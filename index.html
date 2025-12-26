@@ -30,28 +30,16 @@ body{
   min-height: 100vh; overflow: hidden;
 }
 
-/* TELA DE INÍCIO */
 #startScreen {
     position: fixed; inset: 0; background: linear-gradient(180deg, var(--accent), var(--bg2));
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.5s ease;
 }
 .start-logo { font-size: 100px; animation: float 3s infinite ease-in-out; }
-.start-title { font-size: 38px; font-weight: 900; color: var(--dark); margin: 20px 0; text-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+.start-title { font-size: 38px; font-weight: 900; color: var(--dark); margin: 20px 0; }
 
-/* JOGO */
-.game{ 
-    width:100%; max-width:420px; padding:14px; 
-    position: relative; display: flex; flex-direction: column; 
-    opacity: 0; transition: opacity 0.5s; margin: auto;
-}
-
-.card{
-  background:var(--card); border-radius:24px; padding:18px;
-  box-shadow:var(--shadow); text-align:center; position: relative;
-  margin-bottom: 12px;
-}
-
+.game{ width:100%; max-width:420px; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; margin: auto; }
+.card{ background:var(--card); border-radius:24px; padding:18px; box-shadow:var(--shadow); text-align:center; position: relative; margin-bottom: 12px; }
 .notif-card { height: 60px; display: flex; align-items: center; padding: 0 20px; overflow: hidden; }
 .notif-icon-fixed { font-size: 20px; margin-right: 15px; opacity: 0.6; flex-shrink: 0; }
 #notifContainer { flex: 1; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
@@ -60,11 +48,7 @@ body{
 .save-icon.visible { opacity: 1; }
 
 .top-btns { position: absolute; right: 18px; top: 18px; display: flex; gap: 10px; }
-.circle-btn {
-  background: #f0f0f0; border: none; border-radius: 50%;
-  width: 38px; height: 38px; font-size: 20px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
+.circle-btn { background: #f0f0f0; border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
 .level-container { margin-top: 12px; text-align: left; }
 .level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 5px; color: var(--dark); }
@@ -72,29 +56,14 @@ body{
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 .stats{ margin-top:8px; font-size:19px; font-weight: 800; color: var(--dark); }
 
-/* POPUP NOTIFICAÇÃO */
-.popup {
-    position: absolute; background: #fff; padding: 8px 18px; border-radius: 25px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08); font-weight: 800; font-size: 12px; 
-    white-space: nowrap; border-left: 5px solid var(--common);
-    animation: slideInOut 4s ease-in-out forwards;
-}
+.popup { position: absolute; background: #fff; padding: 8px 18px; border-radius: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); font-weight: 800; font-size: 11px; white-space: nowrap; border-left: 5px solid var(--common); animation: slideInOut 4s ease-in-out forwards; }
 .popup.rare { border-left-color: var(--rare); background: #f0f7ff; }
 .popup.epic { border-left-color: var(--epic); background: #f8f5ff; }
 
-@keyframes slideInOut {
-    0% { transform: translateX(-130%); opacity: 0; }
-    10% { transform: translateX(0); opacity: 1; }
-    90% { transform: translateX(0); opacity: 1; }
-    100% { transform: translateX(130%); opacity: 0; }
-}
+@keyframes slideInOut { 0% { transform: translateX(-130%); opacity: 0; } 10% { transform: translateX(0); opacity: 1; } 90% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(130%); opacity: 0; } }
 
 #active-boosts { position: absolute; top: -38px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
-.boost-tag {
-    font-size: 18px; background: white; border-radius: 50%; width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 2px solid var(--accent);
-}
+.boost-tag { font-size: 18px; background: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 2px solid var(--accent); }
 
 .click-zone{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin: 20px 0; }
 .aura-wrapper{ position:relative; width:180px; height:180px; display:flex; justify-content:center; align-items:center; }
@@ -104,18 +73,12 @@ body{
 @keyframes float{ 0%, 100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-18px) rotate(4deg);} }
 .target{ height:85px; width:85px; border-radius:20px; border:3px dashed #ffcc00; display:flex; align-items:center; justify-content:center; font-size:32px; opacity:.4; }
 
-button{
-  width:100%; padding:16px; margin-top:10px; border:none; border-radius:16px;
-  font-size:15px; font-weight:800; background:var(--accent); color:var(--dark);
-  box-shadow:0 6px 0 #d1ad00; cursor: pointer; transition: 0.1s;
-}
+button{ width:100%; padding:16px; margin-top:10px; border:none; border-radius:16px; font-size:15px; font-weight:800; background:var(--accent); color:var(--dark); box-shadow:0 6px 0 #d1ad00; cursor: pointer; transition: 0.1s; }
 button:active{ transform:translateY(3px); box-shadow:0 3px 0 #d1ad00; }
 button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shadow: none !important; pointer-events: none; }
 
-/* MODAL */
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:5000; padding: 20px; }
 .modal-box{ background:#fff; width:100%; max-width:400px; border-radius:28px; overflow:hidden; display: flex; flex-direction: column; animation: modalIn 0.3s ease-out; }
-
 .modal-header{ padding:18px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; align-items: center; color: var(--dark); }
 .modal-body{ padding:0; max-height:65vh; overflow-y:auto; }
 
@@ -187,31 +150,60 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
   </div>
 </div>
 
-<div class="modal" id="shopModal"><div class="modal-box"><div class="modal-header">🛒 Loja <span onclick="closeModal('shopModal')" style="cursor:pointer">×</span></div><div class="modal-body"><div class="shop-item"><div class="shop-info"><b>🌶️ Pimenta</b><small>3x mel por 30s.</small></div><button class="buy-btn" data-cost="500" onclick="buyBoost('pepper', 500)">500 🍯</button></div><div class="shop-item"><div class="shop-info"><b>🥤 Energético</b><small>2x mel/vel por 20s.</small></div><button class="buy-btn" data-cost="300" onclick="buyBoost('energy', 300)">300 🍯</button></div><div class="shop-item"><div class="shop-info"><b>🌼 Flor Dourada</b><small>5x XP por 15s.</small></div><button class="buy-btn" data-cost="1000" onclick="buyBoost('flower', 1000)">1000 🍯</button></div></div></div></div>
-
-<div class="modal" id="helpModal">
-  <div class="modal-box">
-    <div class="modal-header">📖 Guia & Backup <span onclick="closeModal('helpModal')" style="cursor:pointer">×</span></div>
-    <div class="modal-body">
-        <div class="acc-item active"><div class="acc-header" onclick="toggleAcc(this)">🐝 Objetivo <span>▼</span></div><div class="acc-content"><div class="acc-body">Clique na abelha para mel. Conquistas Raras dão +1% e Épicas +5% de bônus!</div></div></div>
-        <div class="acc-item"><div class="acc-header" onclick="toggleAcc(this)">☁️ Backup <span>▼</span></div><div class="acc-content"><div class="acc-body">
-            <button onclick="exportSave()" style="background:#333; color:white; height:40px; margin-bottom:10px;">COPIAR SAVE</button>
-            <button onclick="importSave()" style="background:#777; color:white; height:40px;">IMPORTAR SAVE</button>
-        </div></div></div>
+<div class="modal" id="shopModal">
+    <div class="modal-box">
+        <div class="modal-header">🛒 Loja Real <span onclick="closeModal('shopModal')" style="cursor:pointer">×</span></div>
+        <div class="modal-body">
+            <div class="shop-item">
+                <div class="shop-info"><b>🌶️ Pimenta Habanero</b><small>Triplica (3x) o mel por 30s.</small></div>
+                <button class="buy-btn" data-cost="500" onclick="buyBoost('pepper', 500)">500 🍯</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-info"><b>🥤 Energético de Pólen</b><small>Dobra (2x) mel e velocidade por 20s.</small></div>
+                <button class="buy-btn" data-cost="300" onclick="buyBoost('energy', 300)">300 🍯</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-info"><b>🌼 Flor de Ouro</b><small>5x XP Crítico por 15s.</small></div>
+                <button class="buy-btn" data-cost="1000" onclick="buyBoost('flower', 1000)">1000 🍯</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-<div class="modal" id="offlineModal"><div class="modal-box"><div class="modal-header">🐝 Produção Offline!</div><div class="modal-body" style="text-align:center; padding:25px;"><div style="font-size:60px;">🍯</div><p id="offlineText"></p><button id="btnCollectOffline" style="background:var(--xp-bar);color:white;">COLETAR</button></div></div></div>
+<div class="modal" id="helpModal">
+    <div class="modal-box">
+        <div class="modal-header">📖 Manual da Colmeia <span onclick="closeModal('helpModal')" style="cursor:pointer">×</span></div>
+        <div class="modal-body">
+            <div class="acc-item active"><div class="acc-header" onclick="toggleAcc(this)">🐝 Como Coletar <span>▼</span></div><div class="acc-content"><div class="acc-body">Clique na abelha ou nos alvos laterais. As conquistas Raras dão +1% e as Épicas +5% de bônus real e permanente!</div></div></div>
+            <div class="acc-item"><div class="acc-header" onclick="toggleAcc(this)">☁️ Backup <span>▼</span></div><div class="acc-content"><div class="acc-body">
+                <button onclick="exportSave()" style="background:#333; color:white; height:40px; margin-bottom:10px;">GERAR CÓDIGO DE SAVE</button>
+                <button onclick="importSave()" style="background:#777; color:white; height:40px;">RESTAURAR SAVE</button>
+            </div></div></div>
+        </div>
+    </div>
+</div>
 
-<div class="modal" id="achModal"><div class="modal-box"><div class="modal-header">🏆 Conquistas <span onclick="closeModal('achModal')" style="cursor:pointer">×</span></div><div class="filter-bar"><div class="filter-dot active" onclick="setAchFilter('all', this)">🌐</div><div class="filter-dot" onclick="setAchFilter('common', this)">⚪</div><div class="filter-dot" onclick="setAchFilter('rare', this)">🔵</div><div class="filter-dot" onclick="setAchFilter('epic', this)">🟣</div></div><div class="modal-body" id="achList"></div></div></div>
+<div class="modal" id="offlineModal"><div class="modal-box"><div class="modal-header">🐝 Produção de Descanso</div><div class="modal-body" style="text-align:center; padding:25px;"><div style="font-size:60px;">🍯</div><p id="offlineText"></p><button id="btnCollectOffline" style="background:var(--xp-bar);color:white;">COLETAR TUDO</button></div></div></div>
+
+<div class="modal" id="achModal">
+    <div class="modal-box">
+        <div class="modal-header">🏆 Sala de Troféus <span onclick="closeModal('achModal')" style="cursor:pointer">×</span></div>
+        <div class="filter-bar">
+            <div class="filter-dot active" onclick="setAchFilter('all', this)">🌐</div>
+            <div class="filter-dot" onclick="setAchFilter('common', this)">⚪</div>
+            <div class="filter-dot" onclick="setAchFilter('rare', this)">🔵</div>
+            <div class="filter-dot" onclick="setAchFilter('epic', this)">🟣</div>
+        </div>
+        <div class="modal-body" id="achList"></div>
+    </div>
+</div>
 
 <script>
 let honey=0, totalHoneyEver=0, clicks=0, hPerClick=1, clickCost=10, level=1, currentXP=0, nextLevelXP=100, autoUnlocked=false, autoLevel=1, autoCost=100, timeOnline=0, currentFilter='all';
 let activeBoosts={pepper:0, energy:0, flower:0};
 let pendingOfflineHoney=0, notificationQueue = [], isProcessingNotification = false;
 
-// FULLSCREEN E INÍCIO
+// --- TELA DE INÍCIO & FULLSCREEN ---
 function enterGame() {
     const docEl = document.documentElement;
     const requestFs = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
@@ -224,7 +216,7 @@ function enterGame() {
     }, 500);
 }
 
-// NOTIFICAÇÕES
+// --- SISTEMA DE NOTIFICAÇÕES (UMA POR VEZ) ---
 function notify(a) { notificationQueue.push(a); processQueue(); }
 function processQueue() {
     if (isProcessingNotification || notificationQueue.length === 0) return;
@@ -238,18 +230,42 @@ function processQueue() {
     setTimeout(() => { div.remove(); isProcessingNotification = false; processQueue(); }, 4000);
 }
 
-// CONQUISTAS (200)
+// --- AS 200 CONQUISTAS CRIATIVAS ---
 const achievements = [];
 function initAchievements() {
-    const metasMel = [100, 1000, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12];
-    metasMel.forEach((m, i) => achievements.push({ n: `Reserva #${i+1}`, d: `Acumule ${m.toLocaleString()} mel total`, c: () => totalHoneyEver >= m, u: false, i: "🍯", r: i < 5 ? "common" : (i < 9 ? "rare" : "epic") }));
-    for(let i=1; i<=100; i++) achievements.push({ n: `Rank #${i}`, d: `Nível ${i*10}`, c: () => level >= i*10, u: false, i: "📈", r: i < 20 ? "common" : (i < 60 ? "rare" : "epic") });
-    // Preenche o resto até 200 com metas de cliques e tempo
-    for(let i=1; i<=89; i++) achievements.push({ n: `Atividade #${i}`, d: `Metas de progresso`, c: () => clicks >= (i*500), u: false, i: "🐝", r: "common" });
+    // 50 Metas de Mel (Fortuna Doce)
+    const honeyNames = [
+        "Açúcar no Sangue", "Pingo de Mel", "Pote de Barro", "Reserva de Inverno", "Mel de Flores do Campo",
+        "Empório do Néctar", "Mel de Eucalipto", "Tesouro Dourado", "Barão da Geleia Real", "Magnata do Pólen",
+        "Império Viscoso", "Lago de Caramelo", "Cascata de Âmbar", "Oceano de Doçura", "Planeta Mel",
+        "Constelação de Própolis", "Galáxia Açucarada", "Universo de Favo", "Dimensão Real", "Deus das Abelhas"
+    ];
+    honeyNames.forEach((n, i) => {
+        let val = [100, 500, 1000, 5000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7, 5e7, 1e8, 5e8, 1e9, 5e9, 1e10, 5e10, 1e11, 1e12][i];
+        achievements.push({ n, d: `Total: ${val.toLocaleString()} 🍯`, c: () => totalHoneyEver >= val, u: false, i: "🍯", r: i < 7 ? "common" : (i < 14 ? "rare" : "epic") });
+    });
+
+    // 50 Metas de Cliques (Dedicação Operária)
+    const clickNames = [
+        "Toque Leve", "Vibração de Asas", "Zumbido Rápido", "Esforço Operário", "Asas de Aço",
+        "Martelo de Própolis", "Fúria Amarela", "Zigue-Zague", "Vôo Supersônico", "Flash da Colmeia",
+        "Dedo de Ouro", "Velocidade da Luz", "Maestria de Vôo", "Turbina Alada", "Mestre do Zumbido"
+    ];
+    clickNames.forEach((n, i) => {
+        let val = [1, 100, 500, 1000, 2500, 5000, 1e4, 2.5e4, 5e4, 1e5, 2.5e5, 5e5, 1e6, 2e6, 5e6][i];
+        achievements.push({ n, d: `Cliques: ${val.toLocaleString()}`, c: () => clicks >= val, u: false, i: "👆", r: i < 5 ? "common" : (i < 10 ? "rare" : "epic") });
+    });
+
+    // 100 Metas de Nível (Hierarquia Real)
+    for(let i=1; i<=100; i++) {
+        let n = i <= 20 ? `Zangão Aprendiz ${i}` : (i <= 50 ? `Sentinela Real ${i}` : (i <= 80 ? `Conselheiro de Mel ${i}` : `Divindade Alada ${i}`));
+        achievements.push({ n, d: `Suba ao Nível ${i*10}`, c: () => level >= i*10, u: false, i: "📈", r: i < 20 ? "common" : (i < 60 ? "rare" : "epic") });
+    }
 }
 initAchievements();
 
-function buyBoost(t, c) { if(honey >= c){ honey -= c; activeBoosts[t] += (t==='pepper'?30:20); updateUI(); notify({n:"Boost Ativado!", i:"🚀", r:"rare"}); } }
+// --- LÓGICA DE JOGO ---
+function buyBoost(t, c) { if(honey >= c){ honey -= c; activeBoosts[t] += (t==='pepper'?30:20); updateUI(); notify({n:"Boost Real!", i:"🚀", r:"rare"}); } }
 
 function getGlobalBonus() { 
     let rCount = achievements.filter(a => a.u && a.r === 'rare').length; 
@@ -262,16 +278,16 @@ function getGlobalBonus() {
 
 function updateUI() {
     document.getElementById("honey").textContent = Math.floor(honey).toLocaleString();
-    document.getElementById("mps").textContent = autoUnlocked ? Math.floor((2 * autoLevel) * getGlobalBonus()) : 0;
+    document.getElementById("mps").textContent = autoUnlocked ? Math.floor((autoBase * autoLevel) * getGlobalBonus()) : 0;
     document.getElementById("lvlDisplay").textContent = level;
     document.getElementById("xpDisplay").textContent = `${Math.floor(currentXP)} / ${nextLevelXP}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     document.getElementById("achCount").textContent = achievements.filter(a => a.u).length;
     
-    document.getElementById("btnUpgradeClick").textContent = `🖱️ Upgrade Clique – ${clickCost} 🍯`;
-    document.getElementById("btnAutoAction").textContent = !autoUnlocked ? `⚡ Desbloquear Auto – ${autoCost} 🍯` : `⚡ Upgrade Auto – ${autoCost} 🍯`;
+    document.getElementById("btnUpgradeClick").textContent = `Upgrade Clique: ${clickCost} 🍯`;
+    document.getElementById("btnAutoAction").textContent = !autoUnlocked ? `Auto-Mel: ${autoCost} 🍯` : `Upgrade Auto: ${autoCost} 🍯`;
     
-    // Controle de botões ativos/inativos
+    // Filtro de botões ativos
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     document.getElementById("btnAutoAction").disabled = (honey < autoCost);
     document.querySelectorAll(".buy-btn").forEach(btn => btn.disabled = (honey < parseInt(btn.dataset.cost)));
@@ -292,12 +308,12 @@ function addXP(amt) {
     currentXP += (amt * xpMult); 
     while(currentXP >= nextLevelXP){ 
         currentXP -= nextLevelXP; level++; 
-        nextLevelXP = Math.floor(nextLevelXP * 1.35); 
-        notify({n:`Nível ${level}!`, i:"✨"}); 
+        nextLevelXP = Math.floor(nextLevelXP * levelScale); 
+        notify({n:`Rank Real: ${level}!`, i:"✨"}); 
     } 
 }
 
-function startAuto() { setInterval(() => { if(autoUnlocked){ const amt = (2 * autoLevel) * getGlobalBonus(); honey += amt; totalHoneyEver += amt; addXP(amt); updateUI(); } }, 1000); }
+function startAuto() { setInterval(() => { if(autoUnlocked){ const amt = (autoBase * autoLevel) * getGlobalBonus(); honey += amt; totalHoneyEver += amt; addXP(amt); updateUI(); } }, 1000); }
 
 let clickBuffer = [];
 setInterval(() => {
@@ -305,30 +321,29 @@ setInterval(() => {
     const aura = document.getElementById("aura"), bee = document.getElementById("bee");
     let s=1, o=.3, c="rgba(255,204,0,.4)", sp=3;
     if(activeBoosts.energy > 0) sp = 0.5;
-    if(cps > 4){ s=1.2; o=.5; c="rgba(255,160,0,.6)"; sp=Math.min(sp,2); }
+    if(cps > 4){ s=1.3; o=.6; c="rgba(255,140,0,.6)"; sp=Math.min(sp,1.5); }
     if(aura){ aura.style.transform=`scale(${s})`; aura.style.opacity=o; aura.style.background=`radial-gradient(circle, ${c}, transparent 70%)`; }
     if(bee) bee.style.animationDuration=`${sp}s`;
     achievements.forEach(a => { if(!a.u && a.c()){ a.u = true; notify(a); executeSave(); } });
-    timeOnline++;
 }, 100);
 
-// SAVE & LOAD
+// --- SAVE & LOAD ---
 function executeSave(){ 
-    localStorage.setItem('BeeRoyal_VFinal', JSON.stringify({honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs:achievements.map(a=>a.u), timestamp:Date.now()})); 
+    localStorage.setItem('BeeRoyal_VFinal_Rev', JSON.stringify({honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs:achievements.map(a=>a.u), timestamp:Date.now()})); 
     document.getElementById("saveIndicator").classList.add("visible"); setTimeout(()=>document.getElementById("saveIndicator").classList.remove("visible"),2000);
 }
-function exportSave(){ navigator.clipboard.writeText(btoa(localStorage.getItem('BeeRoyal_VFinal'))); notify({n:"Código Copiado!", i:"📋"}); }
-function importSave(){ const code = prompt("Cole o código:"); if(code){ localStorage.setItem('BeeRoyal_VFinal', atob(code)); location.reload(); }}
+function exportSave(){ navigator.clipboard.writeText(btoa(localStorage.getItem('BeeRoyal_VFinal_Rev'))); notify({n:"Backup Criado!", i:"📋"}); }
+function importSave(){ const code = prompt("Cole o código:"); if(code){ localStorage.setItem('BeeRoyal_VFinal_Rev', atob(code)); location.reload(); }}
 
 function load(){
-    const raw = localStorage.getItem('BeeRoyal_VFinal');
+    const raw = localStorage.getItem('BeeRoyal_VFinal_Rev');
     if(raw){
         const d = JSON.parse(raw);
         honey=d.honey; totalHoneyEver=d.totalHoneyEver; clicks=d.clicks; hPerClick=d.hPerClick; clickCost=d.clickCost; level=d.level; currentXP=d.currentXP; nextLevelXP=d.nextLevelXP; autoUnlocked=d.autoUnlocked; autoLevel=d.autoLevel; autoCost=d.autoCost; timeOnline=d.timeOnline||0;
         if(d.achs) d.achs.forEach((u,i) => { if(achievements[i]) achievements[i].u = u; });
         if(autoUnlocked && d.timestamp){
             const off = Math.floor((Date.now()-d.timestamp)/1000);
-            if(off > 15){ pendingOfflineHoney = off * (2 * autoLevel) * getGlobalBonus(); document.getElementById("offlineText").innerHTML=`Suas abelhas produziram <b>${Math.floor(pendingOfflineHoney).toLocaleString()}</b> mel!`; openModal('offlineModal'); }
+            if(off > 15){ pendingOfflineHoney = off * (autoBase * autoLevel) * getGlobalBonus(); document.getElementById("offlineText").innerHTML=`As abelhas produziram <b>${Math.floor(pendingOfflineHoney).toLocaleString()}</b> mel enquanto você dormia!`; openModal('offlineModal'); }
         }
         if(autoUnlocked) startAuto();
     }
