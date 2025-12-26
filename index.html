@@ -2,12 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Bee Clicker: Royal Edition 🐝</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#ffcc00">
+
+<link rel="apple-touch-icon" href="icone.png">
+<link rel="icon" type="image/png" href="icone.png">
 
 <style>
 :root{
@@ -58,7 +62,6 @@ body{
 
 .stats{ margin-top:6px; font-size:18px; font-weight: bold; color: var(--dark); }
 
-/* BOOST INDICATORS ABOVE BEE */
 #active-boosts {
     position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
     display: flex; gap: 6px; z-index: 10;
@@ -104,14 +107,13 @@ button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: 
   animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), popOut 0.4s 3s forwards;
 }
 .popup.rare { border-left-color: var(--rare); }
-.popup.epic { border-left-color: var(--epic); box-shadow: 0 0 15px rgba(162, 155, 254, 0.5); }
+.popup.epic { border-left-color: var(--epic); box-shadow: 0 0 15px rgba(162,155,254,0.5); }
 
 @keyframes popIn { from{opacity:0; transform:translateY(-20px) scale(0.8);} to{opacity:1; transform:translateY(0) scale(1);} }
 @keyframes popOut { to{opacity:0; transform:scale(0.8); margin-top: -50px;} }
 
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; justify-content:center; align-items:center; z-index:500; padding: 20px; }
 .modal-box{ background:#fff; width:100%; max-width:400px; border-radius:20px; overflow:hidden; display: flex; flex-direction: column; animation: modalIn 0.3s ease-out; }
-@keyframes modalIn { from{transform: scale(0.9); opacity: 0;} to{transform: scale(1); opacity: 1;} }
 
 .modal-header{ padding:15px; background: var(--accent); font-weight:800; display:flex; justify-content:space-between; align-items: center; color: var(--dark); }
 .modal-body{ padding:0; max-height:70vh; overflow-y:auto; }
@@ -142,9 +144,6 @@ button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: 
 .ach-card.unlocked.epic { border-color: var(--epic); background: #f3f0ff; }
 .locked { filter: grayscale(1); opacity: 0.5; }
 .rarity-tag { font-size: 8px; text-transform: uppercase; font-weight: 900; padding: 2px 5px; border-radius: 4px; color: white; margin-bottom: 3px; display: inline-block; }
-.tag-common { background: var(--common); }
-.tag-rare { background: var(--rare); }
-.tag-epic { background: var(--epic); }
 </style>
 </head>
 
@@ -156,8 +155,8 @@ button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: 
   <div class="card">
     <div id="saveIndicator" class="save-icon">💾</div>
     <div class="top-btns">
-        <button class="circle-btn" id="btnShop" title="Loja">🛒</button>
-        <button class="circle-btn" id="btnHelp" title="Como jogar">❓</button>
+        <button class="circle-btn" id="btnShop">🛒</button>
+        <button class="circle-btn" id="btnHelp">❓</button>
     </div>
     <div style="font-size: 24px; font-weight: 900; margin-top: 12px;">Bee Clicker 🐝</div>
     
@@ -219,19 +218,19 @@ button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: 
     <div class="modal-body">
         <div class="acc-item active">
             <div class="acc-header" onclick="toggleAcc(this)">🐝 Objetivo Principal <span>▼</span></div>
-            <div class="acc-content"><div class="acc-body">Clique na abelha ou nos alvos para coletar mel. Use o mel para comprar melhorias e XP para subir de nível.</div></div>
+            <div class="acc-content"><div class="acc-body">Clique na abelha ou nos alvos para coletar mel. Use o mel para melhorias e XP para subir de nível.</div></div>
         </div>
         <div class="acc-item">
             <div class="acc-header" onclick="toggleAcc(this)">⚡ Autoclick e Offline <span>▼</span></div>
-            <div class="acc-content"><div class="acc-body">O Autoclick produz mel sozinho. Se você ficar fora por mais de 15s, ganhará o mel acumulado ao voltar.</div></div>
-        </div>
-        <div class="acc-item">
-            <div class="acc-header" onclick="toggleAcc(this)">🛒 Itens da Loja <span>▼</span></div>
-            <div class="acc-content"><div class="acc-body">Boosts temporários como a Pimenta triplicam seus ganhos. Os ícones aparecem sobre a abelha quando ativos.</div></div>
+            <div class="acc-content"><div class="acc-body">O Autoclick produz mel sozinho. Se sair por mais de 15s, ganhará mel acumulado ao voltar.</div></div>
         </div>
         <div class="acc-item">
             <div class="acc-header" onclick="toggleAcc(this)">🏆 Bônus de Raridade <span>▼</span></div>
-            <div class="acc-content"><div class="acc-body">Raras (🔵) dão +1% e Épicas (🟣) dão +5% de mel total permanente para cada conquista desbloqueada.</div></div>
+            <div class="acc-content"><div class="acc-body">Raras (🔵) dão +1% e Épicas (🟣) dão +5% de mel total permanente por conquista.</div></div>
+        </div>
+        <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">📱 Dica de Instalação <span>▼</span></div>
+            <div class="acc-content"><div class="acc-body">No Safari (iOS) ou Chrome (Android), clique em "Adicionar à Tela de Início" para jogar em tela cheia como um app real!</div></div>
         </div>
     </div>
   </div>
@@ -244,7 +243,6 @@ button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: 
         <div style="font-size: 50px;">🍯</div>
         <p id="offlineText"></p>
         <button id="btnCollectOffline" style="background: var(--xp-bar); color: white;">COLETAR TUDO</button>
-        <div style="margin-top:10px; font-size:12px; color:#888;" id="offlineCloseTimer">Fecha em 45s</div>
     </div>
   </div>
 </div>
@@ -263,7 +261,6 @@ button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: 
 </div>
 
 <script>
-// ESTADO
 let honey=0, totalHoneyEver=0, clicks=0, hPerClick=1, clickCost=10;
 let level=1, currentXP=0, nextLevelXP=100;
 let autoUnlocked=false, autoLevel=1, autoCost=100;
@@ -282,7 +279,7 @@ function initAchievements() {
     const mClick = [1, 50, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000];
     mClick.forEach((m, i) => {
         let r = i < 5 ? "common" : (i < 10 ? "rare" : "epic");
-        achievements.push({ n: `Trabalho #${i+1}`, d: `Dê ${m.toLocaleString()} cliques`, c: () => clicks >= m, u: false, i: "👆", r: r });
+        achievements.push({ n: `Clique #${i+1}`, d: `Dê ${m.toLocaleString()} cliques`, c: () => clicks >= m, u: false, i: "👆", r: r });
     });
     for(let i=1; i<=100; i++) {
         let lvl = i * 10;
@@ -291,6 +288,16 @@ function initAchievements() {
     }
 }
 initAchievements();
+
+// FULLSCREEN LOGIC
+function requestFullScreen() {
+    const doc = window.document;
+    const docEl = doc.documentElement;
+    const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+        requestFullScreen.call(docEl);
+    }
+}
 
 // HELPERS
 function toggleAcc(header) {
@@ -347,7 +354,7 @@ function getGlobalBonus() {
 
 function executeSave() {
     const data = { honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs: achievements.map(a => a.u), timestamp: Date.now() };
-    localStorage.setItem('BeeRoyal_Final_Project', JSON.stringify(data));
+    localStorage.setItem('BeeRoyal_Final_V3', JSON.stringify(data));
     document.getElementById("saveIndicator").classList.add("visible");
     setTimeout(() => document.getElementById("saveIndicator").classList.remove("visible"), 2000);
 }
@@ -361,8 +368,7 @@ function updateUI() {
     document.getElementById("xpDisplay").textContent = `${Math.floor(currentXP)} / ${nextLevelXP}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     document.getElementById("achCount").textContent = achievements.filter(a => a.u).length;
-    
-    document.getElementById("btnUpgradeClick").textContent = `🖱️ Upgrade Clique – ${clickCost} 🍯`;
+    document.getElementById("btnUpgradeClick").textContent = `🖱️ Clique +1 – ${clickCost} 🍯`;
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     const autoBtn = document.getElementById("btnAutoAction");
     autoBtn.textContent = !autoUnlocked ? `⚡ Desbloquear Auto – ${autoCost} 🍯` : `⚡ Upgrade Auto – ${autoCost} 🍯`;
@@ -397,6 +403,7 @@ function addXP(amt) {
 }
 
 function doClick() {
+    requestFullScreen(); // Solicita tela cheia no primeiro clique
     const gain = hPerClick * getGlobalBonus();
     honey += gain; totalHoneyEver += gain; clicks++;
     addXP(gain); clickBuffer.push(Date.now());
@@ -417,18 +424,16 @@ setInterval(() => {
     const aura = document.getElementById("aura");
     const bee = document.getElementById("bee");
     let s=1, o=.3, c="rgba(255,204,0,.4)", sp=3;
-    
     if(activeBoosts.energy > 0) sp = 0.5;
     if(cps > 4) { s=1.2; o=.5; c="rgba(255,160,0,.6)"; sp = Math.min(sp, 2); }
     if(cps > 10) { s=1.4; o=.8; c="rgba(255,80,0,.8)"; sp = Math.min(sp, 1.2); }
-    
     if(aura) { aura.style.transform = `scale(${s})`; aura.style.opacity = o; aura.style.background = `radial-gradient(circle, ${c}, transparent 70%)`; }
     if(bee) bee.style.animationDuration = `${sp}s`;
     achievements.forEach(a => { if(!a.u && a.c()) { a.u = true; notify(a); executeSave(); } });
 }, 100);
 
 function load() {
-    const raw = localStorage.getItem('BeeRoyal_Final_Project');
+    const raw = localStorage.getItem('BeeRoyal_Final_V3');
     if(raw) {
         const d = JSON.parse(raw);
         honey=d.honey; totalHoneyEver=d.totalHoneyEver; clicks=d.clicks; hPerClick=d.hPerClick; clickCost=d.clickCost; level=d.level; currentXP=d.currentXP; nextLevelXP=d.nextLevelXP; autoUnlocked=d.autoUnlocked; autoLevel=d.autoLevel; autoCost=d.autoCost; timeOnline=d.timeOnline || 0;
@@ -446,9 +451,6 @@ function load() {
 function showOfflineModal(gain) {
     document.getElementById("offlineText").innerHTML = `Produção Offline: <b>${Math.floor(gain).toLocaleString()}</b> mel!`;
     openModal('offlineModal');
-    let t = 45;
-    const it = setInterval(() => { t--; document.getElementById("offlineCloseTimer").textContent = `Fecha em ${t}s`; if(t <= 0) { collectOffline(); clearInterval(it); } }, 1000);
-    document.getElementById("btnCollectOffline").onclick = () => { collectOffline(); clearInterval(it); };
 }
 
 function collectOffline() { honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney; addXP(pendingOfflineHoney); pendingOfflineHoney = 0; closeModal('offlineModal'); updateUI(); executeSave(); }
@@ -474,6 +476,7 @@ function closeModal(id) { document.getElementById(id).style.display = "none"; }
 document.getElementById("btnHelp").onclick = () => openModal('helpModal');
 document.getElementById("btnShop").onclick = () => openModal('shopModal');
 document.getElementById("openAchievements").onclick = () => { renderAchs(); openModal('achModal'); };
+document.getElementById("btnCollectOffline").onclick = () => collectOffline();
 
 window.onclick = (e) => { if (e.target.className === "modal") closeModal(e.target.id); }
 
