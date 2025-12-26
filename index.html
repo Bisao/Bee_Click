@@ -38,6 +38,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 .start-logo { font-size: 100px; animation: floatBee 3s infinite ease-in-out; }
 .start-title { font-size: 42px; font-weight: 900; color: var(--dark); margin: 20px 0; text-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+.version-tag { position: absolute; bottom: 20px; font-size: 12px; font-weight: bold; color: rgba(0,0,0,0.3); }
 
 .game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; }
 
@@ -76,10 +77,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .tab-pane { display: none; }
 .tab-pane.active { display: block; }
 
-.filter-sticky-header {
-    position: sticky; top: -15px; background: #fff; z-index: 10;
-    padding: 10px 0; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;
-}
+.filter-sticky-header { position: sticky; top: -15px; background: #fff; z-index: 10; padding: 10px 0; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; }
 .filter-bar { display: flex; justify-content: center; gap: 8px; }
 .filter-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #eee; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: 0.2s; }
 .filter-dot.active { border-color: var(--dark); background: var(--accent); transform: scale(1.1); }
@@ -88,10 +86,12 @@ button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:15p
 button:active{ transform:translateY(2px); box-shadow:0 2px 0 #d1ad00; }
 button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shadow: none !important; }
 
-.shop-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f0f0f0; gap: 10px; text-align: left; }
-.shop-info b { font-size: 14px; display: block; }
-.shop-info small { font-size: 11px; color: #666; }
-.buy-btn { width: auto; padding: 8px 12px; font-size: 12px; margin: 0; min-width: 90px; }
+/* Estilos Loja Expandida */
+.shop-section { margin-bottom: 25px; text-align: left; }
+.shop-section-title { font-size: 16px; font-weight: 900; color: var(--dark); margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+.status-text { font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; }
+.buy-btn-small { padding: 8px 4px; font-size: 10px; margin: 0; line-height: 1.2; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
 .ach-card { display: flex; align-items: center; padding: 12px; border-radius: 15px; background: #fcfcfc; border: 2px solid #eee; text-align: left; gap: 12px; margin-bottom: 8px; }
 .ach-card.unlocked.common { border-color: var(--common); }
@@ -101,13 +101,6 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); display:none; justify-content:center; align-items:center; z-index:5000; padding: 20px; }
 .modal-box{ background:#fff; width:100%; max-width:400px; border-radius:30px; overflow:hidden; }
-.modal-header{ padding:20px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; color: var(--dark); }
-
-.help-guide { padding: 20px; text-align: left; overflow-y: auto; max-height: 70vh; }
-.guide-step { margin-bottom: 18px; display: flex; gap: 12px; }
-.guide-icon { font-size: 24px; background: #f9f9f9; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; }
-.guide-text b { display: block; color: var(--dark); font-size: 15px; }
-.guide-text p { margin: 2px 0 0; font-size: 13px; color: #666; line-height: 1.4; }
 
 .popup { position: absolute; background: #fff; padding: 8px 18px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-weight: 800; font-size: 11px; white-space: nowrap; border-left: 6px solid var(--common); animation: slideInOut 4s ease-in-out forwards; }
 @keyframes slideInOut { 0% { transform: translateX(-140%); opacity: 0; } 8% { transform: translateX(0); opacity: 1; } 92% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(140%); opacity: 0; } }
@@ -120,6 +113,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
     <div class="start-logo">🐝</div>
     <div class="start-title">BEE CLICKER</div>
     <button style="width: 240px; font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
+    <div class="version-tag">VERSÃO 2.2.0</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -143,7 +137,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
     <div class="click-zone">
       <div class="target" id="leftTarget">🎯</div>
       <div class="aura-wrapper">
-        <div id="active-boosts" style="position: absolute; top: -35px; display: flex; gap: 4px;"></div>
+        <div id="active-boosts" style="position: absolute; top: -35px; display: flex; gap: 4px; font-size: 18px;"></div>
         <div class="aura" id="aura"></div>
         <div id="bee" class="bee">🐝</div>
       </div>
@@ -162,20 +156,25 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
               <button id="btnUpgradeClick">Upgrade Clique – 10 🍯</button>
               <button id="btnAutoAction">Desbloquear Auto – 100 🍯</button>
           </div>
+
           <div id="shop" class="tab-pane">
-              <div class="shop-item">
-                  <div class="shop-info"><b>🌶️ Pimenta Habanero</b><small>3x mel por 30s.</small></div>
-                  <button class="buy-btn" id="btn_pepper" onclick="buyBoost('pepper', 500)">---</button>
+              <div class="shop-section">
+                  <div class="shop-section-title">🌶️ Pimenta (3x Mel)</div>
+                  <small id="status_pepper" class="status-text">Inativo</small>
+                  <div class="shop-grid" id="grid_pepper"></div>
               </div>
-              <div class="shop-item">
-                  <div class="shop-info"><b>🥤 Energético de Pólen</b><small>2x mel/vel por 20s.</small></div>
-                  <button class="buy-btn" id="btn_energy" onclick="buyBoost('energy', 300)">---</button>
+              <div class="shop-section">
+                  <div class="shop-section-title">🥤 Energético (2x Velocidade)</div>
+                  <small id="status_energy" class="status-text">Inativo</small>
+                  <div class="shop-grid" id="grid_energy"></div>
               </div>
-              <div class="shop-item">
-                  <div class="shop-info"><b>🌼 Flor Dourada</b><small>5x XP por 15s.</small></div>
-                  <button class="buy-btn" id="btn_flower" onclick="buyBoost('flower', 1000)">---</button>
+              <div class="shop-section">
+                  <div class="shop-section-title">🌼 Flor Dourada (5x XP)</div>
+                  <small id="status_flower" class="status-text">Inativo</small>
+                  <div class="shop-grid" id="grid_flower"></div>
               </div>
           </div>
+
           <div id="achievements" class="tab-pane">
               <div class="filter-sticky-header">
                   <div class="filter-bar">
@@ -194,29 +193,13 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 
 <div class="modal" id="helpModal">
   <div class="modal-box">
-    <div class="modal-header">🐝 Manual do Apicultor <span onclick="closeModal('helpModal')" style="cursor:pointer">×</span></div>
-    <div class="help-guide">
-        <div class="guide-step">
-            <div class="guide-icon">🐝</div>
-            <div class="guide-text"><b>Produção Manual</b><p>Toque na abelha ou nos alvos (🎯) para gerar mel. Cada gota conta!</p></div>
-        </div>
-        <div class="guide-step">
-            <div class="guide-icon">📈</div>
-            <div class="guide-text"><b>Nível e Experiência</b><p>Todo mel coletado vira XP. Subir de nível demonstra seu poder, mas aumenta os preços da Loja.</p></div>
-        </div>
-        <div class="guide-step">
-            <div class="guide-icon">⚡</div>
-            <div class="guide-text"><b>Auto-Mel (Idle)</b><p>Desbloqueie o Auto-Mel para produzir mesmo sem tocar na tela ou com o jogo fechado.</p></div>
-        </div>
-        <div class="guide-step">
-            <div class="guide-icon">🏆</div>
-            <div class="guide-text"><b>Poder das Conquistas</b><p>Conquistas Raras dão <b>+1%</b> e Épicas dão <b>+5%</b> de bônus permanente de produção.</p></div>
-        </div>
-        <div class="guide-step">
-            <div class="guide-icon">🥤</div>
-            <div class="guide-text"><b>Itens da Loja</b><p>Use Boosts para multiplicar sua produção por tempo limitado. Use-os com sabedoria!</p></div>
-        </div>
-        <button onclick="closeModal('helpModal')" style="margin-top:5px;">VAMOS COLETAR!</button>
+    <div class="modal-header">🐝 Como Jogar <span onclick="closeModal('helpModal')" style="cursor:pointer">×</span></div>
+    <div style="padding: 20px; font-size: 14px; text-align: left; line-height: 1.6;">
+        • Clique na abelha ou alvos laterais.<br>
+        • Mel vira XP. Subir de nível aumenta custos.<br>
+        • Conquistas raras (+1%) e épicas (+5%) dão bônus permanente.<br>
+        • Os boosts da loja agora acumulam tempo (stack)!
+        <button onclick="closeModal('helpModal')" style="margin-top:15px;">ENTENDI</button>
     </div>
   </div>
 </div>
@@ -233,32 +216,40 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 </div>
 
 <script>
-// CHAVE ORIGINAL MANTIDA PARA NÃO PERDER O PROGRESSO
+// CHAVE ORIGINAL PRESERVADA
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 
 let honey=0, totalHoneyEver=0, clicks=0, hPerClick=1, clickCost=10, level=1, currentXP=0, nextLevelXP=1000, autoUnlocked=false, autoLevel=1, autoCost=100, timeOnline=0, currentFilter='all';
 let activeBoosts={pepper:0, energy:0, flower:0};
 let pendingOfflineHoney=0, notificationQueue = [], isProcessingNotification = false, gameLoaded = false;
 
+const durations = [
+    { label: "30s", t: 300, m: 1 },
+    { label: "1m", t: 600, m: 1.8 },
+    { label: "5m", t: 3000, m: 8 },
+    { label: "30m", t: 18000, m: 40 },
+    { label: "1h", t: 36000, m: 70 },
+    { label: "12h", t: 432000, m: 700 },
+    { label: "24h", t: 864000, m: 1200 }
+];
+const boostBases = { pepper: 500, energy: 300, flower: 1000 };
+
 const achievements = [];
 function initAchievements() {
     achievements.length = 0;
-    // Títulos Criativos
-    const honeyNames = ["Primeira Gota", "Pote de Barro", "Reserva de Inverno", "Favo de Prata", "Mel do Bosque", "Barril Viscoso", "Lago Doce", "Barão da Geleia Real", "Magnata do Pólen", "Império Âmbar", "Cascata Dourada", "Tesouro Alado", "Oceano de Mel", "Galáxia de Própolis", "Universo Açucarado", "Divindade do Caramelo", "Mestre da Viscosidade", "Eternidade Doce", "Infinito de Mel", "Lenda da Colmeia"];
-    honeyNames.forEach((n, i) => {
+    const names = ["Primeira Gota", "Pote de Barro", "Reserva de Inverno", "Favo de Prata", "Mel do Bosque", "Barril Viscoso", "Lago Doce", "Barão da Geleia Real", "Magnata do Pólen", "Império Âmbar", "Cascata Dourada", "Tesouro Alado", "Oceano de Mel", "Galáxia de Própolis", "Universo Açucarado", "Divindade do Caramelo", "Mestre da Viscosidade", "Eternidade Doce", "Infinito de Mel", "Lenda da Colmeia"];
+    names.forEach((n, i) => {
         let val = Math.pow(10, i * 1.8 + 2);
         achievements.push({ n, d: `Mel total: ${formatNum(val)}`, c: () => totalHoneyEver >= val, u: false, i: "🍯", r: i < 7 ? "common" : (i < 15 ? "rare" : "epic") });
     });
-    // Níveis (100 itens)
-    for(let i=1; i<=100; i++) achievements.push({ n: `Veterano Nível ${i*5}`, d: `Alcance o nível ${i*5}`, c: () => level >= i*5, u: false, i: "📈", r: i < 20 ? "common" : (i < 65 ? "rare" : "epic") });
-    // Tempo (80 itens)
-    for(let i=1; i<=80; i++) achievements.push({ n: `Dedicação #${i}`, d: `Jogue por ${(i*5)} minutos`, c: () => timeOnline >= (i*300000), u: false, i: "⌚", r: "common" });
+    for(let i=1; i<=100; i++) achievements.push({ n: `Veterano Lvl ${i*5}`, d: `Alcance o nível ${i*5}`, c: () => level >= i*5, u: false, i: "📈", r: i < 20 ? "common" : (i < 65 ? "rare" : "epic") });
+    for(let i=1; i<=80; i++) achievements.push({ n: `Dedicação #${i}`, d: `Jogue por ${(i*5)} min`, c: () => timeOnline >= (i * 600 * 50), u: false, i: "⌚", r: "common" });
 }
 initAchievements();
 
 function executeSave(){ 
     if(!gameLoaded) return;
-    const data = {honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs:achievements.map(a=>a.u), timestamp:Date.now()};
+    const data = {honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, activeBoosts, achs:achievements.map(a=>a.u), timestamp:Date.now()};
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     document.getElementById("saveIndicator").classList.add("visible"); setTimeout(()=>document.getElementById("saveIndicator").classList.remove("visible"), 2000);
 }
@@ -269,20 +260,53 @@ function load(){
         try {
             const d = JSON.parse(raw);
             honey=d.honey||0; totalHoneyEver=d.totalHoneyEver||0; hPerClick=d.hPerClick||1; clickCost=d.clickCost||10; level=d.level||1; currentXP=d.currentXP||0; nextLevelXP=d.nextLevelXP||1000; autoUnlocked=d.autoUnlocked||false; autoLevel=d.autoLevel||1; autoCost=d.autoCost||100; timeOnline=d.timeOnline||0;
+            if(d.activeBoosts) activeBoosts = d.activeBoosts;
+            const elapsedTicks = d.timestamp ? Math.floor((Date.now() - d.timestamp) / 100) : 0;
+            for(let b in activeBoosts) activeBoosts[b] = Math.max(0, activeBoosts[b] - elapsedTicks);
             if(d.achs) d.achs.forEach((u,i) => { if(achievements[i]) achievements[i].u = u; });
-            if(autoUnlocked && d.timestamp){
-                const off = Math.floor((Date.now()-d.timestamp)/1000);
-                if(off > 15){ pendingOfflineHoney = off * (2 * autoLevel) * getGlobalBonus(); document.getElementById("offlineText").innerHTML=`Suas abelhas colheram <b>${formatNum(pendingOfflineHoney)}</b> mel enquanto você estava fora!`; openModal('offlineModal'); }
+            if(autoUnlocked && elapsedTicks > 150){ 
+                pendingOfflineHoney = (elapsedTicks/10) * (2 * autoLevel) * getGlobalBonus(); 
+                document.getElementById("offlineText").innerHTML=`Suas abelhas colheram <b>${formatNum(pendingOfflineHoney)}</b> mel!`; 
+                openModal('offlineModal'); 
             }
             if(autoUnlocked) startAuto();
-        } catch(e) { console.error("Erro no load", e); }
+        } catch(e) { console.error(e); }
     }
-    gameLoaded = true; updateUI();
+    gameLoaded = true; buildShop(); updateUI();
 }
 
-function enterGame() { document.getElementById('startScreen').style.opacity = '0'; setTimeout(() => { document.getElementById('startScreen').style.display = 'none'; document.getElementById('gameUI').style.opacity = '1'; }, 500); }
-function openTab(id, btn) { document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); btn.classList.add('active'); if(id === 'achievements') renderAchs(); }
+function buildShop() {
+    ['pepper', 'energy', 'flower'].forEach(type => {
+        const grid = document.getElementById(`grid_${type}`);
+        grid.innerHTML = "";
+        durations.forEach(d => {
+            const btn = document.createElement("button");
+            btn.className = "buy-btn-small";
+            btn.id = `buy_${type}_${d.t}`;
+            btn.onclick = () => buyBoost(type, d.t, d.m);
+            grid.appendChild(btn);
+        });
+    });
+}
 
+function buyBoost(type, ticks, mult) {
+    const cost = Math.floor(boostBases[type] * level * mult);
+    if(honey >= cost) {
+        honey -= cost; activeBoosts[type] += ticks;
+        notify({n: "Tempo Adicionado!", i: "🚀", r: "rare"});
+        updateUI(); executeSave();
+    }
+}
+
+function enterGame() {
+    const el = document.documentElement;
+    const rfs = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if (rfs) rfs.call(el).catch(() => {});
+    document.getElementById('startScreen').style.opacity = '0';
+    setTimeout(() => { document.getElementById('startScreen').style.display = 'none'; document.getElementById('gameUI').style.opacity = '1'; }, 500);
+}
+
+function openTab(id, btn) { document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); btn.classList.add('active'); if(id === 'achievements') renderAchs(); }
 function notify(a) { notificationQueue.push(a); processQueue(); }
 function processQueue() {
     if (isProcessingNotification || notificationQueue.length === 0) return;
@@ -294,6 +318,12 @@ function processQueue() {
 }
 
 function formatNum(n) { if (n >= 1e12) return (n/1e12).toFixed(1) + "T"; if (n >= 1e9) return (n/1e9).toFixed(1) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; return Math.floor(n).toLocaleString(); }
+function formatTime(t) {
+    let s = Math.ceil(t/10);
+    if(s < 60) return s + "s";
+    if(s < 3600) return Math.floor(s/60) + "m " + (s%60) + "s";
+    return Math.floor(s/3600) + "h " + Math.floor((s%3600)/60) + "m";
+}
 
 function updateUI() {
     document.getElementById("honey").textContent = formatNum(honey);
@@ -302,17 +332,21 @@ function updateUI() {
     document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     document.getElementById("achCount").textContent = achievements.filter(a => a.u).length;
-    document.getElementById("btnUpgradeClick").textContent = `Upgrade Clique – ${formatNum(clickCost)} 🍯`;
-    document.getElementById("btnAutoAction").textContent = !autoUnlocked ? `Auto-Mel – ${formatNum(autoCost)} 🍯` : `Upgrade Auto – ${formatNum(autoCost)} 🍯`;
+    
+    document.getElementById("btnUpgradeClick").textContent = `Clique +1 – ${formatNum(clickCost)} 🍯`;
+    document.getElementById("btnAutoAction").textContent = !autoUnlocked ? `Auto-Mel – ${formatNum(autoCost)} 🍯` : `Auto +2 – ${formatNum(autoCost)} 🍯`;
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     document.getElementById("btnAutoAction").disabled = (honey < autoCost);
-    ['pepper','energy','flower'].forEach(t => updateShopButton(t, t==='pepper'?500:t==='energy'?300:1000));
-}
 
-function updateShopButton(t, b) {
-    const btn = document.getElementById("btn_" + t), cost = b * level;
-    if (activeBoosts[t] > 0) { btn.textContent = "ATIVO"; btn.disabled = true; } 
-    else { btn.textContent = formatNum(cost) + " 🍯"; btn.disabled = (honey < cost); }
+    ['pepper', 'energy', 'flower'].forEach(type => {
+        document.getElementById(`status_${type}`).textContent = activeBoosts[type] > 0 ? `Ativo: ${formatTime(activeBoosts[type])}` : "Inativo";
+        durations.forEach(d => {
+            const btn = document.getElementById(`buy_${type}_${d.t}`);
+            const cost = Math.floor(boostBases[type] * level * d.m);
+            btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)}`;
+            btn.disabled = (honey < cost);
+        });
+    });
 }
 
 function getGlobalBonus() { 
@@ -322,21 +356,9 @@ function getGlobalBonus() {
     return m;
 }
 
-function buyBoost(t, b) {
-    const c = b * level;
-    if(honey >= c && activeBoosts[t] <= 0){ honey -= c; activeBoosts[t] = (t==='pepper'?300:t==='energy'?200:150); updateUI(); notify({n:"Boost Ativado!", i:"🚀", r:"rare"}); }
-}
-
 function doClick() { const g = hPerClick * getGlobalBonus(); honey += g; totalHoneyEver += g; addXP(g); clickBuffer.push(Date.now()); updateUI(); }
-function addXP(amt) { 
-    let m = (activeBoosts.flower > 0) ? 5 : 1; 
-    currentXP += (amt * m); 
-    while(currentXP >= nextLevelXP){ 
-        currentXP -= nextLevelXP; level++; nextLevelXP = Math.floor(nextLevelXP * 1.5); 
-        notify({n:`Nível Real ${level}!`, i:"✨", r:"common"}); 
-    } 
-}
-function startAuto() { setInterval(() => { if(autoUnlocked){ const a = (2 * autoLevel) * getGlobalBonus(); honey += a; totalHoneyEver += a; addXP(a); updateUI(); } }, 1000); }
+function addXP(amt) { let m = (activeBoosts.flower > 0) ? 5 : 1; currentXP += (amt * m); while(currentXP >= nextLevelXP){ currentXP -= nextLevelXP; level++; nextLevelXP = Math.floor(nextLevelXP * 1.5); notify({n:`Nível Real ${level}!`, i:"✨", r:"rare"}); } }
+function startAuto() { if(window.autoInt) clearInterval(window.autoInt); window.autoInt = setInterval(() => { if(autoUnlocked){ honey += (2 * autoLevel) * getGlobalBonus(); updateUI(); } }, 1000); }
 
 let clickBuffer = [];
 setInterval(() => {
@@ -351,7 +373,7 @@ setInterval(() => {
     achievements.forEach(a => { if(!a.u && a.c()){ a.u = true; notify(a); executeSave(); if(document.getElementById('achievements').classList.contains('active')) renderAchs(); } });
     
     const container = document.getElementById("active-boosts"); container.innerHTML = "";
-    for(let b in activeBoosts) if(activeBoosts[b] > 0){ activeBoosts[b]--; container.innerHTML += `<span>${b==='pepper'?'🌶️':b==='energy'?'🥤':'🌼'}</span>`; if(activeBoosts[b] === 0) updateUI(); }
+    for(let b in activeBoosts) if(activeBoosts[b] > 0){ activeBoosts[b]--; container.innerHTML += `<span>${b==='pepper'?'🌶️':b==='energy'?'🥤':'🌼'}</span>`; if(activeBoosts[b] % 10 === 0) updateUI(); }
     timeOnline += 100;
 }, 100);
 
@@ -367,7 +389,7 @@ function renderAchs(){
 }
 
 document.getElementById("btnHelp").onclick = () => openModal('helpModal');
-document.getElementById("btnCollectOffline").onclick = () => { honey+=pendingOfflineHoney; totalHoneyEver+=pendingOfflineHoney; pendingOfflineHoney=0; closeModal('offlineModal'); updateUI(); executeSave(); };
+document.getElementById("btnCollectOffline").onclick = () => { honey+=pendingOfflineHoney; pendingOfflineHoney=0; closeModal('offlineModal'); updateUI(); };
 document.getElementById("btnAutoAction").onclick = () => { if(honey >= autoCost){ honey -= autoCost; if(!autoUnlocked){autoUnlocked=true;autoCost=500;startAuto();} else{autoLevel++;autoCost=Math.floor(autoCost*2.1);} updateUI(); executeSave(); } };
 document.getElementById("btnUpgradeClick").onclick = () => { if(honey >= clickCost){ honey -= clickCost; hPerClick++; clickCost=Math.floor(clickCost*1.9); updateUI(); executeSave(); } };
 ["bee","leftTarget","rightTarget"].forEach(id => { const el = document.getElementById(id); el.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(); }); el.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(); }, {passive:false}); });
