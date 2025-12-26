@@ -3,18 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Bee Clicker 🐝</title>
+<title>Bee Clicker: Royal Edition 🐝</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffcc00">
-<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Bee%20Clicker%22,%22short_name%22:%22BeeClicker%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fff3b0%22,%22theme_color%22:%22%23ffcc00%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/517/517563.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
 
 <style>
 :root{
   --bg1:#87ceeb; --bg2:#fff3b0; --card:#fff;
   --accent:#ffcc00; --dark:#4a3b00; --shadow:0 10px 25px rgba(0,0,0,.18);
   --xp-bar:#4caf50;
+  --common: #b2bec3;
+  --rare: #0984e3;
+  --epic: #a29bfe;
 }
 
 *{ box-sizing:border-box; user-select:none; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
@@ -25,23 +27,49 @@ body{
   display:flex; justify-content:center; min-height: 100vh; overflow-x: hidden;
 }
 
-.game{ width:100%; max-width:420px; padding:14px; }
+.game{ width:100%; max-width:420px; padding:14px; position: relative; }
 
 .card{
   background:var(--card); border-radius:20px; padding:15px;
   margin-bottom:14px; box-shadow:var(--shadow); text-align:center;
+  position: relative;
 }
 
-/* LEVEL BAR */
+.save-icon {
+  position: absolute; left: 15px; top: 18px;
+  font-size: 18px; opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+.save-icon.visible { opacity: 1; }
+
+.top-btns { position: absolute; right: 15px; top: 18px; display: flex; gap: 8px; }
+.circle-btn {
+  background: #eee; border: none; border-radius: 50%;
+  width: 34px; height: 34px; font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
 .level-container { margin-top: 10px; text-align: left; }
 .level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: var(--dark); }
 .xp-bg { width: 100%; height: 12px; background: #eee; border-radius: 10px; overflow: hidden; }
-.xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.3s ease; }
+.xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 
 .stats{ margin-top:6px; font-size:18px; font-weight: bold; color: var(--dark); }
 
-/* VISUAL AREA */
-.click-zone{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin: 10px 0; }
+/* BOOST INDICATORS ABOVE BEE */
+#active-boosts {
+    position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px; z-index: 10;
+}
+.boost-tag {
+    font-size: 18px; background: white; border-radius: 50%; width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 2px solid var(--accent);
+}
+
+.click-zone{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin: 15px 0; }
 .aura-wrapper{ position:relative; width:170px; height:170px; display:flex; justify-content:center; align-items:center; }
 .aura{ position:absolute; width:140px; height:140px; border-radius:50%; filter:blur(15px); opacity:.3; transition: all 0.2s; }
 .bee{ font-size:100px; z-index:2; animation:float 3s ease-in-out infinite; cursor: pointer; }
@@ -56,43 +84,83 @@ body{
   display:flex; align-items:center; justify-content:center; font-size:30px; opacity:.5;
 }
 
-/* BUTTONS */
 button{
   width:100%; padding:14px; margin-top:10px; border:none; border-radius:14px;
   font-size:15px; font-weight:700; background:var(--accent); color:var(--dark);
-  box-shadow:0 5px 0 #c9a200; cursor: pointer;
+  box-shadow:0 5px 0 #c9a200; cursor: pointer; transition: 0.1s;
 }
 button:active{ transform:translateY(2px); box-shadow:0 3px 0 #c9a200; }
-button:disabled{ background:#ccc; color:#777; box-shadow: none; transform: none; }
+button:disabled{ background:#ccc !important; color:#777 !important; box-shadow: none !important; }
 
+#notification-container {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 350px; z-index: 2000; pointer-events: none;
+    display: flex; flex-direction: column; gap: 10px;
+}
 .popup{
-  position:fixed; top:20px; left:50%; transform:translateX(-50%);
-  background:white; padding:12px 20px; border-radius:50px;
-  box-shadow: var(--shadow); z-index:1000; font-weight: bold;
-  animation: popFade 2.5s forwards;
+  background: white; padding: 12px 20px; border-radius: 50px;
+  box-shadow: var(--shadow); font-weight: bold; text-align: center;
+  border-left: 8px solid var(--common);
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), popOut 0.4s 3s forwards;
 }
-@keyframes popFade {
-  0%{opacity:0; transform:translate(-50%, -20px);}
-  15%{opacity:1; transform:translate(-50%, 0);}
-  85%{opacity:1;}
-  100%{opacity:0;}
-}
+.popup.rare { border-left-color: var(--rare); }
+.popup.epic { border-left-color: var(--epic); box-shadow: 0 0 15px rgba(162, 155, 254, 0.5); }
 
-/* MODAL */
-.modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; justify-content:center; align-items:center; z-index:500; }
-.modal-box{ background:#fff; width:90%; max-width:380px; border-radius:20px; overflow:hidden; }
-.modal-header{ padding:15px; background: var(--accent); font-weight:800; display:flex; justify-content:space-between; }
-.modal-body{ padding:10px; max-height:60vh; overflow-y:auto; }
-.achievement{ padding:12px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; text-align: left;}
-.locked{ opacity:.4; filter: grayscale(1); }
+@keyframes popIn { from{opacity:0; transform:translateY(-20px) scale(0.8);} to{opacity:1; transform:translateY(0) scale(1);} }
+@keyframes popOut { to{opacity:0; transform:scale(0.8); margin-top: -50px;} }
+
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; justify-content:center; align-items:center; z-index:500; padding: 20px; }
+.modal-box{ background:#fff; width:100%; max-width:400px; border-radius:20px; overflow:hidden; display: flex; flex-direction: column; animation: modalIn 0.3s ease-out; }
+@keyframes modalIn { from{transform: scale(0.9); opacity: 0;} to{transform: scale(1); opacity: 1;} }
+
+.modal-header{ padding:15px; background: var(--accent); font-weight:800; display:flex; justify-content:space-between; align-items: center; color: var(--dark); }
+.modal-body{ padding:0; max-height:70vh; overflow-y:auto; }
+
+/* ACORDEÃO AJUDA */
+.acc-item { border-bottom: 1px solid #eee; }
+.acc-header { padding: 15px; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; }
+.acc-content { max-height: 0; overflow: hidden; background: #fafafa; transition: max-height 0.3s ease-out; font-size: 13px; color: #444; }
+.acc-body { padding: 15px; line-height: 1.5; }
+.acc-item.active .acc-content { max-height: 400px; }
+.acc-item.active .acc-header { background: #fffde7; }
+
+/* LOJA ITEMS */
+.shop-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; gap: 10px; }
+.shop-info { text-align: left; flex: 1; }
+.shop-info b { display: block; font-size: 14px; }
+.shop-info small { color: #666; font-size: 11px; }
+.buy-btn { width: auto; padding: 8px 14px; margin: 0; font-size: 12px; }
+
+/* FILTROS CONQUISTAS */
+.filter-bar { display: flex; justify-content: center; gap: 15px; padding: 12px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+.filter-dot { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #ddd; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
+.filter-dot.active { transform: scale(1.15); border-color: var(--dark); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+.ach-card { display: flex; align-items: center; padding: 12px; border-radius: 15px; background: #f9f9f9; border: 2px solid transparent; text-align: left; gap: 15px; margin: 10px; }
+.ach-card.unlocked.common { border-color: var(--common); background: #f1f2f6; }
+.ach-card.unlocked.rare { border-color: var(--rare); background: #e3f2fd; }
+.ach-card.unlocked.epic { border-color: var(--epic); background: #f3f0ff; }
+.locked { filter: grayscale(1); opacity: 0.5; }
+.rarity-tag { font-size: 8px; text-transform: uppercase; font-weight: 900; padding: 2px 5px; border-radius: 4px; color: white; margin-bottom: 3px; display: inline-block; }
+.tag-common { background: var(--common); }
+.tag-rare { background: var(--rare); }
+.tag-epic { background: var(--epic); }
 </style>
 </head>
 
 <body>
 
+<div id="notification-container"></div>
+
 <div class="game">
   <div class="card">
-    <div style="font-size: 24px; font-weight: 900;">Bee Clicker 🐝</div>
+    <div id="saveIndicator" class="save-icon">💾</div>
+    <div class="top-btns">
+        <button class="circle-btn" id="btnShop" title="Loja">🛒</button>
+        <button class="circle-btn" id="btnHelp" title="Como jogar">❓</button>
+    </div>
+    <div style="font-size: 24px; font-weight: 900; margin-top: 12px;">Bee Clicker 🐝</div>
+    
     <div class="stats">
       🍯 <span id="honey">0</span> | ⚡ <span id="mps">0</span>/s
     </div>
@@ -110,6 +178,7 @@ button:disabled{ background:#ccc; color:#777; box-shadow: none; transform: none;
     <div class="click-zone">
       <div class="target" id="leftTarget">🎯</div>
       <div class="aura-wrapper">
+        <div id="active-boosts"></div>
         <div class="aura" id="aura"></div>
         <div id="bee" class="bee">🐝</div>
       </div>
@@ -119,180 +188,301 @@ button:disabled{ background:#ccc; color:#777; box-shadow: none; transform: none;
 
   <div class="card">
     <button id="btnUpgradeClick">🖱️ Upgrade Clique – 10 🍯</button>
-    <button id="btnUnlockAuto">⚡ Desbloquear Auto – 100 🍯</button>
-    <button id="btnUpgradeAuto">⚡ Upgrade Auto – 200 🍯</button>
-    <button id="openAchievements" style="background:#eee; box-shadow:0 5px 0 #ccc;">🏆 Conquistas</button>
+    <button id="btnAutoAction">⚡ Desbloquear Auto – 100 🍯</button>
+    <button id="openAchievements" style="background:#eee; box-shadow:0 5px 0 #ccc;">🏆 Conquistas (<span id="achCount">0</span>/200)</button>
+  </div>
+</div>
+
+<div class="modal" id="shopModal">
+  <div class="modal-box">
+    <div class="modal-header">🛒 Loja de Boosts <span style="cursor:pointer; font-size:24px;" onclick="closeModal('shopModal')">×</span></div>
+    <div class="modal-body">
+        <div class="shop-item">
+            <div class="shop-info"><b>🌶️ Pimenta Habanero</b><small>Triplica (3x) o mel por 30 segundos.</small></div>
+            <button class="buy-btn" onclick="buyBoost('pepper', 500)">500 🍯</button>
+        </div>
+        <div class="shop-item">
+            <div class="shop-info"><b>🥤 Energético</b><small>Dobra (2x) o mel e a velocidade por 20s.</small></div>
+            <button class="buy-btn" onclick="buyBoost('energy', 300)">300 🍯</button>
+        </div>
+        <div class="shop-item">
+            <div class="shop-info"><b>🌼 Flor Dourada</b><small>XP Crítico (5x mais XP) por 15s.</small></div>
+            <button class="buy-btn" onclick="buyBoost('flower', 1000)">1000 🍯</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="helpModal">
+  <div class="modal-box">
+    <div class="modal-header">📖 Guia do Jogo <span style="cursor:pointer; font-size:24px;" onclick="closeModal('helpModal')">×</span></div>
+    <div class="modal-body">
+        <div class="acc-item active">
+            <div class="acc-header" onclick="toggleAcc(this)">🐝 Objetivo Principal <span>▼</span></div>
+            <div class="acc-content"><div class="acc-body">Clique na abelha ou nos alvos para coletar mel. Use o mel para comprar melhorias e XP para subir de nível.</div></div>
+        </div>
+        <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">⚡ Autoclick e Offline <span>▼</span></div>
+            <div class="acc-content"><div class="acc-body">O Autoclick produz mel sozinho. Se você ficar fora por mais de 15s, ganhará o mel acumulado ao voltar.</div></div>
+        </div>
+        <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">🛒 Itens da Loja <span>▼</span></div>
+            <div class="acc-content"><div class="acc-body">Boosts temporários como a Pimenta triplicam seus ganhos. Os ícones aparecem sobre a abelha quando ativos.</div></div>
+        </div>
+        <div class="acc-item">
+            <div class="acc-header" onclick="toggleAcc(this)">🏆 Bônus de Raridade <span>▼</span></div>
+            <div class="acc-content"><div class="acc-body">Raras (🔵) dão +1% e Épicas (🟣) dão +5% de mel total permanente para cada conquista desbloqueada.</div></div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="offlineModal">
+  <div class="modal-box">
+    <div class="modal-header">🐝 Produção Offline!</div>
+    <div class="modal-body" style="text-align: center; padding: 20px;">
+        <div style="font-size: 50px;">🍯</div>
+        <p id="offlineText"></p>
+        <button id="btnCollectOffline" style="background: var(--xp-bar); color: white;">COLETAR TUDO</button>
+        <div style="margin-top:10px; font-size:12px; color:#888;" id="offlineCloseTimer">Fecha em 45s</div>
+    </div>
   </div>
 </div>
 
 <div class="modal" id="achModal">
   <div class="modal-box">
-    <div class="modal-header">🏆 Conquistas <span style="cursor:pointer; font-size:20px;" onclick="closeAch()">✖</span></div>
+    <div class="modal-header">🏆 Conquistas <span style="cursor:pointer; font-size:24px;" onclick="closeModal('achModal')">×</span></div>
+    <div class="filter-bar">
+        <div class="filter-dot dot-all active" onclick="setAchFilter('all', this)">🌐</div>
+        <div class="filter-dot dot-common" onclick="setAchFilter('common', this)">⚪</div>
+        <div class="filter-dot dot-rare" onclick="setAchFilter('rare', this)">🔵</div>
+        <div class="filter-dot dot-epic" onclick="setAchFilter('epic', this)">🟣</div>
+    </div>
     <div class="modal-body" id="achList"></div>
   </div>
 </div>
 
 <script>
-// --- ESTADO ---
-let honey=0, clicks=0, hPerClick=1, clickCost=10;
+// ESTADO
+let honey=0, totalHoneyEver=0, clicks=0, hPerClick=1, clickCost=10;
 let level=1, currentXP=0, nextLevelXP=100;
-let autoUnlocked=false, autoLevel=1, autoCost=200;
-const autoBase=2, levelScale=1.3;
+let autoUnlocked=false, autoLevel=1, autoCost=100;
+let pendingOfflineHoney = 0, timeOnline = 0, currentFilter = 'all'; 
+let activeBoosts = { pepper: 0, energy: 0, flower: 0 };
+const autoBase=2, levelScale=1.35;
 
-// --- SISTEMA DE CONQUISTAS REFORMULADO ---
-const achievements = [
-    // Meta de Níveis
-    { n: "Aprendiz", d: "Chegue ao nível 10", c: () => level >= 10, u: false },
-    { n: "Esforçada", d: "Chegue ao nível 50", c: () => level >= 50, u: false },
-    { n: "Rainha da Colmeia", d: "Chegue ao nível 100", c: () => level >= 100, u: false },
-    
-    // Meta de Cliques
-    { n: "Dedos Ágeis", d: "Faça 1.000 cliques", c: () => clicks >= 1000, u: false },
-    { n: "Batedora de Asas", d: "Faça 5.000 cliques", c: () => clicks >= 5000, u: false },
-    { n: "Clique Infinito", d: "Faça 10.000 cliques", c: () => clicks >= 10000, u: false },
-
-    // Meta de Mel Acumulado
-    { n: "Pote Cheio", d: "Acumule 10.000 de mel", c: () => honey >= 10000, u: false },
-    { n: "Reserva Real", d: "Acumule 100.000 de mel", c: () => honey >= 100000, u: false },
-    { n: "Ouro Líquido", d: "Acumule 1.000.000 de mel", c: () => honey >= 1000000, u: false },
-
-    // Especiais
-    { n: "Automação", d: "Desbloqueie o Autoclick", c: () => autoUnlocked, u: false }
-];
-
-// --- CORE ---
-function save() {
-    const data = { honey, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, 
-                   achs: achievements.map(a => a.u) };
-    localStorage.setItem('beeSave_v2', JSON.stringify(data));
-}
-
-function load() {
-    const raw = localStorage.getItem('beeSave_v2');
-    if(raw) {
-        const d = JSON.parse(raw);
-        honey=d.honey; clicks=d.clicks; hPerClick=d.hPerClick; clickCost=d.clickCost;
-        level=d.level; currentXP=d.currentXP; nextLevelXP=d.nextLevelXP;
-        autoUnlocked=d.autoUnlocked; autoLevel=d.autoLevel; autoCost=d.autoCost;
-        if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
-        if(autoUnlocked) startAuto();
+// CONQUISTAS
+const achievements = [];
+function initAchievements() {
+    const mMel = [100, 1000, 10000, 1e5, 1e6, 5e6, 1e7, 5e7, 1e8, 5e8, 1e9, 5e9, 1e10, 5e10, 1e11, 5e11, 1e12];
+    mMel.forEach((m, i) => {
+        let r = i < 6 ? "common" : (i < 13 ? "rare" : "epic");
+        achievements.push({ n: `Pote #${i+1}`, d: `Acumule ${m.toLocaleString()} mel total`, c: () => totalHoneyEver >= m, u: false, i: "🍯", r: r });
+    });
+    const mClick = [1, 50, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000];
+    mClick.forEach((m, i) => {
+        let r = i < 5 ? "common" : (i < 10 ? "rare" : "epic");
+        achievements.push({ n: `Trabalho #${i+1}`, d: `Dê ${m.toLocaleString()} cliques`, c: () => clicks >= m, u: false, i: "👆", r: r });
+    });
+    for(let i=1; i<=100; i++) {
+        let lvl = i * 10;
+        let r = i < 15 ? "common" : (i < 45 ? "rare" : "epic");
+        achievements.push({ n: `Rank #${i}`, d: `Alcance o nível ${lvl}`, c: () => level >= lvl, u: false, i: "📈", r: r });
     }
-    updateUI();
+}
+initAchievements();
+
+// HELPERS
+function toggleAcc(header) {
+    const item = header.parentElement;
+    const isActive = item.classList.contains('active');
+    document.querySelectorAll('.acc-item').forEach(el => el.classList.remove('active'));
+    if (!isActive) item.classList.add('active');
 }
 
-function notify(msg) {
-    const p = document.createElement("div"); p.className="popup"; p.textContent=msg;
-    document.body.appendChild(p); setTimeout(() => p.remove(), 2500);
+function notify(a) {
+    const container = document.getElementById("notification-container");
+    const div = document.createElement("div");
+    div.className = `popup ${a.r}`;
+    div.innerHTML = `${a.i} ${a.n}`;
+    container.appendChild(div);
+    setTimeout(() => div.remove(), 3500);
 }
+
+// LOJA & BOOSTS
+function buyBoost(type, cost) {
+    if(honey >= cost) {
+        honey -= cost;
+        const dur = { pepper: 30, energy: 20, flower: 15 };
+        activeBoosts[type] += dur[type];
+        updateUI();
+        notify({n: "Boost Ativado!", i: "🚀", r: "rare"});
+    } else {
+        notify({n: "Mel insuficiente!", i: "❌", r: "common"});
+    }
+}
+
+function updateBoostTick() {
+    const container = document.getElementById("active-boosts");
+    container.innerHTML = "";
+    const icons = { pepper: "🌶️", energy: "🥤", flower: "🌼" };
+    for (let b in activeBoosts) {
+        if (activeBoosts[b] > 0) {
+            activeBoosts[b]--;
+            container.innerHTML += `<div class="boost-tag">${icons[b]}</div>`;
+        }
+    }
+}
+setInterval(updateBoostTick, 1000);
+
+// CORE LOGIC
+function getGlobalBonus() {
+    let rCount = achievements.filter(a => a.u && a.r === 'rare').length;
+    let eCount = achievements.filter(a => a.u && a.r === 'epic').length;
+    let mult = 1 + (rCount * 0.01) + (eCount * 0.05);
+    if(activeBoosts.pepper > 0) mult *= 3;
+    if(activeBoosts.energy > 0) mult *= 2;
+    return mult;
+}
+
+function executeSave() {
+    const data = { honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs: achievements.map(a => a.u), timestamp: Date.now() };
+    localStorage.setItem('BeeRoyal_Final_Project', JSON.stringify(data));
+    document.getElementById("saveIndicator").classList.add("visible");
+    setTimeout(() => document.getElementById("saveIndicator").classList.remove("visible"), 2000);
+}
+setInterval(executeSave, 20000);
+setInterval(() => timeOnline++, 1000);
 
 function updateUI() {
     document.getElementById("honey").textContent = Math.floor(honey).toLocaleString();
-    document.getElementById("mps").textContent = autoUnlocked ? (autoBase * autoLevel) : 0;
+    document.getElementById("mps").textContent = autoUnlocked ? Math.floor((autoBase * autoLevel) * getGlobalBonus()) : 0;
     document.getElementById("lvlDisplay").textContent = level;
     document.getElementById("xpDisplay").textContent = `${Math.floor(currentXP)} / ${nextLevelXP}`;
-    document.getElementById("xpFill").style.width = `${(currentXP / nextLevelXP) * 100}%`;
+    document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    document.getElementById("achCount").textContent = achievements.filter(a => a.u).length;
     
-    document.getElementById("btnUpgradeClick").textContent = `🖱️ Clique +1 – ${clickCost} 🍯`;
-    document.getElementById("btnUpgradeAuto").textContent = `⚡ Auto +2/s – ${autoCost} 🍯`;
-    
-    document.getElementById("btnUnlockAuto").disabled = autoUnlocked;
-    document.getElementById("btnUpgradeAuto").disabled = !autoUnlocked;
-    save();
+    document.getElementById("btnUpgradeClick").textContent = `🖱️ Upgrade Clique – ${clickCost} 🍯`;
+    document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
+    const autoBtn = document.getElementById("btnAutoAction");
+    autoBtn.textContent = !autoUnlocked ? `⚡ Desbloquear Auto – ${autoCost} 🍯` : `⚡ Upgrade Auto – ${autoCost} 🍯`;
+    autoBtn.disabled = (honey < autoCost);
 }
 
+document.getElementById("btnAutoAction").onclick = () => {
+    if(honey >= autoCost) {
+        honey -= autoCost;
+        if(!autoUnlocked) { autoUnlocked = true; autoCost = 200; startAuto(); }
+        else { autoLevel++; autoCost = Math.floor(autoCost * 1.85); }
+        updateUI(); executeSave();
+    }
+};
+
+document.getElementById("btnUpgradeClick").onclick = () => {
+    if(honey >= clickCost) {
+        honey -= clickCost; hPerClick++; 
+        clickCost = Math.floor(clickCost * 1.7);
+        updateUI(); executeSave();
+    }
+};
+
 function addXP(amt) {
-    currentXP += amt;
+    let xpMult = (activeBoosts.flower > 0) ? 5 : 1;
+    currentXP += (amt * xpMult);
     while(currentXP >= nextLevelXP) {
-        currentXP -= nextLevelXP;
-        level++;
+        currentXP -= nextLevelXP; level++;
         nextLevelXP = Math.floor(nextLevelXP * levelScale);
-        notify("✨ NÍVEL " + level + " ALCANÇADO!");
+        notify({n: `Nível ${level}!`, i: "✨", r: 'common'});
     }
 }
 
 function doClick() {
-    honey += hPerClick; clicks++; addXP(hPerClick);
-    clickBuffer.push(Date.now());
+    const gain = hPerClick * getGlobalBonus();
+    honey += gain; totalHoneyEver += gain; clicks++;
+    addXP(gain); clickBuffer.push(Date.now());
     updateUI();
 }
 
 function startAuto() {
     if(window.autoInterval) clearInterval(window.autoInterval);
     window.autoInterval = setInterval(() => {
-        const amt = autoBase * autoLevel;
-        honey += amt; addXP(amt); updateUI();
+        const amt = (autoBase * autoLevel) * getGlobalBonus();
+        honey += amt; totalHoneyEver += amt; addXP(amt); updateUI();
     }, 1000);
 }
 
-// --- CONTROLES ---
-btnUpgradeClick.onclick = () => {
-    if(honey >= clickCost) {
-        honey -= clickCost; hPerClick++; 
-        clickCost = Math.floor(clickCost * 1.6);
-        updateUI();
-    } else notify("🍯 Mel insuficiente!");
-};
-
-btnUnlockAuto.onclick = () => {
-    if(honey >= 100) {
-        honey -= 100; autoUnlocked = true; startAuto(); updateUI();
-        notify("⚡ Autoclick ativado!");
-    } else notify("🍯 Mel insuficiente!");
-};
-
-btnUpgradeAuto.onclick = () => {
-    if(honey >= autoCost) {
-        honey -= autoCost; autoLevel++;
-        autoCost = Math.floor(autoCost * 1.8);
-        updateUI();
-    } else notify("🍯 Mel insuficiente!");
-};
-
-// --- VISUAL LOOP ---
 let clickBuffer = [];
 setInterval(() => {
-    const now = Date.now();
-    clickBuffer = clickBuffer.filter(t => now - t < 1000);
-    const cps = clickBuffer.length;
+    const cps = clickBuffer.filter(t => Date.now() - t < 1000).length;
     const aura = document.getElementById("aura");
     const bee = document.getElementById("bee");
-    
     let s=1, o=.3, c="rgba(255,204,0,.4)", sp=3;
-    if(cps > 4) { s=1.2; o=.5; c="rgba(255,160,0,.6)"; sp=2; }
-    if(cps > 10) { s=1.4; o=.8; c="rgba(255,80,0,.8)"; sp=1.2; }
     
-    aura.style.transform = `scale(${s})`;
-    aura.style.opacity = o;
-    aura.style.background = `radial-gradient(circle, ${c}, transparent 70%)`;
-    bee.style.animationDuration = `${sp}s`;
+    if(activeBoosts.energy > 0) sp = 0.5;
+    if(cps > 4) { s=1.2; o=.5; c="rgba(255,160,0,.6)"; sp = Math.min(sp, 2); }
+    if(cps > 10) { s=1.4; o=.8; c="rgba(255,80,0,.8)"; sp = Math.min(sp, 1.2); }
     
-    achievements.forEach(a => {
-        if(!a.u && a.c()) { a.u = true; notify("🏆 Conquista: " + a.n); save(); }
-    });
+    if(aura) { aura.style.transform = `scale(${s})`; aura.style.opacity = o; aura.style.background = `radial-gradient(circle, ${c}, transparent 70%)`; }
+    if(bee) bee.style.animationDuration = `${sp}s`;
+    achievements.forEach(a => { if(!a.u && a.c()) { a.u = true; notify(a); executeSave(); } });
 }, 100);
 
-// --- MOBILE EVENTS ---
+function load() {
+    const raw = localStorage.getItem('BeeRoyal_Final_Project');
+    if(raw) {
+        const d = JSON.parse(raw);
+        honey=d.honey; totalHoneyEver=d.totalHoneyEver; clicks=d.clicks; hPerClick=d.hPerClick; clickCost=d.clickCost; level=d.level; currentXP=d.currentXP; nextLevelXP=d.nextLevelXP; autoUnlocked=d.autoUnlocked; autoLevel=d.autoLevel; autoCost=d.autoCost; timeOnline=d.timeOnline || 0;
+        if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
+        if(autoUnlocked && d.timestamp) {
+            const mps = (autoBase * autoLevel) * getGlobalBonus();
+            const offlineSecs = Math.floor((Date.now() - d.timestamp) / 1000);
+            if(offlineSecs > 15) { pendingOfflineHoney = offlineSecs * mps; showOfflineModal(pendingOfflineHoney); }
+        }
+        if(autoUnlocked) startAuto();
+    }
+    updateUI();
+}
+
+function showOfflineModal(gain) {
+    document.getElementById("offlineText").innerHTML = `Produção Offline: <b>${Math.floor(gain).toLocaleString()}</b> mel!`;
+    openModal('offlineModal');
+    let t = 45;
+    const it = setInterval(() => { t--; document.getElementById("offlineCloseTimer").textContent = `Fecha em ${t}s`; if(t <= 0) { collectOffline(); clearInterval(it); } }, 1000);
+    document.getElementById("btnCollectOffline").onclick = () => { collectOffline(); clearInterval(it); };
+}
+
+function collectOffline() { honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney; addXP(pendingOfflineHoney); pendingOfflineHoney = 0; closeModal('offlineModal'); updateUI(); executeSave(); }
+
+function setAchFilter(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll('.filter-dot').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAchs();
+}
+
+function renderAchs() {
+    const list = document.getElementById("achList"); list.innerHTML = "";
+    const filtered = achievements.filter(a => currentFilter === 'all' || a.r === currentFilter);
+    filtered.forEach(a => {
+        list.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div class="ach-icon">${a.u ? a.i : '🔒'}</div><div class="ach-info"><span class="rarity-tag tag-${a.r}">${a.r}</span><b>${a.n}</b><br><small>${a.d}</small></div></div>`;
+    });
+}
+
+function openModal(id) { document.getElementById(id).style.display = "flex"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+document.getElementById("btnHelp").onclick = () => openModal('helpModal');
+document.getElementById("btnShop").onclick = () => openModal('shopModal');
+document.getElementById("openAchievements").onclick = () => { renderAchs(); openModal('achModal'); };
+
+window.onclick = (e) => { if (e.target.className === "modal") closeModal(e.target.id); }
+
 ["bee","leftTarget","rightTarget"].forEach(id => {
     const el = document.getElementById(id);
     el.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(); }, {passive:false});
     el.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(); });
 });
 
-// --- MODAL ---
-function renderAchs() {
-    const list = document.getElementById("achList");
-    list.innerHTML = "";
-    achievements.forEach(a => {
-        const item = document.createElement("div");
-        item.className = `achievement ${a.u ? '' : 'locked'}`;
-        item.innerHTML = `<div><b>${a.n}</b><br><small>${a.d}</small></div><div>${a.u ? '✅' : '🔒'}</div>`;
-        list.appendChild(item);
-    });
-}
-openAchievements.onclick = () => { document.getElementById("achModal").style.display="flex"; renderAchs(); };
-window.closeAch = () => { document.getElementById("achModal").style.display="none"; };
-
-// Início
 load();
 </script>
 </body>
