@@ -13,7 +13,7 @@
 <style>
 :root{
   --bg1:#87ceeb; --bg2:#fff3b0; --card:#fff;
-  --accent:#ffcc00; --dark:#4a3b00; --shadow:0 10px 25px rgba(0,0,0,.15);
+  --accent:#ffcc00; --dark:#4a3b00; --shadow:0 10px 30px rgba(0,0,0,0.15);
   --xp-bar:#4caf50;
   --common: #b2bec3;
   --rare: #0984e3;
@@ -22,81 +22,135 @@
 
 *{ box-sizing:border-box; user-select:none; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
 
-body{
-  margin:0; padding: 0; font-family:system-ui, -apple-system, sans-serif;
-  background:linear-gradient(180deg, var(--bg1), var(--bg2));
+/* CENTRALIZAÇÃO UNIVERSAL */
+body, html {
+  margin:0; padding: 0; width: 100%; height: 100%;
+  font-family:system-ui, -apple-system, sans-serif;
+  background: linear-gradient(180deg, var(--bg1), var(--bg2));
   background-attachment: fixed;
-  display:flex; align-items: center; justify-content:center;
-  min-height: 100vh; overflow: hidden;
 }
 
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+/* TELA DE INÍCIO */
 #startScreen {
     position: fixed; inset: 0; background: linear-gradient(180deg, var(--accent), var(--bg2));
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.5s ease;
 }
-.start-logo { font-size: 100px; animation: float 3s infinite ease-in-out; }
-.start-title { font-size: 38px; font-weight: 900; color: var(--dark); margin: 20px 0; }
+.start-logo { font-size: 100px; animation: floatBee 3s infinite ease-in-out; }
+.start-title { font-size: 42px; font-weight: 900; color: var(--dark); margin: 20px 0; text-shadow: 0 4px 0 rgba(0,0,0,0.1); }
 
-.game{ width:100%; max-width:420px; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; margin: auto; }
-.card{ background:var(--card); border-radius:24px; padding:18px; box-shadow:var(--shadow); text-align:center; position: relative; margin-bottom: 12px; }
-.notif-card { height: 60px; display: flex; align-items: center; padding: 0 20px; overflow: hidden; }
-.notif-icon-fixed { font-size: 20px; margin-right: 15px; opacity: 0.6; flex-shrink: 0; }
+/* GAME UI */
+.game{ 
+    width:100%; max-width:420px; padding:14px; 
+    position: relative; display: flex; flex-direction: column; 
+    opacity: 0; transition: opacity 0.5s;
+}
+
+.card{
+  background:var(--card); border-radius:26px; padding:20px;
+  box-shadow:var(--shadow); text-align:center; position: relative;
+  margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.4);
+}
+
+.notif-card { height: 65px; display: flex; align-items: center; padding: 0 20px; overflow: hidden; background: #fff; }
+.notif-icon-fixed { font-size: 22px; margin-right: 15px; opacity: 0.7; flex-shrink: 0; }
 #notifContainer { flex: 1; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
 
 .save-icon { position: absolute; left: 18px; top: 22px; font-size: 18px; opacity: 0; transition: 0.3s; z-index: 10; }
 .save-icon.visible { opacity: 1; }
 
 .top-btns { position: absolute; right: 18px; top: 18px; display: flex; gap: 10px; }
-.circle-btn { background: #f0f0f0; border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.circle-btn { background: #f2f2f2; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+.circle-btn:active { transform: scale(0.9); }
 
 .level-container { margin-top: 12px; text-align: left; }
-.level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 5px; color: var(--dark); }
-.xp-bg { width: 100%; height: 10px; background: #eee; border-radius: 10px; overflow: hidden; }
+.level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: var(--dark); }
+.xp-bg { width: 100%; height: 12px; background: #eee; border-radius: 12px; overflow: hidden; }
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
-.stats{ margin-top:8px; font-size:19px; font-weight: 800; color: var(--dark); }
+.stats{ margin-top:8px; font-size:20px; font-weight: 800; color: var(--dark); }
 
-.popup { position: absolute; background: #fff; padding: 8px 18px; border-radius: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); font-weight: 800; font-size: 11px; white-space: nowrap; border-left: 5px solid var(--common); animation: slideInOut 4s ease-in-out forwards; }
+/* NOTIFICAÇÃO SLIDE */
+.popup { 
+    position: absolute; background: #fff; padding: 8px 18px; border-radius: 25px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-weight: 800; font-size: 11px; 
+    white-space: nowrap; border-left: 6px solid var(--common); 
+    animation: slideInOut 4s ease-in-out forwards; 
+}
 .popup.rare { border-left-color: var(--rare); background: #f0f7ff; }
 .popup.epic { border-left-color: var(--epic); background: #f8f5ff; }
 
-@keyframes slideInOut { 0% { transform: translateX(-130%); opacity: 0; } 10% { transform: translateX(0); opacity: 1; } 90% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(130%); opacity: 0; } }
+@keyframes slideInOut { 
+    0% { transform: translateX(-140%); opacity: 0; } 
+    8% { transform: translateX(0); opacity: 1; } 
+    92% { transform: translateX(0); opacity: 1; } 
+    100% { transform: translateX(140%); opacity: 0; } 
+}
 
-#active-boosts { position: absolute; top: -38px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
-.boost-tag { font-size: 18px; background: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 2px solid var(--accent); }
+/* ÁREA DE CLIQUE SIMÉTRICA */
+.click-zone { 
+    display: flex; justify-content: space-between; align-items: center; 
+    width: 100%; height: 160px; padding: 0 5px; position: relative; 
+}
+.aura-wrapper { 
+    position: relative; width: 120px; height: 120px; 
+    display: flex; justify-content: center; align-items: center; z-index: 5; 
+}
+.aura { 
+    position: absolute; width: 150px; height: 150px; border-radius: 50%; 
+    filter: blur(20px); opacity: 0.3; transition: all 0.2s; 
+    background: radial-gradient(circle, rgba(255,204,0,0.5), transparent 70%); 
+}
+.bee { font-size: 90px; z-index: 2; animation: floatBee 3s infinite ease-in-out; cursor: pointer; }
 
-.click-zone{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin: 20px 0; }
-.aura-wrapper{ position:relative; width:180px; height:180px; display:flex; justify-content:center; align-items:center; }
-.aura{ position:absolute; width:150px; height:150px; border-radius:50%; filter:blur(18px); opacity:.3; transition: all 0.2s; }
-.bee{ font-size:110px; z-index:2; animation:float 3s infinite ease-in-out; cursor: pointer; }
+@keyframes floatBee { 0%, 100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-15px) rotate(4deg);} }
 
-@keyframes float{ 0%, 100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-18px) rotate(4deg);} }
-.target{ height:85px; width:85px; border-radius:20px; border:3px dashed #ffcc00; display:flex; align-items:center; justify-content:center; font-size:32px; opacity:.4; }
+.target { 
+    height: 80px; width: 80px; border-radius: 22px; border: 3px dashed #ffeb3b; 
+    display: flex; align-items: center; justify-content: center; font-size: 32px; 
+    opacity: 0.7; transition: all 0.1s; cursor: pointer;
+}
+.target:active { transform: scale(0.92); opacity: 1; background: rgba(255,235,59,0.1); }
 
-button{ width:100%; padding:16px; margin-top:10px; border:none; border-radius:16px; font-size:15px; font-weight:800; background:var(--accent); color:var(--dark); box-shadow:0 6px 0 #d1ad00; cursor: pointer; transition: 0.1s; }
+/* BOTÕES DE UPGRADE */
+button{ 
+    width:100%; padding:17px; margin-top:10px; border:none; border-radius:18px; 
+    font-size:15px; font-weight:800; background:var(--accent); color:var(--dark); 
+    box-shadow:0 6px 0 #d1ad00; cursor: pointer; transition: 0.1s; 
+}
 button:active{ transform:translateY(3px); box-shadow:0 3px 0 #d1ad00; }
 button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shadow: none !important; pointer-events: none; }
 
-.modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:5000; padding: 20px; }
-.modal-box{ background:#fff; width:100%; max-width:400px; border-radius:28px; overflow:hidden; display: flex; flex-direction: column; animation: modalIn 0.3s ease-out; }
-.modal-header{ padding:18px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; align-items: center; color: var(--dark); }
-.modal-body{ padding:0; max-height:65vh; overflow-y:auto; }
+/* MODAIS */
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); display:none; justify-content:center; align-items:center; z-index:5000; padding: 20px; }
+.modal-box{ background:#fff; width:100%; max-width:400px; border-radius:30px; overflow:hidden; display: flex; flex-direction: column; animation: modalIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes modalIn { from{transform: translateY(30px); opacity: 0;} to{transform: translateY(0); opacity: 1;} }
+
+.modal-header{ padding:20px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; align-items: center; color: var(--dark); }
+.modal-body{ padding:0; max-height:60vh; overflow-y:auto; }
 
 .acc-item { border-bottom: 1px solid #f0f0f0; }
-.acc-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; }
+.acc-header { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; }
 .acc-content { max-height: 0; overflow: hidden; background: #fafafa; transition: max-height 0.3s ease-out; }
-.acc-body { padding: 16px; font-size: 13px; line-height: 1.6; }
-.acc-item.active .acc-content { max-height: 450px; }
+.acc-body { padding: 18px; font-size: 13px; line-height: 1.6; color: #555; }
+.acc-item.active .acc-content { max-height: 500px; }
 
 .shop-item { display: flex; align-items: center; justify-content: space-between; padding: 18px; border-bottom: 1px solid #f0f0f0; gap: 12px; }
-.buy-btn { width: auto; padding: 10px 18px; margin: 0; font-size: 12px; }
+.buy-btn { width: auto; padding: 10px 18px; margin: 0; font-size: 13px; }
 
-.filter-bar { display: flex; justify-content: center; gap: 12px; padding: 12px; background: #f8f9fa; border-bottom: 1px solid #eee; }
-.filter-dot { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #ddd; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
-.filter-dot.active { border-color: var(--dark); transform: scale(1.1); }
+.filter-bar { display: flex; justify-content: center; gap: 12px; padding: 15px; background: #fdfdfd; border-bottom: 1px solid #eee; }
+.filter-dot { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #eee; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: 0.2s; }
+.filter-dot.active { border-color: var(--dark); transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-.ach-card { display: flex; align-items: center; padding: 12px; border-radius: 15px; background: #fafafa; border: 2px solid transparent; text-align: left; gap: 15px; margin: 10px; }
-.ach-card.unlocked.common { border-color: var(--common); background: #f0f0f0; }
+.ach-card { display: flex; align-items: center; padding: 14px; border-radius: 20px; background: #fcfcfc; border: 2px solid transparent; text-align: left; gap: 16px; margin: 12px; transition: 0.3s; }
+.ach-card.unlocked.common { border-color: var(--common); }
 .ach-card.unlocked.rare { border-color: var(--rare); background: #f0f7ff; }
 .ach-card.unlocked.epic { border-color: var(--epic); background: #f8f5ff; }
 .locked { filter: grayscale(1); opacity: 0.4; }
@@ -108,7 +162,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 <div id="startScreen">
     <div class="start-logo">🐝</div>
     <div class="start-title">BEE CLICKER</div>
-    <button style="width: 220px;" onclick="enterGame()">JOGAR AGORA</button>
+    <button style="width: 240px; font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
 </div>
 
 <div class="game" id="gameUI">
@@ -118,7 +172,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
         <button class="circle-btn" id="btnShop">🛒</button>
         <button class="circle-btn" id="btnHelp">❓</button>
     </div>
-    <div style="font-size: 26px; font-weight: 900; margin-top: 14px;">Bee Clicker 🐝</div>
+    <div style="font-size: 26px; font-weight: 900; margin-top: 15px;">Bee Clicker 🐝</div>
     <div class="stats">🍯 <span id="honey">0</span> | ⚡ <span id="mps">0</span>/s</div>
     <div class="level-container">
       <div class="level-info"><span>Nível <span id="lvlDisplay">1</span></span><span id="xpDisplay">0 / 100</span></div>
@@ -135,7 +189,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
     <div class="click-zone">
       <div class="target" id="leftTarget">🎯</div>
       <div class="aura-wrapper">
-        <div id="active-boosts"></div>
+        <div id="active-boosts" style="position: absolute; top: -45px; display: flex; gap: 6px;"></div>
         <div class="aura" id="aura"></div>
         <div id="bee" class="bee">🐝</div>
       </div>
@@ -144,61 +198,35 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
   </div>
 
   <div class="card">
-    <button id="btnUpgradeClick">🖱️ Upgrade Clique – 10 🍯</button>
-    <button id="btnAutoAction">⚡ Desbloquear Auto – 100 🍯</button>
-    <button id="openAchievements" style="background:#f5f5f5; box-shadow:0 6px 0 #ddd;">🏆 Conquistas (<span id="achCount">0</span>/200)</button>
+    <button id="btnUpgradeClick">Upgrade Clique – 10 🍯</button>
+    <button id="btnAutoAction">Desbloquear Auto – 100 🍯</button>
+    <button id="openAchievements" style="background:#f8f8f8; box-shadow:0 6px 0 #ddd;">🏆 Conquistas (<span id="achCount">0</span>/200)</button>
   </div>
 </div>
 
-<div class="modal" id="shopModal">
-    <div class="modal-box">
-        <div class="modal-header">🛒 Loja Real <span onclick="closeModal('shopModal')" style="cursor:pointer">×</span></div>
-        <div class="modal-body">
-            <div class="shop-item">
-                <div class="shop-info"><b>🌶️ Pimenta Habanero</b><small>Triplica (3x) o mel por 30s.</small></div>
-                <button class="buy-btn" data-cost="500" onclick="buyBoost('pepper', 500)">500 🍯</button>
-            </div>
-            <div class="shop-item">
-                <div class="shop-info"><b>🥤 Energético de Pólen</b><small>Dobra (2x) mel e velocidade por 20s.</small></div>
-                <button class="buy-btn" data-cost="300" onclick="buyBoost('energy', 300)">300 🍯</button>
-            </div>
-            <div class="shop-item">
-                <div class="shop-info"><b>🌼 Flor de Ouro</b><small>5x XP Crítico por 15s.</small></div>
-                <button class="buy-btn" data-cost="1000" onclick="buyBoost('flower', 1000)">1000 🍯</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="modal" id="shopModal"><div class="modal-box"><div class="modal-header">🛒 Loja de Boosts <span onclick="closeModal('shopModal')" style="cursor:pointer">×</span></div><div class="modal-body"><div class="shop-item"><div class="shop-info"><b>🌶️ Pimenta Habanero</b><small>3x mel por 30s.</small></div><button class="buy-btn" data-cost="500" onclick="buyBoost('pepper', 500)">500 🍯</button></div><div class="shop-item"><div class="shop-info"><b>🥤 Energético de Pólen</b><small>2x mel/vel por 20s.</small></div><button class="buy-btn" data-cost="300" onclick="buyBoost('energy', 300)">300 🍯</button></div><div class="shop-item"><div class="shop-info"><b>🌼 Flor Dourada</b><small>5x XP por 15s.</small></div><button class="buy-btn" data-cost="1000" onclick="buyBoost('flower', 1000)">1000 🍯</button></div></div></div></div>
 
 <div class="modal" id="helpModal">
-    <div class="modal-box">
-        <div class="modal-header">📖 Manual da Colmeia <span onclick="closeModal('helpModal')" style="cursor:pointer">×</span></div>
-        <div class="modal-body">
-            <div class="acc-item active"><div class="acc-header" onclick="toggleAcc(this)">🐝 Como Coletar <span>▼</span></div><div class="acc-content"><div class="acc-body">Clique na abelha ou nos alvos laterais. As conquistas Raras dão +1% e as Épicas +5% de bônus real e permanente!</div></div></div>
-            <div class="acc-item"><div class="acc-header" onclick="toggleAcc(this)">☁️ Backup <span>▼</span></div><div class="acc-content"><div class="acc-body">
-                <button onclick="exportSave()" style="background:#333; color:white; height:40px; margin-bottom:10px;">GERAR CÓDIGO DE SAVE</button>
-                <button onclick="importSave()" style="background:#777; color:white; height:40px;">RESTAURAR SAVE</button>
-            </div></div></div>
-        </div>
+  <div class="modal-box">
+    <div class="modal-header">📖 Manual & Backup <span onclick="closeModal('helpModal')" style="cursor:pointer">×</span></div>
+    <div class="modal-body">
+        <div class="acc-item active"><div class="acc-header" onclick="toggleAcc(this)">🐝 Regras da Colmeia <span>▼</span></div><div class="acc-content"><div class="acc-body">Clique para mel. Conquistas Raras (+1%) e Épicas (+5%) dão bônus permanentes. Upgrades só ativam com saldo!</div></div></div>
+        <div class="acc-item"><div class="acc-header" onclick="toggleAcc(this)">☁️ Backup Seguro <span>▼</span></div><div class="acc-content"><div class="acc-body">
+            <button onclick="exportSave()" style="background:#333; color:white; height:42px; margin-bottom:12px;">COPIAR CÓDIGO DE SAVE</button>
+            <button onclick="importSave()" style="background:#777; color:white; height:42px;">IMPORTAR SAVE</button>
+        </div></div></div>
     </div>
+  </div>
 </div>
 
-<div class="modal" id="offlineModal"><div class="modal-box"><div class="modal-header">🐝 Produção de Descanso</div><div class="modal-body" style="text-align:center; padding:25px;"><div style="font-size:60px;">🍯</div><p id="offlineText"></p><button id="btnCollectOffline" style="background:var(--xp-bar);color:white;">COLETAR TUDO</button></div></div></div>
+<div class="modal" id="offlineModal"><div class="modal-box"><div class="modal-header">🐝 Mel de Descanso</div><div class="modal-body" style="text-align:center; padding:30px;"><div style="font-size:70px;">🍯</div><p id="offlineText" style="font-weight:bold;"></p><button id="btnCollectOffline" style="background:var(--xp-bar);color:white; box-shadow:0 6px 0 #2d6630;">COLETAR TUDO</button></div></div></div>
 
-<div class="modal" id="achModal">
-    <div class="modal-box">
-        <div class="modal-header">🏆 Sala de Troféus <span onclick="closeModal('achModal')" style="cursor:pointer">×</span></div>
-        <div class="filter-bar">
-            <div class="filter-dot active" onclick="setAchFilter('all', this)">🌐</div>
-            <div class="filter-dot" onclick="setAchFilter('common', this)">⚪</div>
-            <div class="filter-dot" onclick="setAchFilter('rare', this)">🔵</div>
-            <div class="filter-dot" onclick="setAchFilter('epic', this)">🟣</div>
-        </div>
-        <div class="modal-body" id="achList"></div>
-    </div>
-</div>
+<div class="modal" id="achModal"><div class="modal-box"><div class="modal-header">🏆 Sala de Conquistas <span onclick="closeModal('achModal')" style="cursor:pointer">×</span></div><div class="filter-bar"><div class="filter-dot active" onclick="setAchFilter('all', this)">🌐</div><div class="filter-dot" onclick="setAchFilter('common', this)">⚪</div><div class="filter-dot" onclick="setAchFilter('rare', this)">🔵</div><div class="filter-dot" onclick="setAchFilter('epic', this)">🟣</div></div><div class="modal-body" id="achList"></div></div></div>
 
 <script>
+// --- CONFIGURAÇÃO ESTÁVEL DE SALVAMENTO ---
+const SAVE_KEY = "BeeRoyal_Definitive_V1";
+
 let honey=0, totalHoneyEver=0, clicks=0, hPerClick=1, clickCost=10, level=1, currentXP=0, nextLevelXP=100, autoUnlocked=false, autoLevel=1, autoCost=100, timeOnline=0, currentFilter='all';
 let activeBoosts={pepper:0, energy:0, flower:0};
 let pendingOfflineHoney=0, notificationQueue = [], isProcessingNotification = false;
@@ -206,17 +234,13 @@ let pendingOfflineHoney=0, notificationQueue = [], isProcessingNotification = fa
 // --- TELA DE INÍCIO & FULLSCREEN ---
 function enterGame() {
     const docEl = document.documentElement;
-    const requestFs = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-    if(requestFs) requestFs.call(docEl).catch(e => console.log("Erro fullscreen"));
-
+    const rfs = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+    if(rfs) rfs.call(docEl).catch(() => {});
     document.getElementById('startScreen').style.opacity = '0';
-    setTimeout(() => {
-        document.getElementById('startScreen').style.display = 'none';
-        document.getElementById('gameUI').style.opacity = '1';
-    }, 500);
+    setTimeout(() => { document.getElementById('startScreen').style.display = 'none'; document.getElementById('gameUI').style.opacity = '1'; }, 500);
 }
 
-// --- SISTEMA DE NOTIFICAÇÕES (UMA POR VEZ) ---
+// --- FILA DE NOTIFICAÇÕES (4s CADA) ---
 function notify(a) { notificationQueue.push(a); processQueue(); }
 function processQueue() {
     if (isProcessingNotification || notificationQueue.length === 0) return;
@@ -230,42 +254,58 @@ function processQueue() {
     setTimeout(() => { div.remove(); isProcessingNotification = false; processQueue(); }, 4000);
 }
 
-// --- AS 200 CONQUISTAS CRIATIVAS ---
+// --- 200 CONQUISTAS CRIATIVAS E TEMÁTICAS ---
 const achievements = [];
 function initAchievements() {
-    // 50 Metas de Mel (Fortuna Doce)
     const honeyNames = [
-        "Açúcar no Sangue", "Pingo de Mel", "Pote de Barro", "Reserva de Inverno", "Mel de Flores do Campo",
-        "Empório do Néctar", "Mel de Eucalipto", "Tesouro Dourado", "Barão da Geleia Real", "Magnata do Pólen",
-        "Império Viscoso", "Lago de Caramelo", "Cascata de Âmbar", "Oceano de Doçura", "Planeta Mel",
-        "Constelação de Própolis", "Galáxia Açucarada", "Universo de Favo", "Dimensão Real", "Deus das Abelhas"
+        "Primeira Gota", "Pote de Barro", "Reserva de Inverno", "Favo de Prata", "Mel do Bosque", "Barril Viscoso", 
+        "Lago Doce", "Barão da Geleia Real", "Magnata do Pólen", "Império Âmbar", "Cascata Dourada", "Tesouro Alado",
+        "Oceano de Mel", "Galáxia de Própolis", "Universo Açucarado", "Divindade do Caramelo", "Mestre da Viscosidade",
+        "Eternidade Doce", "Infinito de Mel", "Lenda da Colmeia"
     ];
     honeyNames.forEach((n, i) => {
-        let val = [100, 500, 1000, 5000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7, 5e7, 1e8, 5e8, 1e9, 5e9, 1e10, 5e10, 1e11, 1e12][i];
-        achievements.push({ n, d: `Total: ${val.toLocaleString()} 🍯`, c: () => totalHoneyEver >= val, u: false, i: "🍯", r: i < 7 ? "common" : (i < 14 ? "rare" : "epic") });
+        let val = Math.pow(10, i + 1.5);
+        achievements.push({ n, d: `Acumule mel total`, c: () => totalHoneyEver >= val, u: false, i: "🍯", r: i < 7 ? "common" : (i < 15 ? "rare" : "epic") });
     });
 
-    // 50 Metas de Cliques (Dedicação Operária)
     const clickNames = [
-        "Toque Leve", "Vibração de Asas", "Zumbido Rápido", "Esforço Operário", "Asas de Aço",
-        "Martelo de Própolis", "Fúria Amarela", "Zigue-Zague", "Vôo Supersônico", "Flash da Colmeia",
-        "Dedo de Ouro", "Velocidade da Luz", "Maestria de Vôo", "Turbina Alada", "Mestre do Zumbido"
+        "Zumbido Leve", "Vibração Rápida", "Esforço Operário", "Asas de Aço", "Fúria Amarela", "Flash Alado",
+        "Dedo de Própolis", "Zigue-Zague Mestre", "Vôo Supersônico", "Tornado de Pólen", "Maestria Alada",
+        "Relâmpago da Colmeia", "Punho de Favo", "Toque Real", "Divindade dos Cliques"
     ];
     clickNames.forEach((n, i) => {
-        let val = [1, 100, 500, 1000, 2500, 5000, 1e4, 2.5e4, 5e4, 1e5, 2.5e5, 5e5, 1e6, 2e6, 5e6][i];
-        achievements.push({ n, d: `Cliques: ${val.toLocaleString()}`, c: () => clicks >= val, u: false, i: "👆", r: i < 5 ? "common" : (i < 10 ? "rare" : "epic") });
+        let val = [1, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1e6, 2e6, 5e6][i];
+        achievements.push({ n, d: `Cliques manuais`, c: () => clicks >= val, u: false, i: "👆", r: i < 5 ? "common" : (i < 10 ? "rare" : "epic") });
     });
 
-    // 100 Metas de Nível (Hierarquia Real)
     for(let i=1; i<=100; i++) {
-        let n = i <= 20 ? `Zangão Aprendiz ${i}` : (i <= 50 ? `Sentinela Real ${i}` : (i <= 80 ? `Conselheiro de Mel ${i}` : `Divindade Alada ${i}`));
-        achievements.push({ n, d: `Suba ao Nível ${i*10}`, c: () => level >= i*10, u: false, i: "📈", r: i < 20 ? "common" : (i < 60 ? "rare" : "epic") });
+        let n = i <= 25 ? `Recruta ${i}` : (i <= 60 ? `Sentinela ${i}` : (i <= 90 ? `Barão ${i}` : `Arqui-Abelha ${i}`));
+        achievements.push({ n, d: `Nível ${i*10}`, c: () => level >= i*10, u: false, i: "📈", r: i < 20 ? "common" : (i < 65 ? "rare" : "epic") });
+    }
+
+    for(let i=1; i<=65; i++) {
+        achievements.push({ n: `Sobrevivente #${i}`, d: `Jogue muito tempo`, c: () => timeOnline >= (i*1000), u: false, i: "⌚", r: "common" });
     }
 }
 initAchievements();
 
-// --- LÓGICA DE JOGO ---
-function buyBoost(t, c) { if(honey >= c){ honey -= c; activeBoosts[t] += (t==='pepper'?30:20); updateUI(); notify({n:"Boost Real!", i:"🚀", r:"rare"}); } }
+// --- LÓGICA DE JOGO & UPGRADES ---
+function updateUI() {
+    document.getElementById("honey").textContent = Math.floor(honey).toLocaleString();
+    document.getElementById("mps").textContent = autoUnlocked ? Math.floor((2 * autoLevel) * getGlobalBonus()) : 0;
+    document.getElementById("lvlDisplay").textContent = level;
+    document.getElementById("xpDisplay").textContent = `${Math.floor(currentXP)} / ${nextLevelXP}`;
+    document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    document.getElementById("achCount").textContent = achievements.filter(a => a.u).length;
+    
+    document.getElementById("btnUpgradeClick").textContent = `Upgrade Clique – ${clickCost} 🍯`;
+    document.getElementById("btnAutoAction").textContent = !autoUnlocked ? `Auto-Mel – ${autoCost} 🍯` : `Upgrade Auto – ${autoCost} 🍯`;
+    
+    // VERIFICAÇÃO DE SALDO PARA BOTÕES
+    document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
+    document.getElementById("btnAutoAction").disabled = (honey < autoCost);
+    document.querySelectorAll(".buy-btn").forEach(btn => btn.disabled = (honey < parseInt(btn.dataset.cost)));
+}
 
 function getGlobalBonus() { 
     let rCount = achievements.filter(a => a.u && a.r === 'rare').length; 
@@ -276,45 +316,13 @@ function getGlobalBonus() {
     return mult; 
 }
 
-function updateUI() {
-    document.getElementById("honey").textContent = Math.floor(honey).toLocaleString();
-    document.getElementById("mps").textContent = autoUnlocked ? Math.floor((autoBase * autoLevel) * getGlobalBonus()) : 0;
-    document.getElementById("lvlDisplay").textContent = level;
-    document.getElementById("xpDisplay").textContent = `${Math.floor(currentXP)} / ${nextLevelXP}`;
-    document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
-    document.getElementById("achCount").textContent = achievements.filter(a => a.u).length;
-    
-    document.getElementById("btnUpgradeClick").textContent = `Upgrade Clique: ${clickCost} 🍯`;
-    document.getElementById("btnAutoAction").textContent = !autoUnlocked ? `Auto-Mel: ${autoCost} 🍯` : `Upgrade Auto: ${autoCost} 🍯`;
-    
-    // Filtro de botões ativos
-    document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
-    document.getElementById("btnAutoAction").disabled = (honey < autoCost);
-    document.querySelectorAll(".buy-btn").forEach(btn => btn.disabled = (honey < parseInt(btn.dataset.cost)));
-}
+function buyBoost(t, c) { if(honey >= c){ honey -= c; activeBoosts[t] += (t==='pepper'?30:t==='energy'?20:15); updateUI(); notify({n:"Boost Real!", i:"🚀", r:"rare"}); } }
 
-document.getElementById("btnAutoAction").onclick = () => { if(honey >= autoCost){ honey -= autoCost; if(!autoUnlocked){autoUnlocked=true;autoCost=200;startAuto();} else{autoLevel++;autoCost=Math.floor(autoCost*1.85);} updateUI(); executeSave(); } };
-document.getElementById("btnUpgradeClick").onclick = () => { if(honey >= clickCost){ honey -= clickCost; hPerClick++; clickCost=Math.floor(clickCost*1.7); updateUI(); executeSave(); } };
+function doClick() { const gain = hPerClick * getGlobalBonus(); honey += gain; totalHoneyEver += gain; clicks++; addXP(gain); clickBuffer.push(Date.now()); updateUI(); }
+function addXP(amt) { let xpMult = (activeBoosts.flower > 0) ? 5 : 1; currentXP += (amt * xpMult); while(currentXP >= nextLevelXP){ currentXP -= nextLevelXP; level++; nextLevelXP = Math.floor(nextLevelXP * 1.35); notify({n:`Nível Real ${level}!`, i:"✨"}); } }
+function startAuto() { setInterval(() => { if(autoUnlocked){ const amt = (2 * autoLevel) * getGlobalBonus(); honey += amt; totalHoneyEver += amt; addXP(amt); updateUI(); } }, 1000); }
 
-function doClick() { 
-    const gain = hPerClick * getGlobalBonus(); 
-    honey += gain; totalHoneyEver += gain; clicks++; 
-    addXP(gain); clickBuffer.push(Date.now()); 
-    updateUI(); 
-}
-
-function addXP(amt) { 
-    let xpMult = (activeBoosts.flower > 0) ? 5 : 1; 
-    currentXP += (amt * xpMult); 
-    while(currentXP >= nextLevelXP){ 
-        currentXP -= nextLevelXP; level++; 
-        nextLevelXP = Math.floor(nextLevelXP * levelScale); 
-        notify({n:`Rank Real: ${level}!`, i:"✨"}); 
-    } 
-}
-
-function startAuto() { setInterval(() => { if(autoUnlocked){ const amt = (autoBase * autoLevel) * getGlobalBonus(); honey += amt; totalHoneyEver += amt; addXP(amt); updateUI(); } }, 1000); }
-
+// --- LOOP DE EFEITOS & CONQUISTAS ---
 let clickBuffer = [];
 setInterval(() => {
     const cps = clickBuffer.filter(t => Date.now() - t < 1000).length;
@@ -325,32 +333,39 @@ setInterval(() => {
     if(aura){ aura.style.transform=`scale(${s})`; aura.style.opacity=o; aura.style.background=`radial-gradient(circle, ${c}, transparent 70%)`; }
     if(bee) bee.style.animationDuration=`${sp}s`;
     achievements.forEach(a => { if(!a.u && a.c()){ a.u = true; notify(a); executeSave(); } });
+    const container = document.getElementById("active-boosts"); container.innerHTML = "";
+    for(let b in activeBoosts) if(activeBoosts[b] > 0){ activeBoosts[b]--; container.innerHTML += `<div class="boost-tag">${b==='pepper'?'🌶️':b==='energy'?'🥤':'🌼'}</div>`; }
+    timeOnline += 100;
 }, 100);
 
-// --- SAVE & LOAD ---
+// --- SALVAMENTO & BACKUP ---
 function executeSave(){ 
-    localStorage.setItem('BeeRoyal_VFinal_Rev', JSON.stringify({honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs:achievements.map(a=>a.u), timestamp:Date.now()})); 
+    const data = {honey, totalHoneyEver, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, timeOnline, achs:achievements.map(a=>a.u), timestamp:Date.now()};
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     document.getElementById("saveIndicator").classList.add("visible"); setTimeout(()=>document.getElementById("saveIndicator").classList.remove("visible"),2000);
 }
-function exportSave(){ navigator.clipboard.writeText(btoa(localStorage.getItem('BeeRoyal_VFinal_Rev'))); notify({n:"Backup Criado!", i:"📋"}); }
-function importSave(){ const code = prompt("Cole o código:"); if(code){ localStorage.setItem('BeeRoyal_VFinal_Rev', atob(code)); location.reload(); }}
+setInterval(executeSave, 15000);
+
+function exportSave(){ navigator.clipboard.writeText(btoa(localStorage.getItem(SAVE_KEY))); notify({n:"Código Copiado!", i:"📋"}); }
+function importSave(){ const code = prompt("Cole seu código:"); if(code){ try { localStorage.setItem(SAVE_KEY, atob(code)); location.reload(); } catch(e) { alert("Código inválido!"); } } }
 
 function load(){
-    const raw = localStorage.getItem('BeeRoyal_VFinal_Rev');
+    const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         const d = JSON.parse(raw);
         honey=d.honey; totalHoneyEver=d.totalHoneyEver; clicks=d.clicks; hPerClick=d.hPerClick; clickCost=d.clickCost; level=d.level; currentXP=d.currentXP; nextLevelXP=d.nextLevelXP; autoUnlocked=d.autoUnlocked; autoLevel=d.autoLevel; autoCost=d.autoCost; timeOnline=d.timeOnline||0;
         if(d.achs) d.achs.forEach((u,i) => { if(achievements[i]) achievements[i].u = u; });
         if(autoUnlocked && d.timestamp){
             const off = Math.floor((Date.now()-d.timestamp)/1000);
-            if(off > 15){ pendingOfflineHoney = off * (autoBase * autoLevel) * getGlobalBonus(); document.getElementById("offlineText").innerHTML=`As abelhas produziram <b>${Math.floor(pendingOfflineHoney).toLocaleString()}</b> mel enquanto você dormia!`; openModal('offlineModal'); }
+            if(off > 15){ pendingOfflineHoney = off * (2 * autoLevel) * getGlobalBonus(); document.getElementById("offlineText").innerHTML=`Suas abelhas produziram <b>${Math.floor(pendingOfflineHoney).toLocaleString()}</b> mel offline!`; openModal('offlineModal'); }
         }
         if(autoUnlocked) startAuto();
     }
     updateUI();
 }
 
-function openModal(id){document.getElementById(id).style.display="flex";}
+// --- MODAIS & INTERFACE ---
+function openModal(id){document.getElementById(id).style.display="flex"; if(id==='achModal') renderAchs();}
 function closeModal(id){document.getElementById(id).style.display="none";}
 function toggleAcc(h){ h.parentElement.classList.toggle('active'); }
 function setAchFilter(t,b){ currentFilter=t; document.querySelectorAll('.filter-dot').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderAchs(); }
@@ -358,8 +373,10 @@ function renderAchs(){ const l=document.getElementById("achList"); l.innerHTML="
 
 document.getElementById("btnHelp").onclick = () => openModal('helpModal');
 document.getElementById("btnShop").onclick = () => openModal('shopModal');
-document.getElementById("openAchievements").onclick = () => { renderAchs(); openModal('achModal'); };
+document.getElementById("openAchievements").onclick = () => openModal('achModal');
 document.getElementById("btnCollectOffline").onclick = () => { honey+=pendingOfflineHoney; totalHoneyEver+=pendingOfflineHoney; pendingOfflineHoney=0; closeModal('offlineModal'); updateUI(); executeSave(); };
+document.getElementById("btnAutoAction").onclick = () => { if(honey >= autoCost){ honey -= autoCost; if(!autoUnlocked){autoUnlocked=true;autoCost=200;startAuto();} else{autoLevel++;autoCost=Math.floor(autoCost*1.85);} updateUI(); executeSave(); } };
+document.getElementById("btnUpgradeClick").onclick = () => { if(honey >= clickCost){ honey -= clickCost; hPerClick++; clickCost=Math.floor(clickCost*1.7); updateUI(); executeSave(); } };
 
 ["bee","leftTarget","rightTarget"].forEach(id => {
     const el = document.getElementById(id);
