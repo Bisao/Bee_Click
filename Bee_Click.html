@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bee Clicker 🐝</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#ffcc00">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Bee%20Clicker%22,%22short_name%22:%22BeeClicker%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fff3b0%22,%22theme_color%22:%22%23ffcc00%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/517/517563.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+
+<style>
+:root{
+  --bg1:#87ceeb; --bg2:#fff3b0; --card:#fff;
+  --accent:#ffcc00; --dark:#4a3b00; --shadow:0 10px 25px rgba(0,0,0,.18);
+  --xp-bar:#4caf50;
+}
+
+*{ box-sizing:border-box; user-select:none; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
+
+body{
+  margin:0; font-family:system-ui, -apple-system, sans-serif;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  display:flex; justify-content:center; min-height: 100vh; overflow-x: hidden;
+}
+
+.game{ width:100%; max-width:420px; padding:14px; }
+
+.card{
+  background:var(--card); border-radius:20px; padding:15px;
+  margin-bottom:14px; box-shadow:var(--shadow); text-align:center;
+}
+
+/* LEVEL BAR */
+.level-container { margin-top: 10px; text-align: left; }
+.level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: var(--dark); }
+.xp-bg { width: 100%; height: 12px; background: #eee; border-radius: 10px; overflow: hidden; }
+.xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.3s ease; }
+
+.stats{ margin-top:6px; font-size:18px; font-weight: bold; color: var(--dark); }
+
+/* VISUAL AREA */
+.click-zone{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin: 10px 0; }
+.aura-wrapper{ position:relative; width:170px; height:170px; display:flex; justify-content:center; align-items:center; }
+.aura{ position:absolute; width:140px; height:140px; border-radius:50%; filter:blur(15px); opacity:.3; transition: all 0.2s; }
+.bee{ font-size:100px; z-index:2; animation:float 3s ease-in-out infinite; cursor: pointer; }
+
+@keyframes float{
+  0%, 100%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(-15px) rotate(3deg);}
+}
+
+.target{
+  height:80px; border-radius:15px; border:3px dashed #ffcc00;
+  display:flex; align-items:center; justify-content:center; font-size:30px; opacity:.5;
+}
+
+/* BUTTONS */
+button{
+  width:100%; padding:14px; margin-top:10px; border:none; border-radius:14px;
+  font-size:15px; font-weight:700; background:var(--accent); color:var(--dark);
+  box-shadow:0 5px 0 #c9a200; cursor: pointer;
+}
+button:active{ transform:translateY(2px); box-shadow:0 3px 0 #c9a200; }
+button:disabled{ background:#ccc; color:#777; box-shadow: none; transform: none; }
+
+.popup{
+  position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  background:white; padding:12px 20px; border-radius:50px;
+  box-shadow: var(--shadow); z-index:1000; font-weight: bold;
+  animation: popFade 2.5s forwards;
+}
+@keyframes popFade {
+  0%{opacity:0; transform:translate(-50%, -20px);}
+  15%{opacity:1; transform:translate(-50%, 0);}
+  85%{opacity:1;}
+  100%{opacity:0;}
+}
+
+/* MODAL */
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; justify-content:center; align-items:center; z-index:500; }
+.modal-box{ background:#fff; width:90%; max-width:380px; border-radius:20px; overflow:hidden; }
+.modal-header{ padding:15px; background: var(--accent); font-weight:800; display:flex; justify-content:space-between; }
+.modal-body{ padding:10px; max-height:60vh; overflow-y:auto; }
+.achievement{ padding:12px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; text-align: left;}
+.locked{ opacity:.4; filter: grayscale(1); }
+</style>
+</head>
+
+<body>
+
+<div class="game">
+  <div class="card">
+    <div style="font-size: 24px; font-weight: 900;">Bee Clicker 🐝</div>
+    <div class="stats">
+      🍯 <span id="honey">0</span> | ⚡ <span id="mps">0</span>/s
+    </div>
+
+    <div class="level-container">
+      <div class="level-info">
+        <span>Nível <span id="lvlDisplay">1</span></span>
+        <span id="xpDisplay">0 / 100</span>
+      </div>
+      <div class="xp-bg"><div class="xp-fill" id="xpFill"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="click-zone">
+      <div class="target" id="leftTarget">🎯</div>
+      <div class="aura-wrapper">
+        <div class="aura" id="aura"></div>
+        <div id="bee" class="bee">🐝</div>
+      </div>
+      <div class="target" id="rightTarget">🎯</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button id="btnUpgradeClick">🖱️ Upgrade Clique – 10 🍯</button>
+    <button id="btnUnlockAuto">⚡ Desbloquear Auto – 100 🍯</button>
+    <button id="btnUpgradeAuto">⚡ Upgrade Auto – 200 🍯</button>
+    <button id="openAchievements" style="background:#eee; box-shadow:0 5px 0 #ccc;">🏆 Conquistas</button>
+  </div>
+</div>
+
+<div class="modal" id="achModal">
+  <div class="modal-box">
+    <div class="modal-header">🏆 Conquistas <span style="cursor:pointer; font-size:20px;" onclick="closeAch()">✖</span></div>
+    <div class="modal-body" id="achList"></div>
+  </div>
+</div>
+
+<script>
+// --- ESTADO ---
+let honey=0, clicks=0, hPerClick=1, clickCost=10;
+let level=1, currentXP=0, nextLevelXP=100;
+let autoUnlocked=false, autoLevel=1, autoCost=200;
+const autoBase=2, levelScale=1.3;
+
+// --- SISTEMA DE CONQUISTAS REFORMULADO ---
+const achievements = [
+    // Meta de Níveis
+    { n: "Aprendiz", d: "Chegue ao nível 10", c: () => level >= 10, u: false },
+    { n: "Esforçada", d: "Chegue ao nível 50", c: () => level >= 50, u: false },
+    { n: "Rainha da Colmeia", d: "Chegue ao nível 100", c: () => level >= 100, u: false },
+    
+    // Meta de Cliques
+    { n: "Dedos Ágeis", d: "Faça 1.000 cliques", c: () => clicks >= 1000, u: false },
+    { n: "Batedora de Asas", d: "Faça 5.000 cliques", c: () => clicks >= 5000, u: false },
+    { n: "Clique Infinito", d: "Faça 10.000 cliques", c: () => clicks >= 10000, u: false },
+
+    // Meta de Mel Acumulado
+    { n: "Pote Cheio", d: "Acumule 10.000 de mel", c: () => honey >= 10000, u: false },
+    { n: "Reserva Real", d: "Acumule 100.000 de mel", c: () => honey >= 100000, u: false },
+    { n: "Ouro Líquido", d: "Acumule 1.000.000 de mel", c: () => honey >= 1000000, u: false },
+
+    // Especiais
+    { n: "Automação", d: "Desbloqueie o Autoclick", c: () => autoUnlocked, u: false }
+];
+
+// --- CORE ---
+function save() {
+    const data = { honey, clicks, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, 
+                   achs: achievements.map(a => a.u) };
+    localStorage.setItem('beeSave_v2', JSON.stringify(data));
+}
+
+function load() {
+    const raw = localStorage.getItem('beeSave_v2');
+    if(raw) {
+        const d = JSON.parse(raw);
+        honey=d.honey; clicks=d.clicks; hPerClick=d.hPerClick; clickCost=d.clickCost;
+        level=d.level; currentXP=d.currentXP; nextLevelXP=d.nextLevelXP;
+        autoUnlocked=d.autoUnlocked; autoLevel=d.autoLevel; autoCost=d.autoCost;
+        if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
+        if(autoUnlocked) startAuto();
+    }
+    updateUI();
+}
+
+function notify(msg) {
+    const p = document.createElement("div"); p.className="popup"; p.textContent=msg;
+    document.body.appendChild(p); setTimeout(() => p.remove(), 2500);
+}
+
+function updateUI() {
+    document.getElementById("honey").textContent = Math.floor(honey).toLocaleString();
+    document.getElementById("mps").textContent = autoUnlocked ? (autoBase * autoLevel) : 0;
+    document.getElementById("lvlDisplay").textContent = level;
+    document.getElementById("xpDisplay").textContent = `${Math.floor(currentXP)} / ${nextLevelXP}`;
+    document.getElementById("xpFill").style.width = `${(currentXP / nextLevelXP) * 100}%`;
+    
+    document.getElementById("btnUpgradeClick").textContent = `🖱️ Clique +1 – ${clickCost} 🍯`;
+    document.getElementById("btnUpgradeAuto").textContent = `⚡ Auto +2/s – ${autoCost} 🍯`;
+    
+    document.getElementById("btnUnlockAuto").disabled = autoUnlocked;
+    document.getElementById("btnUpgradeAuto").disabled = !autoUnlocked;
+    save();
+}
+
+function addXP(amt) {
+    currentXP += amt;
+    while(currentXP >= nextLevelXP) {
+        currentXP -= nextLevelXP;
+        level++;
+        nextLevelXP = Math.floor(nextLevelXP * levelScale);
+        notify("✨ NÍVEL " + level + " ALCANÇADO!");
+    }
+}
+
+function doClick() {
+    honey += hPerClick; clicks++; addXP(hPerClick);
+    clickBuffer.push(Date.now());
+    updateUI();
+}
+
+function startAuto() {
+    if(window.autoInterval) clearInterval(window.autoInterval);
+    window.autoInterval = setInterval(() => {
+        const amt = autoBase * autoLevel;
+        honey += amt; addXP(amt); updateUI();
+    }, 1000);
+}
+
+// --- CONTROLES ---
+btnUpgradeClick.onclick = () => {
+    if(honey >= clickCost) {
+        honey -= clickCost; hPerClick++; 
+        clickCost = Math.floor(clickCost * 1.6);
+        updateUI();
+    } else notify("🍯 Mel insuficiente!");
+};
+
+btnUnlockAuto.onclick = () => {
+    if(honey >= 100) {
+        honey -= 100; autoUnlocked = true; startAuto(); updateUI();
+        notify("⚡ Autoclick ativado!");
+    } else notify("🍯 Mel insuficiente!");
+};
+
+btnUpgradeAuto.onclick = () => {
+    if(honey >= autoCost) {
+        honey -= autoCost; autoLevel++;
+        autoCost = Math.floor(autoCost * 1.8);
+        updateUI();
+    } else notify("🍯 Mel insuficiente!");
+};
+
+// --- VISUAL LOOP ---
+let clickBuffer = [];
+setInterval(() => {
+    const now = Date.now();
+    clickBuffer = clickBuffer.filter(t => now - t < 1000);
+    const cps = clickBuffer.length;
+    const aura = document.getElementById("aura");
+    const bee = document.getElementById("bee");
+    
+    let s=1, o=.3, c="rgba(255,204,0,.4)", sp=3;
+    if(cps > 4) { s=1.2; o=.5; c="rgba(255,160,0,.6)"; sp=2; }
+    if(cps > 10) { s=1.4; o=.8; c="rgba(255,80,0,.8)"; sp=1.2; }
+    
+    aura.style.transform = `scale(${s})`;
+    aura.style.opacity = o;
+    aura.style.background = `radial-gradient(circle, ${c}, transparent 70%)`;
+    bee.style.animationDuration = `${sp}s`;
+    
+    achievements.forEach(a => {
+        if(!a.u && a.c()) { a.u = true; notify("🏆 Conquista: " + a.n); save(); }
+    });
+}, 100);
+
+// --- MOBILE EVENTS ---
+["bee","leftTarget","rightTarget"].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(); }, {passive:false});
+    el.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(); });
+});
+
+// --- MODAL ---
+function renderAchs() {
+    const list = document.getElementById("achList");
+    list.innerHTML = "";
+    achievements.forEach(a => {
+        const item = document.createElement("div");
+        item.className = `achievement ${a.u ? '' : 'locked'}`;
+        item.innerHTML = `<div><b>${a.n}</b><br><small>${a.d}</small></div><div>${a.u ? '✅' : '🔒'}</div>`;
+        list.appendChild(item);
+    });
+}
+openAchievements.onclick = () => { document.getElementById("achModal").style.display="flex"; renderAchs(); };
+window.closeAch = () => { document.getElementById("achModal").style.display="none"; };
+
+// Início
+load();
+</script>
+</body>
+</html>
