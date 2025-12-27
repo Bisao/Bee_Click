@@ -93,7 +93,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 
 /* INTERFACE DO JOGO */
-.game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; }
+.game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; display: none; }
 .card{ background:var(--card); border-radius:26px; padding:20px; box-shadow:var(--shadow); text-align:center; position: relative; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.4); }
 
 .notif-card { 
@@ -112,6 +112,10 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .save-icon { position: absolute; left: 18px; top: 22px; font-size: 18px; opacity: 0; transition: 0.3s; z-index: 10; }
 .save-icon.visible { opacity: 1; animation: pulseSave 1s ease-out; }
 @keyframes pulseSave { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+/* BOTÃO DE CONFIGURAÇÃO (GEAR) */
+.settings-gear { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; }
+.settings-gear:active { transform: rotate(90deg) scale(1.2); }
 
 .level-container { margin-top: 12px; text-align: left; }
 .level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: var(--dark); }
@@ -165,6 +169,11 @@ button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:15p
 button:active{ transform:translateY(2px); box-shadow:0 2px 0 #d1ad00; }
 button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shadow: none !important; opacity: 0.6; }
 
+/* ESTILOS DE CONFIGURAÇÃO */
+.config-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+.config-label { font-weight: 800; font-size: 14px; color: var(--dark); display: flex; justify-content: space-between; }
+input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
+
 /* MODAIS */
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(12px); display:none; justify-content:center; align-items:center; z-index:10001; padding: 20px; }
 .modal-box{ background:#fff; width:100%; max-width:380px; max-height: 85svh; border-radius:35px; overflow:hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; }
@@ -205,9 +214,10 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
     <div style="display: flex; flex-direction: column; gap: 10px; width: 240px; z-index: 10;">
         <button style="font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
         <button id="btnChangelog" style="background: #ffffff; color: #1e3799; box-shadow: 0 4px 0 #cbd5e0; font-size: 14px; padding: 12px;" onclick="openChangelog()">O QUE MUDOU?</button>
+        <button style="background: #f1f2f6; color: #333; box-shadow: 0 4px 0 #ccc; font-size: 14px; padding: 12px;" onclick="openModal('settingsModal')">CONFIGURAÇÕES ⚙️</button>
     </div>
 
-    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v3.9.1</div>
+    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v3.9.5</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -215,6 +225,8 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
   
   <div class="card">
     <div id="saveIndicator" class="save-icon">💾</div>
+    <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
+
     <div id="gameHeaderTitle" style="font-size: 20px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         Bee Clicker <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 25px; height: 25px;">
     </div>
@@ -317,6 +329,39 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
   </div>
 </div>
 
+<div class="modal" id="settingsModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>Configurações Reais ⚙️</span>
+            <span style="cursor:pointer" onclick="closeModal('settingsModal')">✖</span>
+        </div>
+        <div class="modal-content-scroll">
+            
+            <div class="config-row">
+                <div class="config-label">
+                    <span>Volume da Música 🎵</span>
+                    <span id="musicVolLabel">50%</span>
+                </div>
+                <input type="range" id="musicVol" min="0" max="100" value="50" oninput="updateVolume('music')">
+            </div>
+
+            <div class="config-row">
+                <div class="config-label">
+                    <span>Volume do Clique 🔊</span>
+                    <span id="clickVolLabel">80%</span>
+                </div>
+                <input type="range" id="clickVol" min="0" max="100" value="80" oninput="updateVolume('click')">
+            </div>
+
+            <button id="btnExitToMain" onclick="returnToMain()" style="background: #ffffff; color: #1e3799; box-shadow: 0 4px 0 #cbd5e0; margin-top: 20px;">SAIR PARA O INÍCIO</button>
+
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('settingsModal')" style="margin-top: 0;">FECHAR</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="changelogModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -347,47 +392,18 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 
 <script>
 // --- SISTEMA DE VERSÃO E HISTÓRICO ---
-const GAME_VERSION = "3.9.1";
+const GAME_VERSION = "3.9.5";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
+const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const VERSION_KEY = "BeeRoyal_LastSeenVersion_" + GAME_VERSION.replace(/\./g, ""); 
 
 const updateHistory = [
     {
-        version: "3.9.1",
-        title: "🧹 LIMPEZA DE INTERFACE",
+        version: "3.9.5",
+        title: "⚙️ CONFIGURAÇÕES GLOBAIS",
         changes: [
-            { type: "rem", text: "Removido painel de 'Como Jogar' e botão de ajuda." },
-            { type: "mod", text: "Otimização de UI para foco total na jogabilidade." }
-        ]
-    },
-    {
-        version: "3.9.0",
-        title: "⚡ EVOLUÇÃO AUTOMÁTICA",
-        changes: [
-            { type: "add", text: "Auto-mel agora gera XP proporcional à produção." },
-            { type: "mod", text: "Painel offline agora detalha o XP coletado enquanto ausente." }
-        ]
-    },
-    {
-        version: "3.8.9",
-        title: "📚 ATUALIZAÇÃO DE CONHECIMENTO",
-        changes: [
-            { type: "add", text: "Adicionadas 100 novas curiosidades reais sobre abelhas." },
-            { type: "mod", text: "Notificações alternam entre Curiosidade e Dica a cada 40s." }
-        ]
-    },
-    {
-        version: "3.8.8",
-        title: "🎅 NOELBEE BUFF",
-        changes: [
-            { type: "mod", text: "Skin NoelBee concede +15% de bônus em Mel e XP." }
-        ]
-    },
-    {
-        version: "3.8.0",
-        title: "✨ SISTEMA DE NÍVEIS",
-        changes: [
-            { type: "add", text: "Nível de Player contribui com a produção automática." }
+            { type: "add", text: "Botão de configurações agora disponível na tela inicial." },
+            { type: "mod", text: "Música e sons agora funcionam desde o menu inicial." }
         ]
     }
 ];
@@ -411,8 +427,57 @@ let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, auto
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0 }, clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all';
+let autoProduceInterval = null;
+let gameTickInterval = null;
 
-// --- SISTEMA DE NOTIFICAÇÕES (100 CURIOSIDADES + DICAS) ---
+// SISTEMA DE ÁUDIO GLOBAL
+let audioSettings = { music: 50, click: 80 };
+const soundMusic = new Audio('Music.mp3');
+const soundClick = new Audio('Click.mp3');
+soundMusic.loop = true;
+
+// --- FUNÇÕES DE ÁUDIO ---
+function updateVolume(type) {
+    // Iniciar a música na primeira interação com o volume caso não esteja tocando
+    if(soundMusic.paused) soundMusic.play().catch(() => {});
+
+    if(type === 'music') {
+        audioSettings.music = document.getElementById('musicVol').value;
+        document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
+        soundMusic.volume = audioSettings.music / 100;
+    } else {
+        audioSettings.click = document.getElementById('clickVol').value;
+        document.getElementById('clickVolLabel').textContent = audioSettings.click + '%';
+        soundClick.volume = audioSettings.click / 100;
+    }
+    localStorage.setItem(AUDIO_KEY, JSON.stringify(audioSettings));
+}
+
+function playClickSound() {
+    soundClick.currentTime = 0;
+    soundClick.play().catch(() => {});
+}
+
+// FUNÇÃO PARA SAIR E FICAR OFFLINE
+function returnToMain() {
+    closeModal('settingsModal');
+    if(autoProduceInterval) { clearInterval(autoProduceInterval); autoProduceInterval = null; }
+    if(gameTickInterval) { clearInterval(gameTickInterval); gameTickInterval = null; }
+    
+    // Na v3.9.5, a música CONTINUA tocando no menu se o usuário quiser
+    // soundMusic.pause(); // Opcional: pausar ou não. Deixaremos tocando para manter a vibe.
+
+    executeSave();
+    document.getElementById('gameUI').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('gameUI').style.display = 'none';
+        document.getElementById('startScreen').style.display = 'flex';
+        document.getElementById('startScreen').style.opacity = '1';
+        gameLoaded = false;
+    }, 500);
+}
+
+// --- SISTEMA DE NOTIFICAÇÕES ---
 const beeFacts = [
     "Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.",
     "Abelhas dançam para indicar onde há flores ricas em néctar.", "Para 1kg de mel, abelhas visitam 4 milhões de flores.",
@@ -443,7 +508,7 @@ const beeFacts = [
     "A cera de abelha é produzida por glândulas no abdômen.", "Elas evitam flores visitadas recentemente.",
     "Abelhas bebem água para hidratar e resfriar o ninho.", "A polinização aumenta o tamanho e o sabor das frutas.",
     "Algumas abelhas dormem dentro das flores à noite.", "O zumbido é causado pelo movimento rápido das asas.",
-    "Elas têm dois estômagos: um para mel e um para comida.", "Abelhas são fundamentais para a biodiversidade.",
+    "Elas têm dois estômagos: um para mel e um para comida.", "Abelhas são fundamentais para the biodiversidade.",
     "O mel escuro geralmente tem mais antioxidantes.", "Abelhas operárias vivem apenas 6 semanas no verão.",
     "Elas não enxergam bem no escuro total.", "A rainha emite um aroma que mantém a colmeia unida.",
     "Abelhas podem carregar metade do seu peso em pólen.", "O mel é a única fonte de energia delas no inverno.",
@@ -463,7 +528,7 @@ const beeFacts = [
     "Algumas abelhas roubam néctar furando a base da flor.", "A fumaça as acalma simulando um incêndio.",
     "Guardiãs conferem o cheiro de quem entra na colmeia.", "Podem aprender novas tarefas observando outras.",
     "Bebem néctar usando uma língua tipo tromba.", "São essenciais para a produção de alfafa.",
-    "Proteger as abelhas é proteger o futuro da humanidade.", "Abelhas são amigas! Fique calmo se uma pousar em você."
+    "Proteger as abelhas é proteger o futuro da humanidade.", "Abelhas são amigas! Fique calmo se uma pósar em você."
 ];
 
 const gameTips = [
@@ -484,14 +549,8 @@ let lastNotifType = "fact";
 function startDynamicNotifications() {
     setInterval(() => {
         if (!gameLoaded || document.getElementById('gameUI').style.opacity !== '1') return;
-        let msg = "";
-        if (lastNotifType === "fact") {
-            msg = gameTips[Math.floor(Math.random() * gameTips.length)];
-            lastNotifType = "tip";
-        } else {
-            msg = "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)];
-            lastNotifType = "fact";
-        }
+        let msg = lastNotifType === "fact" ? gameTips[Math.floor(Math.random() * gameTips.length)] : "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)];
+        lastNotifType = lastNotifType === "fact" ? "tip" : "fact";
         showSystemNotification(msg);
     }, 40000); 
 }
@@ -508,28 +567,10 @@ function showSystemNotification(text) {
 }
 
 // --- MECÂNICAS ---
-const durations = [
-    { label: "30s", t: 300, m: 1 }, { label: "1m", t: 600, m: 1.8 }, 
-    { label: "5m", t: 3000, m: 8 }, { label: "1h", t: 36000, m: 70 }, 
-    { label: "24h", t: 864000, m: 1200 }
-];
+const durations = [{label:"30s",t:300,m:1},{label:"1m",t:600,m:1.8},{label:"5m",t:3000,m:8},{label:"1h",t:36000,m:70},{label:"24h",t:864000,m:1200}];
 const boostBases = { pepper: 500, energy: 300, flower: 1000 };
 const achievements = [];
-
-const achThemes = [
-    { n: "Aprendiz de Pólen", r: "common", i: "🌱" },
-    { n: "Batedor de Asas", r: "common", i: "🪽" },
-    { n: "Zumbido Melódico", r: "common", i: "🎵" },
-    { n: "Pequeno Apicultor", r: "common", i: "👨‍🌾" },
-    { n: "Doce Começo", r: "common", i: "🍭" },
-    { n: "Barão do Açúcar", r: "rare", i: "💎" },
-    { n: "Arquiduque da Colmeia", r: "rare", i: "🏰" },
-    { n: "Mestre Gelado", r: "rare", i: "❄️" },
-    { n: "Alquimista do Mel", r: "rare", i: "⚗️" },
-    { n: "Imperador da Geleia Real", r: "epic", i: "👑" },
-    { n: "Divindade Alada", r: "epic", i: "✨" },
-    { n: "Lenda do Inverno Eterno", r: "epic", i: "🌨️" }
-];
+const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Doce Começo",r:"common",i:"🍭"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Mestre Gelado",r:"rare",i:"❄️"},{n:"Alquimista do Mel",r:"rare",i:"⚗️"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"},{n:"Divindade Alada",r:"epic",i:"✨"},{n:"Lenda do Inverno Eterno",r:"epic",i:"🌨️"}];
 
 function initAchievements() {
     achievements.length = 0;
@@ -537,11 +578,7 @@ function initAchievements() {
         let val = Math.pow(1.58, i) * 120;
         let rar = i < 80 ? "common" : (i < 160 ? "rare" : "epic");
         let theme = achThemes[i % achThemes.length];
-        achievements.push({ 
-            id: i, n: `${theme.n} ${Math.ceil(i/achThemes.length)}`, 
-            d: `Produziu ${formatNum(val)} de mel`, target: val,
-            u: false, r: rar, i: theme.i 
-        });
+        achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:rar,i:theme.i});
     }
 }
 
@@ -562,15 +599,8 @@ function formatTime(t) {
     return Math.floor(m/60) + "h";
 }
 
-function getMPSBase() {
-    if(!autoUnlocked) return 0;
-    return (autoLevel * 2) + (level * 1.5);
-}
-
-function getSkinBonus() {
-    return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0;
-}
-
+function getMPSBase() { return !autoUnlocked ? 0 : (autoLevel * 2) + (level * 1.5); }
+function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length;
     let e = achievements.filter(a => a.u && a.r === 'epic').length;
@@ -582,20 +612,16 @@ function getGlobalBonus() {
 
 function updateUI() {
     document.getElementById("honey").textContent = formatNum(honey);
-    let mps = getMPSBase() * getGlobalBonus();
-    document.getElementById("mps").textContent = formatNum(mps);
+    document.getElementById("mps").textContent = formatNum(getMPSBase() * getGlobalBonus());
     document.getElementById("lvlDisplay").textContent = level;
     document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
-    
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     document.getElementById("btnUpgradeClick").innerHTML = `Upgrade Clique<br>${formatNum(clickCost)} 🍯`;
     document.getElementById("btnAutoAction").disabled = (honey < autoCost);
     document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `Desbloquear Auto<br>${formatNum(autoCost)} 🍯` : `Upgrade Auto (Lvl ${autoLevel})<br>${formatNum(autoCost)} 🍯`;
-
     buildShop();
     renderActiveBoosts();
-
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`);
         if(!btn) return;
@@ -604,8 +630,7 @@ function updateUI() {
             btn.style.background = "var(--xp-bar)"; 
             document.getElementById("mainBeeSprite").src = `${id}.png`;
             document.getElementById("miniBeeHeader").src = `${id}.png`;
-        }
-        else { 
+        } else { 
             let label = (id === "NoelBee") ? "NoelBee (+15%)" : "Abelha Comum";
             btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`;
             btn.style.background = "var(--rare)"; 
@@ -628,6 +653,7 @@ function renderActiveBoosts() {
 }
 
 function doClick() {
+    playClickSound();
     const g = hPerClick * getGlobalBonus();
     honey += g; totalHoneyEver += g;
     addXP(g);
@@ -652,24 +678,14 @@ function addXP(amt) {
 
 function buyBoost(type, ticks, mult, label) {
     const cost = Math.floor(boostBases[type] * level * mult);
-    if(honey >= cost) { 
-        honey -= cost; 
-        activeBoosts[type] += ticks; 
-        notify({n: "Boost Ativado!", d: `+${label} restantes`});
-        updateUI(); 
-        executeSave(); 
-    }
+    if(honey >= cost) { honey -= cost; activeBoosts[type] += ticks; notify({n: "Boost Ativado!", d: `+${label} restantes`}); updateUI(); executeSave(); }
 }
 
-function handleCosmetic(id) {
-    equippedCosmetic = id; 
-    notify({n: "Skin Trocada!", d: (id === "NoelBee" ? "+15% Bônus" : "")});
-    updateUI(); 
-    executeSave();
-}
+function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!", d: (id === "NoelBee" ? "+15% Bônus" : "")}); updateUI(); executeSave(); }
 
 function startAutoProducing() {
-    setInterval(() => {
+    if(autoProduceInterval) clearInterval(autoProduceInterval);
+    autoProduceInterval = setInterval(() => {
         if(autoUnlocked){
             let gain = getMPSBase() * getGlobalBonus();
             honey += gain; totalHoneyEver += gain;
@@ -678,27 +694,53 @@ function startAutoProducing() {
     }, 1000);
 }
 
+function startGameTicks() {
+    if(gameTickInterval) clearInterval(gameTickInterval);
+    gameTickInterval = setInterval(() => {
+        if(!gameLoaded) return;
+        const now = Date.now();
+        clickBuffer = clickBuffer.filter(t => now - t < 1000);
+        const cps = clickBuffer.length;
+        document.getElementById("aura").style.transform = `scale(${1 + (cps * 0.15)})`;
+        document.getElementById("aura").style.opacity = 0.3 + (cps * 0.1);
+        achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
+        for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
+        for(let b in activeBoosts) {
+            const el = document.getElementById(`status_${b}`);
+            if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo";
+        }
+        if(now % 1000 < 150) updateUI();
+        if(Math.random() < (0.05 + (cps * 0.08))) spawnFlake('gameSnowContainer');
+    }, 100);
+}
+
 function executeSave(){ 
-    if(!gameLoaded) return; 
-    const data = {
-        honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, 
-        autoUnlocked, autoLevel, autoCost, activeBoosts, ownedCosmetics, equippedCosmetic, 
-        achs: achievements.map(a => a.u), timestamp: Date.now()
-    }; 
+    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, ownedCosmetics, equippedCosmetic, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const indicator = document.getElementById("saveIndicator");
-    indicator.classList.add("visible");
-    setTimeout(() => indicator.classList.remove("visible"), 1000);
+    if(indicator) {
+        indicator.classList.add("visible");
+        setTimeout(() => indicator.classList.remove("visible"), 1000);
+    }
 }
 
 function load(){
     initAchievements();
     renderChangelog();
-    document.getElementById("mainVersionDisplay").textContent = `🎄 CHRISTMAS UPDATE v${GAME_VERSION}`;
-    const raw = localStorage.getItem(SAVE_KEY);
-    if(!localStorage.getItem(VERSION_KEY)) {
-        document.getElementById("btnChangelog").classList.add("update-aura");
+    
+    // CARREGA AUDIO
+    const savedAudio = localStorage.getItem(AUDIO_KEY);
+    if(savedAudio) {
+        audioSettings = JSON.parse(savedAudio);
     }
+    document.getElementById('musicVol').value = audioSettings.music;
+    document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
+    document.getElementById('clickVol').value = audioSettings.click;
+    document.getElementById('clickVolLabel').textContent = audioSettings.click + '%';
+    soundMusic.volume = audioSettings.music / 100;
+    soundClick.volume = audioSettings.click / 100;
+
+    const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         try {
             const d = JSON.parse(raw);
@@ -707,40 +749,57 @@ function load(){
             nextLevelXP = d.nextLevelXP || 1000; autoUnlocked = d.autoUnlocked || false;
             autoLevel = d.autoLevel || 1; autoCost = d.autoCost || 100;
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
-            ownedCosmetics = ["Bee", "NoelBee"];
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
+            
             if(autoUnlocked && d.timestamp) {
                 const now = Date.now();
                 const totalDiffSec = Math.floor((now - d.timestamp) / 1000);
-                if(totalDiffSec > 30) {
+                if(totalDiffSec > 10) {
                     let offGain = 0; let offXP = 0;
-                    let currentMPSBase = (autoLevel * 2) + (level * 1.5);
-                    let bonusBase = (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10)) * getSkinBonus();
-                    let xpMult = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
+                    let cMPS = (autoLevel * 2) + (level * 1.5);
+                    let bBase = (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10)) * getSkinBonus();
+                    let xM = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
                     for(let i=0; i<totalDiffSec; i++){
-                        let mult = bonusBase;
+                        let mult = bBase;
                         if(activeBoosts.pepper > i*10) mult += 2;
                         if(activeBoosts.energy > i*10) mult += 1;
-                        let perSec = currentMPSBase * mult * 0.8; 
-                        offGain += perSec; offXP += perSec * xpMult;
+                        let perSec = cMPS * mult * 0.8; 
+                        offGain += perSec; offXP += perSec * xM;
                     }
                     pendingOfflineHoney = Math.floor(offGain); pendingOfflineXP = Math.floor(offXP);
                 }
             }
             if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
-            if(autoUnlocked) startAutoProducing();
         } catch(e) { console.error(e); }
     }
-    gameLoaded = true; buildShop(); updateUI();
-    startDynamicNotifications(); 
 }
 
-function openChangelog() {
-    localStorage.setItem(VERSION_KEY, "true");
-    document.getElementById("btnChangelog").classList.remove("update-aura");
-    openModal('changelogModal');
+function enterGame() {
+    load();
+    soundMusic.play().catch(() => {});
+    const doc = document.documentElement;
+    if (doc.requestFullscreen) doc.requestFullscreen();
+    document.getElementById('startScreen').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('startScreen').style.display = 'none';
+        const gameUI = document.getElementById('gameUI');
+        gameUI.style.display = 'flex';
+        gameUI.style.opacity = '1';
+        gameLoaded = true;
+        
+        startGameTicks();
+        if(autoUnlocked) startAutoProducing();
+        
+        if(pendingOfflineHoney > 1) {
+            document.getElementById("offlineText").innerHTML = `As abelhas do Dudu trabalharam duro!<br><br><b>Mel Coletado:</b> ${formatNum(pendingOfflineHoney)} 🍯<br><b>XP Ganhos:</b> ${formatNum(pendingOfflineXP)} ✨`;
+            openModal('offlineModal');
+        }
+        updateUI();
+        startDynamicNotifications();
+    }, 500);
 }
 
+function openChangelog() { openModal('changelogModal'); }
 function openTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -748,14 +807,12 @@ function openTab(id, btn) {
     btn.classList.add('active');
     if(id === 'achievements') renderAchs();
 }
-
 function openSubShop(id, btn) {
     document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none');
     document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('shop_'+id).style.display = 'block';
     btn.classList.add('active');
 }
-
 function setAchFilter(rarity, btn) {
     currentAchFilter = rarity;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -784,60 +841,27 @@ function renderAchs() {
     const l = document.getElementById("achList");
     l.innerHTML = "";
     achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => {
-        l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}">
-            <div style="font-size:24px;">${a.u ? a.i : '🔒'}</div>
-            <div style="flex:1">
-                <div style="font-weight:900; color:var(--dark); font-size:13px;">${a.n}</div>
-                <div style="font-size:11px; color:#666;">${a.d}</div>
-            </div>
-            ${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}
-        </div>`;
+        l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:var(--dark); font-size:13px;">${a.n}</div><div style="font-size:11px; color:#666;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`;
     });
 }
 
 function notify(a) {
     const container = document.getElementById("notifContainer");
     const div = document.createElement("div");
-    div.className = `popup`;
-    div.textContent = `${a.n} ${a.d ? '('+a.d+')' : ''}`;
-    container.innerHTML = "";
-    container.appendChild(div);
+    div.className = `popup`; div.textContent = `${a.n} ${a.d ? '('+a.d+')' : ''}`;
+    container.innerHTML = ""; container.appendChild(div);
     div.style.animation = "slideInNotif 4s ease-in-out forwards";
     setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
-setInterval(() => {
-    if(!gameLoaded) return;
-    const now = Date.now();
-    clickBuffer = clickBuffer.filter(t => now - t < 1000);
-    const cps = clickBuffer.length;
-    document.getElementById("aura").style.transform = `scale(${1 + (cps * 0.15)})`;
-    document.getElementById("aura").style.opacity = 0.3 + (cps * 0.1);
-    achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
-    for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
-    for(let b in activeBoosts) {
-        const el = document.getElementById(`status_${b}`);
-        if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo";
-    }
-    if(now % 1000 < 150) updateUI();
-    if(Math.random() < (0.05 + (cps * 0.08))) spawnFlake('gameSnowContainer');
-}, 100);
+function openModal(id) { 
+    // Atualiza a visibilidade do botão sair com base em onde estamos
+    const exitBtn = document.getElementById('btnExitToMain');
+    const isMainScreen = document.getElementById('startScreen').style.display !== 'none';
+    exitBtn.style.display = isMainScreen ? 'none' : 'block';
 
-function enterGame() {
-    const doc = document.documentElement;
-    if (doc.requestFullscreen) doc.requestFullscreen();
-    document.getElementById('startScreen').style.opacity = '0';
-    setTimeout(() => {
-        document.getElementById('startScreen').style.display = 'none';
-        document.getElementById('gameUI').style.opacity = '1';
-        if(pendingOfflineHoney > 1) {
-            document.getElementById("offlineText").innerHTML = `As abelhas do Dudu trabalharam duro!<br><br><b>Mel Coletado:</b> ${formatNum(pendingOfflineHoney)} 🍯<br><b>XP Ganhos:</b> ${formatNum(pendingOfflineXP)} ✨`;
-            openModal('offlineModal');
-        }
-    }, 500);
+    document.getElementById(id).style.display = 'flex'; 
 }
-
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
 document.getElementById("btnCollectOffline").onclick = () => {
@@ -872,19 +896,15 @@ function spawnFlake(containerId) {
     const container = document.getElementById(containerId);
     if(!container) return;
     const flake = document.createElement('div');
-    flake.className = 'snowflake';
-    flake.innerHTML = '❄';
-    flake.style.left = (Math.random() * 95) + 'vw';
-    flake.style.opacity = Math.random();
+    flake.className = 'snowflake'; flake.innerHTML = '❄';
+    flake.style.left = (Math.random() * 95) + 'vw'; flake.style.opacity = Math.random();
     flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
     container.appendChild(flake);
     setTimeout(() => flake.remove(), 6000);
 }
 
 setInterval(() => spawnFlake('snowContainer'), 300);
-setInterval(() => {
-    if(document.getElementById('gameUI').style.opacity == '1') spawnFlake('gameSnowContainer');
-}, 400);
+setInterval(() => { if(gameLoaded && document.getElementById('gameUI').style.opacity == '1') spawnFlake('gameSnowContainer'); }, 400);
 
 load();
 </script>
