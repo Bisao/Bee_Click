@@ -148,8 +148,9 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .active-boost-timer { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 12px; border: 1.5px solid var(--accent); font-size: 11px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
 .main-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--card); border-radius: 26px; box-shadow: var(--shadow); margin-bottom: 14px; }
-.tabs-header { display: flex; background: #f8f8f8; border-bottom: 1px solid #eee; flex-shrink: 0; }
-.tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: 800; color: #999; cursor: pointer; font-size: 13px; }
+.tabs-header { display: flex; background: #f8f8f8; border-bottom: 1px solid #eee; flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
+.tabs-header::-webkit-scrollbar { display: none; }
+.tab-btn { flex: 1; min-width: 60px; padding: 15px; border: none; background: none; font-weight: 800; color: #999; cursor: pointer; font-size: 20px; }
 .tab-btn.active { color: var(--dark); border-bottom: 3px solid var(--accent); background: #fff; }
 
 .tabs-content { flex: 1; overflow: hidden; position: relative; }
@@ -183,6 +184,41 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 .modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
 .modal-footer { padding: 0 20px 20px 20px; background: #fff; flex-shrink: 0; }
+
+/* EVENT LIST */
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    border: 2px solid #eee;
+}
+.event-info { text-align: left; }
+.event-name { font-weight: 900; font-size: 16px; color: var(--dark); }
+.event-reward { font-size: 11px; color: #666; }
+.btn-play-event { width: 80px; margin-top: 0; padding: 10px; font-size: 12px; }
+
+/* MINIGAME FULLSCREEN OVERLAY */
+#minigameOverlay {
+    position: fixed; inset: 0; background: #000; z-index: 20000;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+#snakeCanvas { background: #1a1a1a; border: 4px solid var(--accent); border-radius: 10px; max-width: 90vw; max-height: 50vh; }
+.mg-header { width: 100%; padding: 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+.mg-stats { font-weight: 900; font-size: 20px; color: var(--accent); }
+.mg-controls { margin-top: 20px; display: grid; grid-template-areas: ". up ." "left down right"; gap: 10px; }
+.dpad-btn { width: 65px; height: 65px; background: rgba(255,255,255,0.2); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; border: 2px solid rgba(255,255,255,0.3); }
+.dpad-btn:active { background: var(--accent); color: var(--dark); }
+
+/* TIMER E TELA FINAL MINIGAME */
+#mgCountdown { position: absolute; font-size: 120px; color: var(--accent); font-weight: 900; text-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 20005; display: none; }
+#mgResultScreen {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 20010;
+    display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 30px;
+}
 
 /* REFORMA NO CHANGELOG */
 .changelog-block { margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 20px; border: 1px solid #eee; }
@@ -231,7 +267,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
         <button style="background: #f1f2f6; color: #333; box-shadow: 0 4px 0 #ccc; font-size: 14px; padding: 12px;" onclick="openModal('settingsModal')">CONFIGURAÇÕES ⚙️</button>
     </div>
 
-    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v3.9.7</div>
+    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v4.0.8</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -273,9 +309,10 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
   <div class="main-panel">
       <div class="tabs-header">
-          <button class="tab-btn active" onclick="openTab('upgrades', this)">UPGRADES</button>
-          <button class="tab-btn" onclick="openTab('shop', this)">LOJA</button>
-          <button class="tab-btn" onclick="openTab('achievements', this)">CONQUISTAS</button>
+          <button class="tab-btn active" onclick="openTab('upgrades', this)">🚀</button>
+          <button class="tab-btn" onclick="openTab('shop', this)">🛒</button>
+          <button class="tab-btn" onclick="openTab('events', this)">🏆</button>
+          <button class="tab-btn" onclick="openTab('achievements', this)">🎖️</button>
       </div>
       
       <div class="tabs-content" id="mainScrollArea">
@@ -351,6 +388,19 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
               </div>
           </div>
 
+          <div id="events" class="tab-pane">
+              <div class="scroll-area">
+                  <div class="event-item">
+                      <div class="event-info">
+                          <div class="event-name">Bee-Line (Snake) 🐍</div>
+                          <div class="event-reward">Ganhos: Mel & XP p/ ponto</div>
+                      </div>
+                      <button class="btn-play-event" onclick="prepareMinigame('snake')">PLAY</button>
+                  </div>
+                  <div style="text-align: center; color: #999; font-size: 11px; margin-top: 20px;">Novos minijogos em breve!</div>
+              </div>
+          </div>
+
           <div id="achievements" class="tab-pane">
               <div class="fixed-nav-header">
                   <div class="filter-bar">
@@ -366,6 +416,28 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
           </div>
       </div>
   </div>
+</div>
+
+<div id="minigameOverlay">
+    <div id="mgCountdown">3</div>
+    <div id="mgResultScreen">
+        <h1 id="mgResultTitle">FIM DE JOGO</h1>
+        <p style="font-size: 20px; margin-bottom: 5px;">Pontuação: <span id="mgResultScore">0</span></p>
+        <p id="mgResultReward" style="color: var(--accent); font-weight: 800; margin-bottom: 20px;"></p>
+        <button onclick="closeMgResult()" style="width: 200px; background: var(--xp-bar); color: white;">COLETAR</button>
+    </div>
+
+    <div class="mg-header">
+        <div class="mg-stats">PONTOS: <span id="snakeScore">0</span></div>
+        <button onclick="exitSnakeGame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: #ff4757; color: white;">DESISTIR</button>
+    </div>
+    <canvas id="snakeCanvas"></canvas>
+    <div class="mg-controls">
+        <div class="dpad-btn" style="grid-area: up;" onclick="changeSnakeDir('UP')">▲</div>
+        <div class="dpad-btn" style="grid-area: left;" onclick="changeSnakeDir('LEFT')">◀</div>
+        <div class="dpad-btn" style="grid-area: down;" onclick="changeSnakeDir('DOWN')">▼</div>
+        <div class="dpad-btn" style="grid-area: right;" onclick="changeSnakeDir('RIGHT')">▶</div>
+    </div>
 </div>
 
 <div class="modal" id="missionsModal">
@@ -439,55 +511,19 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 <script>
 // --- HISTÓRICO DE ATUALIZAÇÕES ---
-const GAME_VERSION = "3.9.7";
+const GAME_VERSION = "4.0.8";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const MISSION_KEY = "BeeRoyal_Missions_V2";
 
 const updateHistory = [
     {
-        version: "3.9.7",
-        title: "🧹 LIMPEZA DE CATÁLOGO",
+        version: "4.0.8",
+        title: "🛠️ CORREÇÕES DE SISTEMA",
         changes: [
-            { type: "rem", text: "Removidos cenários Jardim Real e Colmeia (Legado)." },
-            { type: "mod", text: "Foco exclusivo em cenários dinâmicos e temáticos." }
-        ]
-    },
-    {
-        version: "3.9.6",
-        title: "🌌 EXPANSÃO VISUAL",
-        changes: [
-            { type: "add", text: "Novos cenários animados: Chuva, Noite e Lago." },
-            { type: "mod", text: "Ajuste no grid de cosméticos para suportar mais itens." },
-            { type: "fix", text: "Otimização de carregamento dos GIFs de fundo." }
-        ]
-    },
-    {
-        version: "3.9.5",
-        title: "⚙️ SISTEMA DE MISSÕES 2.0",
-        changes: [
-            { type: "add", text: "Painel com 10 Missões Diárias fixas." },
-            { type: "add", text: "Recompensas incluem Upgrades Grátis e Boosts Automáticos." },
-            { type: "mod", text: "Refatoração completa do layout do Changelog." },
-            { type: "fix", text: "Melhoria na sincronização do tempo de reset (22:00)." }
-        ]
-    },
-    {
-        version: "3.8.0",
-        title: "🎄 CLIMA DE NATAL",
-        changes: [
-            { type: "add", text: "Efeitos de neve acumulada na tela." },
-            { type: "add", text: "Skin limitada NoelBee com bônus de +15%." },
-            { type: "mod", text: "Paleta de cores ajustada para azul real e dourado." }
-        ]
-    },
-    {
-        version: "3.5.2",
-        title: "🔊 ÁUDIO E PERFORMANCE",
-        changes: [
-            { type: "add", text: "Sliders de volume independentes para música e cliques." },
-            { type: "fix", text: "Corrigido atraso no som de clique em dispositivos móveis." },
-            { type: "mod", text: "Redução de 30% no consumo de bateria." }
+            { type: "fix", text: "Corrigido persistência de volume ao reiniciar." },
+            { type: "fix", text: "Ativado Fullscreen automático ao entrar no jogo." },
+            { type: "mod", text: "Melhorada a detecção de input de áudio inicial." }
         ]
     }
 ];
@@ -495,32 +531,17 @@ const updateHistory = [
 function renderChangelog() {
     const container = document.getElementById("changelogContent");
     container.innerHTML = "";
-    
-    // Pega as 5 últimas atualizações
     const recentUpdates = updateHistory.slice(0, 5);
-    
     recentUpdates.forEach(update => {
-        let blockHtml = `
-            <div class="changelog-block">
-                <div class="changelog-section-title">v${update.version} - ${update.title}</div>
-                <div class="changelog-list">
-        `;
-        
+        let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
         update.changes.forEach(change => {
             let icon = "🔹";
             if(change.type === "add") icon = "🟢";
             if(change.type === "rem") icon = "🔴";
             if(change.type === "fix") icon = "🔵";
             if(change.type === "mod") icon = "🟡";
-            
-            blockHtml += `
-                <div class="changelog-item">
-                    <span class="changelog-icon">${icon}</span>
-                    <span>${change.text}</span>
-                </div>
-            `;
+            blockHtml += `<div class="changelog-item"><span class="changelog-icon">${icon}</span><span>${change.text}</span></div>`;
         });
-        
         blockHtml += `</div></div>`;
         container.innerHTML += blockHtml;
     });
@@ -543,17 +564,149 @@ const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
 soundMusic.loop = true;
 
-function tryPlayMusic() {
-    if(soundMusic.paused) {
-        soundMusic.play().then(() => {
-            window.removeEventListener('click', tryPlayMusic);
-            window.removeEventListener('touchstart', tryPlayMusic);
-        }).catch(() => {});
+// --- LÓGICA DO MINIGAME SNAKE ---
+let snake = [];
+let food = {x: 0, y: 0};
+let dx = 20;
+let dy = 0;
+let snakeScore = 0;
+let snakeInterval = null;
+let mgRunning = false;
+const snakeCanvas = document.getElementById("snakeCanvas");
+const snakeCtx = snakeCanvas.getContext("2d");
+const boxSize = 20;
+
+function prepareMinigame(type) {
+    document.getElementById("minigameOverlay").style.display = "flex";
+    document.getElementById("mgResultScreen").style.display = "none";
+    const countdownEl = document.getElementById("mgCountdown");
+    countdownEl.style.display = "block";
+    
+    let count = 3;
+    countdownEl.textContent = count;
+    
+    const countTimer = setInterval(() => {
+        count--;
+        if(count > 0) {
+            countdownEl.textContent = count;
+        } else if(count === 0) {
+            countdownEl.textContent = "GO!";
+        } else {
+            clearInterval(countTimer);
+            countdownEl.style.display = "none";
+            if(type === 'snake') startSnakeGame();
+        }
+    }, 1000);
+}
+
+function startSnakeGame() {
+    snakeCanvas.width = 300;
+    snakeCanvas.height = 300;
+    snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
+    snakeScore = 0;
+    dx = boxSize;
+    dy = 0;
+    mgRunning = true;
+    document.getElementById("snakeScore").textContent = "0";
+    createFood();
+    if(snakeInterval) clearInterval(snakeInterval);
+    snakeInterval = setInterval(drawSnakeGame, 150);
+}
+
+// SUPORTE TECLADO
+window.addEventListener("keydown", (e) => {
+    if(!mgRunning) return;
+    const key = e.key.toLowerCase();
+    if ((key === "arrowleft" || key === "a")) changeSnakeDir('LEFT');
+    if ((key === "arrowup" || key === "w")) changeSnakeDir('UP');
+    if ((key === "arrowright" || key === "d")) changeSnakeDir('RIGHT');
+    if ((key === "arrowdown" || key === "s")) changeSnakeDir('DOWN');
+});
+
+function showMgResult(score) {
+    mgRunning = false;
+    clearInterval(snakeInterval);
+    
+    let hGain = score * 50 * (1 + level * 0.1);
+    let xGain = score * 25 * (1 + level * 0.1);
+    
+    honey += hGain;
+    addXP(xGain);
+    
+    document.getElementById("mgResultScore").textContent = score;
+    document.getElementById("mgResultReward").innerHTML = `RECOMPENSA:<br>+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
+    document.getElementById("mgResultScreen").style.display = "flex";
+    
+    updateUI();
+    executeSave();
+}
+
+function closeMgResult() {
+    document.getElementById("minigameOverlay").style.display = "none";
+}
+
+function exitSnakeGame() {
+    clearInterval(snakeInterval);
+    mgRunning = false;
+    document.getElementById("minigameOverlay").style.display = "none";
+}
+
+function drawSnakeGame() {
+    if (checkSnakeCollision()) {
+        showMgResult(snakeScore);
+        return;
+    }
+
+    snakeCtx.fillStyle = "#1a1a1a";
+    snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+    // Food (Flor)
+    snakeCtx.fillStyle = "#ff4757";
+    snakeCtx.beginPath();
+    snakeCtx.arc(food.x + boxSize/2, food.y + boxSize/2, boxSize/2, 0, Math.PI * 2);
+    snakeCtx.fill();
+
+    // Snake (Abelha)
+    snake.forEach((part, index) => {
+        snakeCtx.fillStyle = index === 0 ? "#ffcc00" : "#4a3b00";
+        snakeCtx.fillRect(part.x, part.y, boxSize - 2, boxSize - 2);
+    });
+
+    // Movimento
+    const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+    snake.unshift(head);
+
+    if (head.x === food.x && head.y === food.y) {
+        snakeScore++;
+        document.getElementById("snakeScore").textContent = snakeScore;
+        createFood();
+    } else {
+        snake.pop();
     }
 }
 
-window.addEventListener('click', tryPlayMusic);
-window.addEventListener('touchstart', tryPlayMusic);
+function createFood() {
+    food.x = Math.floor(Math.random() * (snakeCanvas.width / boxSize)) * boxSize;
+    food.y = Math.floor(Math.random() * (snakeCanvas.height / boxSize)) * boxSize;
+}
+
+function checkSnakeCollision() {
+    const head = snake[0];
+    if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height) return true;
+    for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) return true;
+    }
+    return false;
+}
+
+function changeSnakeDir(dir) {
+    if (dir === 'LEFT' && dx === 0) { dx = -boxSize; dy = 0; }
+    if (dir === 'UP' && dy === 0) { dx = 0; dy = -boxSize; }
+    if (dir === 'RIGHT' && dx === 0) { dx = boxSize; dy = 0; }
+    if (dir === 'DOWN' && dy === 0) { dx = 0; dy = boxSize; }
+}
+
+// --- PERSISTÊNCIA E ÁUDIO ---
 
 function updateVolume(type) {
     tryPlayMusic();
@@ -569,9 +722,50 @@ function updateVolume(type) {
     localStorage.setItem(AUDIO_KEY, JSON.stringify(audioSettings));
 }
 
+function applyAudioSettings() {
+    // Aplica aos objetos de áudio
+    soundMusic.volume = audioSettings.music / 100;
+    soundClick.volume = audioSettings.click / 100;
+    
+    // Atualiza sliders e labels na UI
+    const mVol = document.getElementById('musicVol');
+    const cVol = document.getElementById('clickVol');
+    if(mVol) {
+        mVol.value = audioSettings.music;
+        document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
+    }
+    if(cVol) {
+        cVol.value = audioSettings.click;
+        document.getElementById('clickVolLabel').textContent = audioSettings.click + '%';
+    }
+}
+
+function tryPlayMusic() {
+    if(soundMusic.paused) {
+        soundMusic.play().then(() => {
+            window.removeEventListener('click', tryPlayMusic);
+            window.removeEventListener('touchstart', tryPlayMusic);
+        }).catch(() => {});
+    }
+}
+
+window.addEventListener('click', tryPlayMusic);
+window.addEventListener('touchstart', tryPlayMusic);
+
 function playClickSound() {
     soundClick.currentTime = 0;
     soundClick.play().catch(() => {});
+}
+
+function requestFullscreen() {
+    const doc = window.document;
+    const docEl = doc.documentElement;
+    const request = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    if (request && !doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+        request.call(docEl).catch(err => {
+            console.warn(`Erro ao tentar ativar Fullscreen: ${err.message}`);
+        });
+    }
 }
 
 function returnToMain() {
@@ -588,9 +782,9 @@ function returnToMain() {
     }, 500);
 }
 
+// --- NOTIFICAÇÕES E DINÂMICA ---
 const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Uma colmeia pode ter até 60.000 abelhas no verão."];
 const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!", "💡 DICA: Complete as 10 missões para um crescimento explosivo!"];
-
 let lastNotifType = "fact"; 
 
 function startDynamicNotifications() {
@@ -816,10 +1010,7 @@ function updateUI() {
         if(equippedBackground === id) {
             btn.style.background = "var(--xp-bar)";
             btn.style.color = "white";
-            
-            // Aplicar GIF ao painel
             clickZone.style.backgroundImage = `url('${id}.gif')`;
-            
             if(id === 'BgPadrao') {
                 clickCard.style.background = "rgba(255,255,255,0.85)";
             } else {
@@ -924,15 +1115,23 @@ function executeSave(){
 }
 
 function load(){
-    initAchievements(); renderChangelog();
+    initAchievements(); 
+    renderChangelog();
+
+    // Carrega áudio primeiro
     const savedAudio = localStorage.getItem(AUDIO_KEY);
-    if(savedAudio) audioSettings = JSON.parse(savedAudio);
+    if(savedAudio) {
+        audioSettings = JSON.parse(savedAudio);
+    }
+    applyAudioSettings();
+
     const rawMissions = localStorage.getItem(MISSION_KEY);
     if(rawMissions) {
         const md = JSON.parse(rawMissions);
         dailyMissions = md.dailyMissions || [];
         lastMissionReset = md.lastMissionReset || 0;
     }
+
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         try {
@@ -952,7 +1151,10 @@ function load(){
 }
 
 function enterGame() {
-    load(); tryPlayMusic();
+    load(); 
+    tryPlayMusic();
+    requestFullscreen(); // Ativa fullscreen ao clicar
+    
     document.getElementById('startScreen').style.opacity = '0';
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
@@ -1040,14 +1242,6 @@ document.getElementById("btnAutoAction").onclick = () => {
     }
 });
 
-["leftTarget", "rightTarget"].forEach(id => {
-    const el = document.getElementById(id);
-    if(el){
-        el.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(true); });
-        el.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(true); }, {passive: false});
-    }
-});
-
 function spawnFlake(containerId) {
     const container = document.getElementById(containerId);
     if(!container) return; const flake = document.createElement('div');
@@ -1069,6 +1263,7 @@ function initAchievements() {
     }
 }
 
+// Carrega inicial para garantir volumes no menu também
 load();
 </script>
 </body>
