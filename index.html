@@ -540,29 +540,18 @@ const missionTemplates = [
 function checkMissionReset() {
     const now = new Date();
     const resetHour = 22;
-    // Cria data do próximo reset (hoje às 22h ou amanhã às 22h)
     let resetDate = new Date();
     resetDate.setHours(resetHour, 0, 0, 0);
     
-    // Se já passou das 22h hoje, o reset válido é de amanhã
-    if (now.getHours() >= resetHour) {
-        // O "dia" das missões atual termina às 22:00 de amanhã.
-        // Mas para simplificar, verificamos se o lastMissionReset foi antes das 22h de hoje.
-    }
-
-    // Lógica simples: Se o dia mudou ou se cruzou a barreira das 22h
     const lastReset = new Date(lastMissionReset);
     const timeSinceReset = now.getTime() - lastMissionReset;
     
-    // Se nunca resetou ou se passou das 22h desde o último reset
     let shouldReset = false;
     if(!lastMissionReset) shouldReset = true;
     else {
-        // Se o último reset foi ANTES das 22h de um dia e agora já passou das 22h desse dia ou de outro
         const lastResetLimit = new Date(lastReset);
         lastResetLimit.setHours(resetHour, 0, 0, 0);
         if (lastReset < lastResetLimit && now >= lastResetLimit) shouldReset = true;
-        // Se passou mais de 24h
         if (timeSinceReset > 86400000) shouldReset = true;
     }
 
@@ -579,7 +568,6 @@ function generateDailyMissions() {
     const selected = shuffled.slice(0, 3);
 
     selected.forEach(m => {
-        // Escalonar meta com o nível
         let scale = 1 + (level * 0.5);
         let target = Math.ceil(m.goal * scale);
         let rewardHoney = Math.ceil(target * 10 * (level * 0.8));
@@ -607,7 +595,6 @@ function updateMissionProgress(id, amt = 1) {
                 m.progress = m.target;
                 m.completed = true;
                 notify({n: "Missão Concluída!", d: m.title});
-                // Auto claim recompensas
                 honey += m.rewardH;
                 addXP(m.rewardX);
                 m.claimed = true;
@@ -668,6 +655,7 @@ function formatTime(t) {
     return Math.floor(m/60) + "h";
 }
 
+// LOGICA INFINITA: O ganho base escala com o nível de forma linear para manter o jogo equilibrado
 function getMPSBase() { return !autoUnlocked ? 0 : (autoLevel * 2) + (level * 1.5); }
 function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
 function getGlobalBonus() {
@@ -725,7 +713,6 @@ function doClick(isTarget = false) {
     const g = hPerClick * getGlobalBonus();
     honey += g; totalHoneyEver += g; addXP(g);
     
-    // Progresso Missões
     updateMissionProgress('clicks', 1);
     updateMissionProgress('honey_gain', g);
     if(isTarget) updateMissionProgress('target_clicks', 1);
@@ -739,14 +726,11 @@ function addXP(amt) {
     let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
     currentXP += (amt * m);
     while(currentXP >= nextLevelXP){
-        currentXP -= nextLevelXP; level++; nextLevelXP = Math.floor(nextLevelXP * 1.5);
+        currentXP -= nextLevelXP; level++; 
+        // PROGRESSÃO INFINITA DE NÍVEL: O custo de XP sobe 20% a cada nível (menos agressivo para permitir infinito)
+        nextLevelXP = Math.floor(nextLevelXP * 1.2);
         notify({n:`Nível Real ${level}!`});
     }
-}
-
-function buyBoost(type, ticks, mult, label) {
-    const cost = Math.floor(boostBases[type] * level * d.m);
-    // Nota: O objeto 'd' aqui deve vir do loop de criação. Ajustado abaixo no buildShop.
 }
 
 function buyBoostManual(type, ticks, cost, label) {
@@ -893,7 +877,8 @@ function buildShop() {
         const grid = document.getElementById(`grid_${type}`);
         if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
-            const cost = Math.floor(boostBases[type] * level * d.m);
+            // AJUSTE INFINITO: Custo da loja agora escala linearmente com o nível para evitar travar a evolução
+            const cost = Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m);
             const btn = document.createElement("button");
             btn.className = "buy-btn-small"; btn.disabled = honey < cost;
             btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`;
@@ -933,11 +918,13 @@ document.getElementById("btnCollectOffline").onclick = () => {
     pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave();
 };
 
+// BALANÇO INFINITO: Reduzi os multiplicadores para garantir que o mel produzido sempre consiga pagar o próximo nível
 document.getElementById("btnUpgradeClick").onclick = () => { 
     if(honey >= clickCost){ 
         honey -= clickCost; 
         hPerClick++; 
-        clickCost = Math.floor(clickCost * 1.9); 
+        // Multiplicador de 1.4x (antes era 1.9x). Muito mais sustentável para leveis infinitos.
+        clickCost = Math.floor(clickCost * 1.4); 
         updateMissionProgress('buy_upgrade', 1);
         updateUI(); executeSave(); 
     } 
@@ -949,7 +936,9 @@ document.getElementById("btnAutoAction").onclick = () => {
         if(!autoUnlocked){ 
             autoUnlocked = true; autoCost = 500; startAutoProducing(); 
         } else { 
-            autoLevel++; autoCost = Math.floor(autoCost * 2.2); 
+            autoLevel++; 
+            // Multiplicador de 1.6x (antes era 2.2x). Permite progressão constante.
+            autoCost = Math.floor(autoCost * 1.6); 
         } 
         updateMissionProgress('buy_upgrade', 1);
         updateUI(); executeSave(); 
