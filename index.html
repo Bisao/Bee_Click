@@ -43,6 +43,14 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     object-fit: contain;
 }
 
+/* PREVIEW NA LOJA */
+.skin-preview {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
 /* TELA INICIAL NATALINA */
 #startScreen {
     position: fixed; inset: 0; background: var(--bg-gradient);
@@ -154,7 +162,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .sub-tab-btn.active, .filter-btn.active { background: var(--accent); border-color: var(--dark); color: var(--dark); box-shadow: 0 4px 0 #d1ad00; }
 
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; }
-.buy-btn-small { padding: 8px 4px; font-size: 10px; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.buy-btn-small { padding: 8px 4px; font-size: 10px; min-height: 85px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
 button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:15px; font-size:14px; font-weight:800; background:var(--accent); color:var(--dark); box-shadow:0 4px 0 #d1ad00; cursor: pointer; }
 button:active{ transform:translateY(2px); box-shadow:0 2px 0 #d1ad00; }
@@ -207,7 +215,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
         <button id="btnChangelog" style="background: #ffffff; color: #1e3799; box-shadow: 0 4px 0 #cbd5e0; font-size: 14px; padding: 12px;" onclick="openChangelog()">O QUE MUDOU?</button>
     </div>
 
-    <div class="version-tag">🎄 CHRISTMAS UPDATE v3.8.5</div>
+    <div class="version-tag">🎄 CHRISTMAS UPDATE v3.8.8</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -216,8 +224,8 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
   <div class="card">
     <div id="saveIndicator" class="save-icon">💾</div>
     <div class="top-btns"><button class="circle-btn" id="btnHelp">❓</button></div>
-    <div style="font-size: 20px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-        Bee Clicker <img src="NoelBee.png" alt="Bee" style="width: 25px; height: 25px;">
+    <div id="gameHeaderTitle" style="font-size: 20px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        Bee Clicker <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 25px; height: 25px;">
     </div>
     <div class="stats">🍯 <span id="honey">0</span> | ⚡ <span id="mps">0</span>/s</div>
     <div class="level-container">
@@ -288,8 +296,14 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
                   <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
                       <div style="font-weight:900; margin-bottom:10px;">👔 Guarda-Roupa Real</div>
                       <div class="shop-grid">
-                          <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')"><b>Abelha Comum</b><br>DESBLOQUEADO</button>
-                          <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')"><b>Abelha Noel</b><br>NATAL 2025</button>
+                          <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')">
+                              <img src="Bee.png" class="skin-preview">
+                              <b>Abelha Comum</b>
+                          </button>
+                          <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')">
+                              <img src="NoelBee.png" class="skin-preview">
+                              <b>NoelBee (+15%)</b>
+                          </button>
                       </div>
                   </div>
               </div>
@@ -319,10 +333,10 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
             <span style="cursor:pointer" onclick="closeModal('changelogModal')">✖</span>
         </div>
         <div class="modal-content-scroll">
-            <div class="changelog-section-title">🎨 ARTES DO DUDU (v3.8.5)</div>
-            <div class="changelog-item">🎄 <span><b>Créditos:</b> Todas as abelhas deste update foram desenhadas pelo lendário <b>Dudu</b>!</span></div>
-            <div class="changelog-item">🎄 <span><b>Skin NoelBee:</b> A skin NoelBee agora é o padrão de Natal.</span></div>
-            <div class="changelog-item">🎄 <span><b>Sistema de Skins:</b> Novo menu de cosméticos com troca instantânea de sprites.</span></div>
+            <div class="changelog-section-title">🎅 NOELBEE BUFF (v3.8.8)</div>
+            <div class="changelog-item">🎁 <span><b>Poder Natalino:</b> Skin NoelBee agora concede <b>+15% de bônus</b> em Mel e XP!</span></div>
+            <div class="changelog-item">🎁 <span><b>Preview de Skin:</b> Agora você pode ver as abelhas na loja antes de equipar.</span></div>
+            <div class="changelog-item">🎄 <span><b>Artes:</b> Abelhas desenhadas pelo <b>Dudu</b>.</span></div>
             
             <div class="changelog-section-title" style="margin-top: 15px;">✨ O QUE CHEGOU (v3.8.0)</div>
             <div class="changelog-item">🟢 <span><b>Buff de Experiência:</b> PlayerLevel contribui com 1.5x na produção automática.</span></div>
@@ -357,17 +371,15 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
         <div class="modal-content-scroll">
             <div class="help-block">
                 <h3>🎯 Coleta Principal</h3>
-                <p>Clique na <b>Abelha central</b> desenhada pelo <b>Dudu</b> ou nos <b>Alvos 🎯</b>.</p>
+                <p>Clique na <b>Abelha central</b> ou nos <b>Alvos 🎯</b>.</p>
+            </div>
+            <div class="help-block">
+                <h3>🎁 Bônus de Skin</h3>
+                <p>A skin <b>NoelBee</b> aumenta todo o seu ganho de Mel e XP em 15% enquanto estiver equipada!</p>
             </div>
             <div class="help-block">
                 <h3>⚡ Automação e Níveis</h3>
                 <p>A produção (MPS) escala fortemente com seu <b>Nível de Player</b>.</p>
-            </div>
-            <div class="help-block">
-                <h3>🚀 Boosts Temporários</h3>
-                <div class="help-item">🌶️ Pimenta: Produção x3</div>
-                <div class="help-item">🥤 Energético: Velocidade Auto x2</div>
-                <div class="help-item">🌼 Flor: Ganho de XP x5</div>
             </div>
         </div>
         <div class="modal-footer">
@@ -378,7 +390,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 
 <script>
 const SAVE_KEY = "BeeRoyal_Balance_V2";
-const VERSION_KEY = "BeeRoyal_LastSeenVersion_385"; 
+const VERSION_KEY = "BeeRoyal_LastSeenVersion_388"; 
 
 let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
@@ -445,10 +457,15 @@ function getMPSBase() {
     return (autoLevel * 2) + (level * 1.5);
 }
 
+// LOGICA DE BONUS DE SKIN IMPLEMENTADA
+function getSkinBonus() {
+    return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0;
+}
+
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length;
     let e = achievements.filter(a => a.u && a.r === 'epic').length;
-    let b = 1 + (r * 0.02) + (e * 0.10);
+    let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus();
     if(activeBoosts.pepper > 0) b += 2;
     if(activeBoosts.energy > 0) b += 1;
     return b;
@@ -470,17 +487,18 @@ function updateUI() {
     buildShop();
     renderActiveBoosts();
 
-    // UI DE COSMÉTICOS ATUALIZADA
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`);
         if(!btn) return;
         if(equippedCosmetic === id) { 
-            btn.textContent = "EQUIPADO"; 
+            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`;
             btn.style.background = "var(--xp-bar)"; 
             document.getElementById("mainBeeSprite").src = `${id}.png`;
+            document.getElementById("miniBeeHeader").src = `${id}.png`;
         }
         else { 
-            btn.textContent = "EQUIPAR"; 
+            let label = (id === "NoelBee") ? "NoelBee (+15%)" : "Abelha Comum";
+            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`;
             btn.style.background = "var(--rare)"; 
         }
     });
@@ -513,7 +531,7 @@ function doClick() {
 }
 
 function addXP(amt) {
-    let m = (activeBoosts.flower > 0) ? 5 : 1;
+    let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
     currentXP += (amt * m);
     while(currentXP >= nextLevelXP){
         currentXP -= nextLevelXP;
@@ -536,7 +554,7 @@ function buyBoost(type, ticks, mult, label) {
 
 function handleCosmetic(id) {
     equippedCosmetic = id; 
-    notify({n: "Skin Trocada!"});
+    notify({n: "Skin Trocada!", d: (id === "NoelBee" ? "+15% Bônus" : "")});
     updateUI(); 
     executeSave();
 }
@@ -578,7 +596,6 @@ function load(){
             nextLevelXP = d.nextLevelXP || 1000; autoUnlocked = d.autoUnlocked || false;
             autoLevel = d.autoLevel || 1; autoCost = d.autoCost || 100;
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
-            // Garantir que as novas skins estejam desbloqueadas em saves antigos
             ownedCosmetics = ["Bee", "NoelBee"];
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
             
@@ -588,7 +605,7 @@ function load(){
                 if(totalDiffSec > 30) {
                     let offGain = 0;
                     let currentMPSBase = (autoLevel * 2) + (level * 1.5);
-                    let bonusBase = 1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10);
+                    let bonusBase = (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10)) * getSkinBonus();
                     
                     for(let i=0; i<totalDiffSec; i++){
                         let mult = bonusBase;
@@ -701,7 +718,7 @@ function enterGame() {
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('gameUI').style.opacity = '1';
         if(pendingOfflineHoney > 1) {
-            document.getElementById("offlineText").textContent = `As abelhas do Dudu trabalharam a 80% de eficiência! Você coletou ${formatNum(pendingOfflineHoney)} de mel.`;
+            document.getElementById("offlineText").textContent = `As abelhas do Dudu trabalharam duro! Você coletou ${formatNum(pendingOfflineHoney)} de mel.`;
             openModal('offlineModal');
         }
     }, 500);
