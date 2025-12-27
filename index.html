@@ -125,7 +125,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 .stats{ margin-top:8px; font-size:18px; font-weight: 800; color: var(--dark); }
 
-.click-zone { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 180px; position: relative; touch-action: none; }
+.click-zone { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 180px; position: relative; touch-action: none; border-radius: 20px; overflow: hidden; background-size: cover; background-position: center; transition: background 0.3s ease; }
 
 .aura-wrapper { 
     position: relative; 
@@ -142,7 +142,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .bee-container { position: relative; z-index: 2; animation: floatBee 3s infinite ease-in-out; cursor: pointer; transition: transform 0.05s; }
 
 @keyframes floatBee { 0%, 100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-12px) rotate(3deg);} }
-.target { height: 65px; width: 65px; border-radius: 20px; border: 3px dashed #ffeb3b; display: flex; align-items: center; justify-content: center; font-size: 28px; opacity: 0.7; }
+.target { height: 65px; width: 65px; border-radius: 20px; border: 3px dashed #ffeb3b; display: flex; align-items: center; justify-content: center; font-size: 28px; opacity: 0.7; background: rgba(255,255,255,0.4); backdrop-filter: blur(2px); }
 
 #active-boosts { position: absolute; top: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; pointer-events: none; z-index: 5; }
 .active-boost-timer { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 12px; border: 1.5px solid var(--accent); font-size: 11px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -231,7 +231,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
         <button style="background: #f1f2f6; color: #333; box-shadow: 0 4px 0 #ccc; font-size: 14px; padding: 12px;" onclick="openModal('settingsModal')">CONFIGURAÇÕES ⚙️</button>
     </div>
 
-    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v3.9.5</div>
+    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v3.9.7</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -257,7 +257,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
       <div id="notifContainer"></div>
   </div>
 
-  <div class="card" style="padding: 10px; background: rgba(255,255,255,0.85); position: relative;">
+  <div class="card" id="clickCard" style="padding: 10px; background: rgba(255,255,255,0.85); position: relative; overflow: hidden;">
     <div id="active-boosts"></div>
     <div class="click-zone" id="clickZone">
       <div class="target" id="leftTarget">🎯</div>
@@ -321,6 +321,30 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                           <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')">
                               <img src="NoelBee.png" class="skin-preview">
                               <b>NoelBee (+15%)</b>
+                          </button>
+                      </div>
+
+                      <div style="font-weight:900; margin: 20px 0 10px;">🖼️ Cenários Animados</div>
+                      <div class="shop-grid">
+                          <button class="buy-btn-small" id="btn_bg_BgPadrao" onclick="handleBackground('BgPadrao')">
+                              <div style="width:40px;height:40px;background:url('BgPadrao.gif');background-size:cover;margin-bottom:5px;border-radius:5px;border:1px solid #ddd"></div>
+                              <b>Padrão</b>
+                          </button>
+                          <button class="buy-btn-small" id="btn_bg_BgCristmas" onclick="handleBackground('BgCristmas')">
+                              <div style="width:40px;height:40px;background:url('BgCristmas.gif');background-size:cover;margin-bottom:5px;border-radius:5px;border:1px solid #ddd"></div>
+                              <b>Natal 🎄</b>
+                          </button>
+                          <button class="buy-btn-small" id="btn_bg_BgRaining" onclick="handleBackground('BgRaining')">
+                              <div style="width:40px;height:40px;background:url('BgRaining.gif');background-size:cover;margin-bottom:5px;border-radius:5px;border:1px solid #ddd"></div>
+                              <b>Chuva 🌧️</b>
+                          </button>
+                          <button class="buy-btn-small" id="btn_bg_BgNight" onclick="handleBackground('BgNight')">
+                              <div style="width:40px;height:40px;background:url('BgNight.gif');background-size:cover;margin-bottom:5px;border-radius:5px;border:1px solid #ddd"></div>
+                              <b>Noite 🌙</b>
+                          </button>
+                          <button class="buy-btn-small" id="btn_bg_BgLake" onclick="handleBackground('BgLake')">
+                              <div style="width:40px;height:40px;background:url('BgLake.gif');background-size:cover;margin-bottom:5px;border-radius:5px;border:1px solid #ddd"></div>
+                              <b>Lago 🌊</b>
                           </button>
                       </div>
                   </div>
@@ -415,12 +439,29 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 <script>
 // --- HISTÓRICO DE ATUALIZAÇÕES ---
-const GAME_VERSION = "3.9.5";
+const GAME_VERSION = "3.9.7";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const MISSION_KEY = "BeeRoyal_Missions_V2";
 
 const updateHistory = [
+    {
+        version: "3.9.7",
+        title: "🧹 LIMPEZA DE CATÁLOGO",
+        changes: [
+            { type: "rem", text: "Removidos cenários Jardim Real e Colmeia (Legado)." },
+            { type: "mod", text: "Foco exclusivo em cenários dinâmicos e temáticos." }
+        ]
+    },
+    {
+        version: "3.9.6",
+        title: "🌌 EXPANSÃO VISUAL",
+        changes: [
+            { type: "add", text: "Novos cenários animados: Chuva, Noite e Lago." },
+            { type: "mod", text: "Ajuste no grid de cosméticos para suportar mais itens." },
+            { type: "fix", text: "Otimização de carregamento dos GIFs de fundo." }
+        ]
+    },
     {
         version: "3.9.5",
         title: "⚙️ SISTEMA DE MISSÕES 2.0",
@@ -447,24 +488,6 @@ const updateHistory = [
             { type: "add", text: "Sliders de volume independentes para música e cliques." },
             { type: "fix", text: "Corrigido atraso no som de clique em dispositivos móveis." },
             { type: "mod", text: "Redução de 30% no consumo de bateria." }
-        ]
-    },
-    {
-        version: "3.2.0",
-        title: "🏠 MENU INICIAL",
-        changes: [
-            { type: "add", text: "Nova tela inicial com logo flutuante." },
-            { type: "add", text: "Sistema de conquistas filtráveis (Comum, Raro, Épico)." },
-            { type: "mod", text: "Tutorial inicial mais intuitivo." }
-        ]
-    },
-    {
-        version: "3.0.0",
-        title: "👑 ROYAL UPDATE",
-        changes: [
-            { type: "add", text: "Lançamento oficial da versão Royal Edition." },
-            { type: "add", text: "Sistema de produção offline (80% de eficiência)." },
-            { type: "add", text: "Novos Boosts: Pimenta, Energético e Flor." }
         ]
     }
 ];
@@ -508,7 +531,7 @@ let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
 let clickLvl = 1, autoLvlLvl = 1; 
 
-let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", pendingOfflineHoney = 0, pendingOfflineXP = 0;
+let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0 }, clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
 
@@ -638,7 +661,8 @@ function generateDailyMissions() {
             case 'boost_pepper': rewardLabel = "10min Pimenta (3x Mel)"; break;
             case 'boost_energy': rewardLabel = "10min Energético (2x Vel)"; break;
             case 'boost_flower': rewardLabel = "10min Flor (5x XP)"; break;
-            case 'boost_all': rewardLabel = "Pack de Boosts (5min)"; break;
+            case 'boost_all': 
+                rewardLabel = "Pack de Boosts (5min)"; break;
             case 'boost_extreme': rewardLabel = "30min de Pimenta & Flor"; break;
             case 'upgrade_free_click': rewardLabel = "+1 Nível Clique GRÁTIS"; break;
             case 'upgrade_free_auto': rewardLabel = "+1 Nível Auto GRÁTIS"; break;
@@ -764,6 +788,8 @@ function updateUI() {
     document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `Desbloquear Auto<br>${formatNum(autoCost)} 🍯` : `Upgrade Auto (Lvl ${autoLevel})<br>${formatNum(autoCost)} 🍯`;
     buildShop();
     renderActiveBoosts();
+    
+    // Atualizar UI de Skins
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`);
         if(!btn) return;
@@ -776,6 +802,33 @@ function updateUI() {
             let label = (id === "NoelBee") ? "NoelBee (+15%)" : "Abelha Comum";
             btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`;
             btn.style.background = "var(--rare)"; 
+        }
+    });
+
+    // Atualizar UI de Backgrounds Animados (GIFs)
+    const bgs = ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'];
+    const clickZone = document.getElementById("clickZone");
+    const clickCard = document.getElementById("clickCard");
+    
+    bgs.forEach(id => {
+        const btn = document.getElementById(`btn_bg_${id}`);
+        if(!btn) return;
+        if(equippedBackground === id) {
+            btn.style.background = "var(--xp-bar)";
+            btn.style.color = "white";
+            
+            // Aplicar GIF ao painel
+            clickZone.style.backgroundImage = `url('${id}.gif')`;
+            
+            if(id === 'BgPadrao') {
+                clickCard.style.background = "rgba(255,255,255,0.85)";
+            } else {
+                clickCard.style.background = "rgba(255,255,255,0.35)"; 
+                clickCard.style.backdropFilter = "blur(3px)";
+            }
+        } else {
+            btn.style.background = "#f9f9f9";
+            btn.style.color = "var(--dark)";
         }
     });
 }
@@ -826,6 +879,8 @@ function buyBoostManual(type, ticks, cost, label) {
 
 function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!"}); updateUI(); executeSave(); }
 
+function handleBackground(id) { equippedBackground = id; notify({n: "Cenário Alterado!"}); updateUI(); executeSave(); }
+
 function startAutoProducing() {
     if(autoProduceInterval) clearInterval(autoProduceInterval);
     autoProduceInterval = setInterval(() => {
@@ -860,7 +915,7 @@ function startGameTicks() {
 }
 
 function executeSave(){ 
-    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, equippedCosmetic, clickLvl, autoLvlLvl, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
+    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const missionData = {dailyMissions, lastMissionReset};
     localStorage.setItem(MISSION_KEY, JSON.stringify(missionData));
@@ -889,6 +944,7 @@ function load(){
             clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1;
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
+            if(d.equippedBackground) equippedBackground = d.equippedBackground;
             if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
         } catch(e) { console.error(e); }
     }
