@@ -113,9 +113,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .save-icon.visible { opacity: 1; animation: pulseSave 1s ease-out; }
 @keyframes pulseSave { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 
-.top-btns { position: absolute; right: 18px; top: 18px; display: flex; gap: 10px; }
-.circle-btn { background: #f2f2f2; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-
 .level-container { margin-top: 12px; text-align: left; }
 .level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: var(--dark); }
 .xp-bg { width: 100%; height: 12px; background: #eee; border-radius: 12px; overflow: hidden; }
@@ -179,12 +176,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 .changelog-section-title { font-weight: 900; font-size: 15px; margin-bottom: 10px; color: var(--dark); border-left: 4px solid var(--accent); padding-left: 8px; }
 .changelog-item { display: flex; gap: 8px; margin-bottom: 10px; font-size: 13px; line-height: 1.4; }
 
-.help-block { background: #f9f9f9; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
-.help-block h3 { margin: 0 0 10px 0; font-size: 16px; display: flex; align-items: center; gap: 8px; color: var(--dark); }
-.help-block p { margin: 0; font-size: 13px; color: #555; line-height: 1.5; }
-.help-item { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; font-weight: bold; color: #444; }
-
-.popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 12px; color: #333; animation: slideInNotif 4s ease-in-out forwards; pointer-events: none; text-align: center; }
+.popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 11px; color: #333; pointer-events: none; text-align: center; display: flex; align-items: center; justify-content: center; padding: 0 10px; opacity: 0; }
 @keyframes slideInNotif { 0% { transform: translateY(40px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
 
 .version-tag { color: rgba(255,255,255,0.7); margin-top: 15px; font-weight: bold; font-size: 13px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
@@ -215,7 +207,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
         <button id="btnChangelog" style="background: #ffffff; color: #1e3799; box-shadow: 0 4px 0 #cbd5e0; font-size: 14px; padding: 12px;" onclick="openChangelog()">O QUE MUDOU?</button>
     </div>
 
-    <div class="version-tag">🎄 CHRISTMAS UPDATE v3.8.8</div>
+    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v3.9.1</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -223,7 +215,6 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
   
   <div class="card">
     <div id="saveIndicator" class="save-icon">💾</div>
-    <div class="top-btns"><button class="circle-btn" id="btnHelp">❓</button></div>
     <div id="gameHeaderTitle" style="font-size: 20px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         Bee Clicker <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 25px; height: 25px;">
     </div>
@@ -332,16 +323,8 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
             <span>Registro Real 📜</span>
             <span style="cursor:pointer" onclick="closeModal('changelogModal')">✖</span>
         </div>
-        <div class="modal-content-scroll">
-            <div class="changelog-section-title">🎅 NOELBEE BUFF (v3.8.8)</div>
-            <div class="changelog-item">🎁 <span><b>Poder Natalino:</b> Skin NoelBee agora concede <b>+15% de bônus</b> em Mel e XP!</span></div>
-            <div class="changelog-item">🎁 <span><b>Preview de Skin:</b> Agora você pode ver as abelhas na loja antes de equipar.</span></div>
-            <div class="changelog-item">🎄 <span><b>Artes:</b> Abelhas desenhadas pelo <b>Dudu</b>.</span></div>
-            
-            <div class="changelog-section-title" style="margin-top: 15px;">✨ O QUE CHEGOU (v3.8.0)</div>
-            <div class="changelog-item">🟢 <span><b>Buff de Experiência:</b> PlayerLevel contribui com 1.5x na produção automática.</span></div>
-            <div class="changelog-item">🟢 <span><b>Auto-Mel Potente:</b> Ganho por nível triplicado.</span></div>
-        </div>
+        <div class="modal-content-scroll" id="changelogContent">
+            </div>
         <div class="modal-footer">
             <button onclick="closeModal('changelogModal')" style="margin-top: 0;">ENTENDIDO!</button>
         </div>
@@ -357,47 +340,174 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
             <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: #555;"></p>
         </div>
         <div class="modal-footer">
-            <button id="btnCollectOffline" style="background:var(--xp-bar); color:white; box-shadow:0 6px 0 #2d6630; height: 60px; font-size: 18px;">REIVINDICAR MEL</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="howToPlayModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>Guia da Colmeia Real 🐝</span>
-            <span style="cursor:pointer" onclick="closeModal('howToPlayModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll">
-            <div class="help-block">
-                <h3>🎯 Coleta Principal</h3>
-                <p>Clique na <b>Abelha central</b> ou nos <b>Alvos 🎯</b>.</p>
-            </div>
-            <div class="help-block">
-                <h3>🎁 Bônus de Skin</h3>
-                <p>A skin <b>NoelBee</b> aumenta todo o seu ganho de Mel e XP em 15% enquanto estiver equipada!</p>
-            </div>
-            <div class="help-block">
-                <h3>⚡ Automação e Níveis</h3>
-                <p>A produção (MPS) escala fortemente com seu <b>Nível de Player</b>.</p>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('howToPlayModal')" style="margin-top: 0;">VAMOS PRODUZIR!</button>
+            <button id="btnCollectOffline" style="background:var(--xp-bar); color:white; box-shadow:0 6px 0 #2d6630; height: 60px; font-size: 18px;">REIVINDICAR RECOMPENSAS</button>
         </div>
     </div>
 </div>
 
 <script>
+// --- SISTEMA DE VERSÃO E HISTÓRICO ---
+const GAME_VERSION = "3.9.1";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
-const VERSION_KEY = "BeeRoyal_LastSeenVersion_388"; 
+const VERSION_KEY = "BeeRoyal_LastSeenVersion_" + GAME_VERSION.replace(/\./g, ""); 
 
+const updateHistory = [
+    {
+        version: "3.9.1",
+        title: "🧹 LIMPEZA DE INTERFACE",
+        changes: [
+            { type: "rem", text: "Removido painel de 'Como Jogar' e botão de ajuda." },
+            { type: "mod", text: "Otimização de UI para foco total na jogabilidade." }
+        ]
+    },
+    {
+        version: "3.9.0",
+        title: "⚡ EVOLUÇÃO AUTOMÁTICA",
+        changes: [
+            { type: "add", text: "Auto-mel agora gera XP proporcional à produção." },
+            { type: "mod", text: "Painel offline agora detalha o XP coletado enquanto ausente." }
+        ]
+    },
+    {
+        version: "3.8.9",
+        title: "📚 ATUALIZAÇÃO DE CONHECIMENTO",
+        changes: [
+            { type: "add", text: "Adicionadas 100 novas curiosidades reais sobre abelhas." },
+            { type: "mod", text: "Notificações alternam entre Curiosidade e Dica a cada 40s." }
+        ]
+    },
+    {
+        version: "3.8.8",
+        title: "🎅 NOELBEE BUFF",
+        changes: [
+            { type: "mod", text: "Skin NoelBee concede +15% de bônus em Mel e XP." }
+        ]
+    },
+    {
+        version: "3.8.0",
+        title: "✨ SISTEMA DE NÍVEIS",
+        changes: [
+            { type: "add", text: "Nível de Player contribui com a produção automática." }
+        ]
+    }
+];
+
+function renderChangelog() {
+    const container = document.getElementById("changelogContent");
+    container.innerHTML = "";
+    updateHistory.slice(0, 5).forEach(update => {
+        let html = `<div class="changelog-section-title">${update.title} (v${update.version})</div>`;
+        update.changes.forEach(change => {
+            let icon = change.type === "add" ? "🟢" : (change.type === "rem" ? "🔴" : "🟡");
+            html += `<div class="changelog-item">${icon} <span>${change.text}</span></div>`;
+        });
+        container.innerHTML += html + `<div style="height:15px"></div>`;
+    });
+}
+
+// --- VARIÁVEIS DE JOGO ---
 let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
-let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", pendingOfflineHoney = 0;
+let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0 }, clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all';
 
+// --- SISTEMA DE NOTIFICAÇÕES (100 CURIOSIDADES + DICAS) ---
+const beeFacts = [
+    "Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.",
+    "Abelhas dançam para indicar onde há flores ricas em néctar.", "Para 1kg de mel, abelhas visitam 4 milhões de flores.",
+    "Abelhas existem há mais de 30 milhões de anos!", "A rainha pode viver 5 anos e põe 2.000 ovos por dia.",
+    "Abelhas têm 5 olhos: dois grandes e três ocelos no topo.", "Sem abelhas, a segurança alimentar global estaria em risco.",
+    "Elas batem as asas cerca de 200 vezes por segundo!", "Uma colmeia pode ter até 60.000 abelhas no verão.",
+    "Abelhas nunca dormem profundamente; fazem micro-cochilos.", "O olfato da abelha detecta pólen a quilômetros de distância.",
+    "Único inseto que produz alimento consumido por humanos.", "A extinção das abelhas causaria um colapso ecológico.",
+    "Plante flores nativas para ajudar as abelhas locais! 🌸", "Abelhas operárias são todas fêmeas.",
+    "Zangões não possuem ferrão e sua única função é reprodução.", "O mel nunca estraga; acharam mel comestível em egito.",
+    "Abelhas podem reconhecer rostos humanos individuais!", "Elas usam o sol como bússola para navegar.",
+    "Uma abelha voa a cerca de 24 km/h.", "O cérebro de uma abelha tem o tamanho de um grão de açúcar.",
+    "Abelhas são capazes de resolver problemas matemáticos.", "Elas mantêm a colmeia a 35°C constantes, mesmo no frio.",
+    "O ferrão da abelha tem farpas que ficam presas na pele.", "Abelhas comunicam o perigo através de feromônios.",
+    "Elas coletam própolis para selar frestas na colmeia.", "A geleia real define se uma larva será operária ou rainha.",
+    "Abelhas podem detectar campos elétricos de flores.", "Existem mais de 20.000 espécies de abelhas no mundo.",
+    "Algumas abelhas bebem lágrimas para obter sais minerais.", "Elas podem distinguir cores, exceto o vermelho.",
+    "Abelhas visitam entre 50 a 100 flores em uma viagem.", "O veneno da abelha é usado em terapias contra artrite.",
+    "Uma colmeia produz em média 25 a 45kg de mel por ano.", "Abelhas de mel morrem após picar mamíferos.",
+    "Elas batem as asas para ventilar e resfriar a colmeia.", "Abelhas são os principais polinizadores de café e cacau.",
+    "A rainha decide o sexo dos ovos que põe.", "Operárias limpam a colmeia e cuidam da prole.",
+    "Abelhas podem voar até 10km longe de casa.", "Elas usam resina de árvores como antibiótico natural.",
+    "O mel é néctar regurgitado e desidratado.", "Abelhas têm pelos nos olhos para coletar pólen.",
+    "Elas conseguem perceber a luz ultravioleta das flores.", "Uma abelha carregada de néctar pesa quase o seu peso.",
+    "O mel de abelhas sem ferrão é usado como remédio.", "Abelhas solitárias não vivem em colmeias nem têm rainha.",
+    "Elas ajudam na reprodução de árvores que geram oxigênio.", "No inverno, operárias vibram para aquecer a rainha.",
+    "Abelhas são atraídas por cores azuis e violetas.", "Elas possuem mandíbulas fortes para moldar a cera.",
+    "A cera de abelha é produzida por glândulas no abdômen.", "Elas evitam flores visitadas recentemente.",
+    "Abelhas bebem água para hidratar e resfriar o ninho.", "A polinização aumenta o tamanho e o sabor das frutas.",
+    "Algumas abelhas dormem dentro das flores à noite.", "O zumbido é causado pelo movimento rápido das asas.",
+    "Elas têm dois estômagos: um para mel e um para comida.", "Abelhas são fundamentais para a biodiversidade.",
+    "O mel escuro geralmente tem mais antioxidantes.", "Abelhas operárias vivem apenas 6 semanas no verão.",
+    "Elas não enxergam bem no escuro total.", "A rainha emite um aroma que mantém a colmeia unida.",
+    "Abelhas podem carregar metade do seu peso em pólen.", "O mel é a única fonte de energia delas no inverno.",
+    "Elas são higiênicas e não defecam dentro da colmeia.", "Abelhas sentem a umidade do ar com as antenas.",
+    "O uso de pesticidas é a maior ameaça às abelhas.", "Algumas fazem ninhos no chão ou buracos de madeira.",
+    "Elas são vitais para a produção de algodão e fibras.", "Abelhas mantêm o equilíbrio de pragas no jardim.",
+    "O pólen é a principal fonte de proteína das abelhas.", "Elas viajam o equivalente a 3 voltas na Terra coletando.",
+    "Abelhas evitam voar sob chuva intensa.", "Possuem sensores de CO2 nas antenas.",
+    "A colmeia é uma das estruturas mais eficientes da Terra.", "Abelhas ajudam a dispersar sementes de plantas.",
+    "Elas são bioindicadores de um ambiente saudável.", "Operárias têm profissões diferentes conforme a idade.",
+    "O mel de Manuka tem fortes propriedades curativas.", "Abelhas identificam campos eletromagnéticos.",
+    "Elas não gostam de cheiros fortes como álcool ou perfumes.", "Abelhas contribuem com bilhões para a economia.",
+    "Algumas espécies de abelhas são azuis metálicas!", "Elas usam as patas para limpar as antenas sempre.",
+    "A rainha acasala apenas uma vez na vida.", "Sem polinização, muitas sementes não germinariam.",
+    "Abelhas são símbolos de trabalho em equipe e lealdade.", "O hexágono dos favos economiza o máximo de cera.",
+    "Abelhas podem detectar a aproximação de tempestades.", "Preferem jardins com flores de formatos variados.",
+    "Algumas abelhas roubam néctar furando a base da flor.", "A fumaça as acalma simulando um incêndio.",
+    "Guardiãs conferem o cheiro de quem entra na colmeia.", "Podem aprender novas tarefas observando outras.",
+    "Bebem néctar usando uma língua tipo tromba.", "São essenciais para a produção de alfafa.",
+    "Proteger as abelhas é proteger o futuro da humanidade.", "Abelhas são amigas! Fique calmo se uma pousar em você."
+];
+
+const gameTips = [
+    "💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!",
+    "💡 DICA: Boosts de XP ajudam você a subir de nível mais rápido.",
+    "💡 DICA: O ícone 💾 indica que o progresso foi salvo.",
+    "💡 DICA: Os alvos 🎯 ajudam a focar nos cliques!",
+    "💡 DICA: Comprar durações maiores na loja vale mais a pena.",
+    "💡 DICA: O nível de player (Level) multiplica sua produção automática.",
+    "💡 DICA: Use a Flor (XP Boost) antes de clicar nos alvos!",
+    "💡 DICA: A produção offline rende 80% do valor normal.",
+    "💡 DICA: Desbloqueie o Auto-Mel o quanto antes!",
+    "💡 DICA: Conquistas raras aumentam permanentemente o mel."
+];
+
+let lastNotifType = "fact"; 
+
+function startDynamicNotifications() {
+    setInterval(() => {
+        if (!gameLoaded || document.getElementById('gameUI').style.opacity !== '1') return;
+        let msg = "";
+        if (lastNotifType === "fact") {
+            msg = gameTips[Math.floor(Math.random() * gameTips.length)];
+            lastNotifType = "tip";
+        } else {
+            msg = "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)];
+            lastNotifType = "fact";
+        }
+        showSystemNotification(msg);
+    }, 40000); 
+}
+
+function showSystemNotification(text) {
+    const container = document.getElementById("notifContainer");
+    container.innerHTML = ""; 
+    const div = document.createElement("div");
+    div.className = "popup";
+    div.innerHTML = `<span>${text}</span>`;
+    container.appendChild(div);
+    div.style.animation = "slideInNotif 10s ease-in-out forwards";
+    setTimeout(() => { if(div) div.remove(); }, 10000);
+}
+
+// --- MECÂNICAS ---
 const durations = [
     { label: "30s", t: 300, m: 1 }, { label: "1m", t: 600, m: 1.8 }, 
     { label: "5m", t: 3000, m: 8 }, { label: "1h", t: 36000, m: 70 }, 
@@ -457,7 +567,6 @@ function getMPSBase() {
     return (autoLevel * 2) + (level * 1.5);
 }
 
-// LOGICA DE BONUS DE SKIN IMPLEMENTADA
 function getSkinBonus() {
     return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0;
 }
@@ -564,6 +673,7 @@ function startAutoProducing() {
         if(autoUnlocked){
             let gain = getMPSBase() * getGlobalBonus();
             honey += gain; totalHoneyEver += gain;
+            addXP(gain);
         }
     }, 1000);
 }
@@ -583,11 +693,12 @@ function executeSave(){
 
 function load(){
     initAchievements();
+    renderChangelog();
+    document.getElementById("mainVersionDisplay").textContent = `🎄 CHRISTMAS UPDATE v${GAME_VERSION}`;
     const raw = localStorage.getItem(SAVE_KEY);
     if(!localStorage.getItem(VERSION_KEY)) {
         document.getElementById("btnChangelog").classList.add("update-aura");
     }
-
     if(raw){
         try {
             const d = JSON.parse(raw);
@@ -598,22 +709,22 @@ function load(){
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
             ownedCosmetics = ["Bee", "NoelBee"];
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
-            
             if(autoUnlocked && d.timestamp) {
                 const now = Date.now();
                 const totalDiffSec = Math.floor((now - d.timestamp) / 1000);
                 if(totalDiffSec > 30) {
-                    let offGain = 0;
+                    let offGain = 0; let offXP = 0;
                     let currentMPSBase = (autoLevel * 2) + (level * 1.5);
                     let bonusBase = (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10)) * getSkinBonus();
-                    
+                    let xpMult = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
                     for(let i=0; i<totalDiffSec; i++){
                         let mult = bonusBase;
                         if(activeBoosts.pepper > i*10) mult += 2;
                         if(activeBoosts.energy > i*10) mult += 1;
-                        offGain += currentMPSBase * mult * 0.8; 
+                        let perSec = currentMPSBase * mult * 0.8; 
+                        offGain += perSec; offXP += perSec * xpMult;
                     }
-                    pendingOfflineHoney = Math.floor(offGain);
+                    pendingOfflineHoney = Math.floor(offGain); pendingOfflineXP = Math.floor(offXP);
                 }
             }
             if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
@@ -621,6 +732,7 @@ function load(){
         } catch(e) { console.error(e); }
     }
     gameLoaded = true; buildShop(); updateUI();
+    startDynamicNotifications(); 
 }
 
 function openChangelog() {
@@ -690,7 +802,8 @@ function notify(a) {
     div.textContent = `${a.n} ${a.d ? '('+a.d+')' : ''}`;
     container.innerHTML = "";
     container.appendChild(div);
-    setTimeout(() => div.remove(), 4000);
+    div.style.animation = "slideInNotif 4s ease-in-out forwards";
+    setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
 setInterval(() => {
@@ -718,7 +831,7 @@ function enterGame() {
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('gameUI').style.opacity = '1';
         if(pendingOfflineHoney > 1) {
-            document.getElementById("offlineText").textContent = `As abelhas do Dudu trabalharam duro! Você coletou ${formatNum(pendingOfflineHoney)} de mel.`;
+            document.getElementById("offlineText").innerHTML = `As abelhas do Dudu trabalharam duro!<br><br><b>Mel Coletado:</b> ${formatNum(pendingOfflineHoney)} 🍯<br><b>XP Ganhos:</b> ${formatNum(pendingOfflineXP)} ✨`;
             openModal('offlineModal');
         }
     }, 500);
@@ -726,12 +839,12 @@ function enterGame() {
 
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-document.getElementById("btnHelp").onclick = () => openModal('howToPlayModal');
 
 document.getElementById("btnCollectOffline").onclick = () => {
     honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney;
-    notify({n: "Mel Offline Coletado!", d: `+${formatNum(pendingOfflineHoney)} 🍯`});
-    pendingOfflineHoney = 0; closeModal('offlineModal'); updateUI(); executeSave();
+    addXP(pendingOfflineXP);
+    notify({n: "Recompensas Coletadas!", d: `+${formatNum(pendingOfflineHoney)} 🍯`});
+    pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave();
 };
 
 document.getElementById("btnUpgradeClick").onclick = () => {
