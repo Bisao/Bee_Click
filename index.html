@@ -158,13 +158,13 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 .modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
 .modal-footer { padding: 0 20px 20px 20px; background: #fff; flex-shrink: 0; }
 
+.changelog-section-title { font-weight: 900; font-size: 15px; margin-bottom: 10px; color: var(--dark); border-left: 4px solid var(--accent); padding-left: 8px; }
+.changelog-item { display: flex; gap: 8px; margin-bottom: 10px; font-size: 13px; line-height: 1.4; }
+
 .help-block { background: #f9f9f9; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
 .help-block h3 { margin: 0 0 10px 0; font-size: 16px; display: flex; align-items: center; gap: 8px; color: var(--dark); }
 .help-block p { margin: 0; font-size: 13px; color: #555; line-height: 1.5; }
 .help-item { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; font-weight: bold; color: #444; }
-
-.changelog-list { text-align: left; }
-.changelog-item { display: flex; gap: 10px; margin-bottom: 12px; font-size: 14px; line-height: 1.3; }
 
 .popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 12px; color: #333; animation: slideInNotif 4s ease-in-out forwards; pointer-events: none; text-align: center; }
 @keyframes slideInNotif { 0% { transform: translateY(40px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
@@ -195,7 +195,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
         <button id="btnChangelog" style="background: #ffffff; color: #1e3799; box-shadow: 0 4px 0 #cbd5e0; font-size: 14px; padding: 12px;" onclick="openChangelog()">O QUE MUDOU?</button>
     </div>
 
-    <div class="version-tag">🎄 CHRISTMAS UPDATE v3.6.5</div>
+    <div class="version-tag">🎄 CHRISTMAS UPDATE v3.8.5</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -303,20 +303,22 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 <div class="modal" id="changelogModal">
     <div class="modal-box">
         <div class="modal-header">
-            <span>O que mudou? 🎄</span>
+            <span>Registro Real 📜</span>
             <span style="cursor:pointer" onclick="closeModal('changelogModal')">✖</span>
         </div>
         <div class="modal-content-scroll">
-            <div class="changelog-list">
-                <div class="changelog-item">📖 <span><b>Painel Responsivo:</b> Modais agora respeitam o tamanho da tela com rolagem interna.</span></div>
-                <div class="changelog-item">💾 <span><b>Autosave:</b> Salvamento automático a cada 15 segundos ativado.</span></div>
-                <div class="changelog-item">🎨 <span><b>Design Premium:</b> Painel inferior arredondado em todos os lados.</span></div>
-                <div class="changelog-item">📈 <span><b>Eficiência Offline:</b> Produção offline aumentada para 80%.</span></div>
-                <div class="changelog-item">✅ <span><b>Ortografia:</b> Revisão completa dos textos de conquistas.</span></div>
-            </div>
+            <div class="changelog-section-title">✨ O QUE CHEGOU (v3.8.5)</div>
+            <div class="changelog-item">🟢 <span><b>XP Automático:</b> Agora o Auto-Mel gera experiência continuamente! Suba de nível sem precisar clicar.</span></div>
+            <div class="changelog-item">🟢 <span><b>Buff de Experiência:</b> PlayerLevel agora contribui com 1.5x na produção automática.</span></div>
+            <div class="changelog-item">🟢 <span><b>Fórmula Atualizada:</b> Nova equação de MPS implementada ($MPS = (AutoLevel \times 2) + (PlayerLevel \times 1.5)$).</span></div>
+            <div class="changelog-item">🟢 <span><b>Estabilidade Offline:</b> Sincronia perfeita entre bônus de nível e tempo offline.</span></div>
+            
+            <div class="changelog-section-title" style="margin-top: 15px;">🗑️ O QUE FOI AJUSTADO/REMOVIDO</div>
+            <div class="changelog-item">🔴 <span><b>MPS Estático:</b> Removido o multiplicador de 0.5x por nível de player.</span></div>
+            <div class="changelog-item">🔴 <span><b>Registro Estático:</b> Painel agora mostra mudanças de forma dinâmica com botões fixos.</span></div>
         </div>
         <div class="modal-footer">
-            <button onclick="closeModal('changelogModal')" style="margin-top: 0;">FECHAR</button>
+            <button onclick="closeModal('changelogModal')" style="margin-top: 0;">ENTENDIDO!</button>
         </div>
     </div>
 </div>
@@ -348,22 +350,18 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
             </div>
             <div class="help-block">
                 <h3>⚡ Automação e Níveis</h3>
-                <p>Compre o <b>Auto-Mel</b> para colher mel sozinho. Cada ação gera XP para seu <b>Nível Real</b>. Níveis altos desbloqueiam bônus, mas aumentam custos!</p>
+                <p>O <b>Auto-Mel</b> agora gera **Mel e XP** a cada segundo! A produção automática (MPS) escala fortemente com seu **Nível de Player**.</p>
             </div>
             <div class="help-block">
                 <h3>🚀 Boosts Temporários</h3>
                 <p>Use a loja para multiplicar seu poder temporariamente:</p>
                 <div class="help-item">🌶️ Pimenta: Produção x3</div>
                 <div class="help-item">🥤 Energético: Velocidade Auto x2</div>
-                <div class="help-item">🌼 Flor: Ganho de XP x5</div>
+                <div class="help-item">🌼 Flor: Ganho de XP x5 (Afeta Cliques e Auto-Mel!)</div>
             </div>
             <div class="help-block">
                 <h3>💤 Estratégia Offline</h3>
-                <p>Ao desbloquear a Automação, suas abelhas trabalham enquanto você dorme! Você coleta <b>80% da sua produção total</b> ao retornar, incluindo efeitos de boosts ativos!</p>
-            </div>
-            <div class="help-block">
-                <h3>🏆 Conquistas Reais</h3>
-                <p>Existem 200 conquistas. Cada uma desbloqueada oferece um bônus <b>permanente e acumulativo</b> para sua colmeia.</p>
+                <p>Ao retornar, você coleta <b>80% da sua produção total** acumulada enquanto estava fora.</b></p>
             </div>
         </div>
         <div class="modal-footer">
@@ -374,7 +372,7 @@ button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shad
 
 <script>
 const SAVE_KEY = "BeeRoyal_Balance_V2";
-const VERSION_KEY = "BeeRoyal_LastSeenVersion_365"; 
+const VERSION_KEY = "BeeRoyal_LastSeenVersion_385"; 
 
 let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
@@ -390,7 +388,6 @@ const durations = [
 const boostBases = { pepper: 500, energy: 300, flower: 1000 };
 const achievements = [];
 
-/* ORTOGRAFIA REVISADA */
 const achThemes = [
     { n: "Aprendiz de Pólen", r: "common", i: "🌱" },
     { n: "Batedor de Asas", r: "common", i: "🪽" },
@@ -437,6 +434,11 @@ function formatTime(t) {
     return Math.floor(m/60) + "h";
 }
 
+function getMPSBase() {
+    if(!autoUnlocked) return 0;
+    return (autoLevel * 2) + (level * 1.5);
+}
+
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length;
     let e = achievements.filter(a => a.u && a.r === 'epic').length;
@@ -448,7 +450,7 @@ function getGlobalBonus() {
 
 function updateUI() {
     document.getElementById("honey").textContent = formatNum(honey);
-    let mps = autoUnlocked ? (2 * autoLevel) * getGlobalBonus() : 0;
+    let mps = getMPSBase() * getGlobalBonus();
     document.getElementById("mps").textContent = formatNum(mps);
     document.getElementById("lvlDisplay").textContent = level;
     document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
@@ -529,8 +531,10 @@ function handleCosmetic(id, cost) {
 function startAutoProducing() {
     setInterval(() => {
         if(autoUnlocked){
-            let gain = (2 * autoLevel) * getGlobalBonus();
+            let gain = getMPSBase() * getGlobalBonus();
             honey += gain; totalHoneyEver += gain;
+            // AJUSTE v3.8.5: AUTO-MEL GERA XP
+            addXP(gain);
         }
     }, 1000);
 }
@@ -575,12 +579,14 @@ function load(){
                 const totalDiffSec = Math.floor((now - d.timestamp) / 1000);
                 if(totalDiffSec > 30) {
                     let offGain = 0;
-                    let mpsBase = (2 * autoLevel) * (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10));
+                    let currentMPSBase = (autoLevel * 2) + (level * 1.5);
+                    let bonusBase = 1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10);
+                    
                     for(let i=0; i<totalDiffSec; i++){
-                        let mult = 1;
+                        let mult = bonusBase;
                         if(activeBoosts.pepper > i*10) mult += 2;
                         if(activeBoosts.energy > i*10) mult += 1;
-                        offGain += mpsBase * mult * 0.8; 
+                        offGain += currentMPSBase * mult * 0.8; 
                     }
                     pendingOfflineHoney = Math.floor(offGain);
                 }
@@ -687,7 +693,7 @@ function enterGame() {
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('gameUI').style.opacity = '1';
         if(pendingOfflineHoney > 1) {
-            document.getElementById("offlineText").textContent = `As abelhas trabalharam a 80% de eficiência com boosts! Você coletou ${formatNum(pendingOfflineHoney)} de mel real.`;
+            document.getElementById("offlineText").textContent = `As abelhas trabalharam a 80% de eficiência com o novo bônus de Nível Real! Você coletou ${formatNum(pendingOfflineHoney)} de mel.`;
             openModal('offlineModal');
         }
     }, 500);
