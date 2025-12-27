@@ -368,8 +368,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
             <span>Registro Real 📜</span>
             <span style="cursor:pointer" onclick="closeModal('changelogModal')">✖</span>
         </div>
-        <div class="modal-content-scroll" id="changelogContent">
-            </div>
+        <div class="modal-content-scroll" id="changelogContent"></div>
         <div class="modal-footer">
             <button onclick="closeModal('changelogModal')" style="margin-top: 0;">ENTENDIDO!</button>
         </div>
@@ -397,16 +396,7 @@ const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const VERSION_KEY = "BeeRoyal_LastSeenVersion_" + GAME_VERSION.replace(/\./g, ""); 
 
-const updateHistory = [
-    {
-        version: "3.9.5",
-        title: "⚙️ CONFIGURAÇÕES GLOBAIS",
-        changes: [
-            { type: "add", text: "Botão de configurações agora disponível na tela inicial." },
-            { type: "mod", text: "Música e sons agora funcionam desde o menu inicial." }
-        ]
-    }
-];
+const updateHistory = [{version:"3.9.5",title:"⚙️ CONFIGURAÇÕES GLOBAIS",changes:[{type:"add",text:"Botão de configurações na tela inicial."},{type:"mod",text:"Música agora inicia ao tocar em qualquer lugar da tela inicial."},{type:"fix",text:"Corrigido áudio mudo no menu inicial."}]}];
 
 function renderChangelog() {
     const container = document.getElementById("changelogContent");
@@ -414,7 +404,7 @@ function renderChangelog() {
     updateHistory.slice(0, 5).forEach(update => {
         let html = `<div class="changelog-section-title">${update.title} (v${update.version})</div>`;
         update.changes.forEach(change => {
-            let icon = change.type === "add" ? "🟢" : (change.type === "rem" ? "🔴" : "🟡");
+            let icon = change.type === "add" ? "🟢" : (change.type === "rem" ? "🔴" : (change.type === "fix" ? "🔵" : "🟡"));
             html += `<div class="changelog-item">${icon} <span>${change.text}</span></div>`;
         });
         container.innerHTML += html + `<div style="height:15px"></div>`;
@@ -426,9 +416,7 @@ let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0 }, clickBuffer = [], gameLoaded = false;
-let currentAchFilter = 'all';
-let autoProduceInterval = null;
-let gameTickInterval = null;
+let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
 
 // SISTEMA DE ÁUDIO GLOBAL
 let audioSettings = { music: 50, click: 80 };
@@ -436,11 +424,23 @@ const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
 soundMusic.loop = true;
 
-// --- FUNÇÕES DE ÁUDIO ---
-function updateVolume(type) {
-    // Iniciar a música na primeira interação com o volume caso não esteja tocando
-    if(soundMusic.paused) soundMusic.play().catch(() => {});
+// --- FUNÇÃO PARA TENTAR TOCAR MÚSICA (RECORRENTE) ---
+function tryPlayMusic() {
+    if(soundMusic.paused) {
+        soundMusic.play().then(() => {
+            // Se tocou, removemos o listener global para economizar recursos
+            window.removeEventListener('click', tryPlayMusic);
+            window.removeEventListener('touchstart', tryPlayMusic);
+        }).catch(() => {});
+    }
+}
 
+// Adiciona listeners para detectar qualquer toque do usuário na página
+window.addEventListener('click', tryPlayMusic);
+window.addEventListener('touchstart', tryPlayMusic);
+
+function updateVolume(type) {
+    tryPlayMusic(); // Tenta tocar ao mexer no volume também
     if(type === 'music') {
         audioSettings.music = document.getElementById('musicVol').value;
         document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
@@ -458,15 +458,10 @@ function playClickSound() {
     soundClick.play().catch(() => {});
 }
 
-// FUNÇÃO PARA SAIR E FICAR OFFLINE
 function returnToMain() {
     closeModal('settingsModal');
     if(autoProduceInterval) { clearInterval(autoProduceInterval); autoProduceInterval = null; }
     if(gameTickInterval) { clearInterval(gameTickInterval); gameTickInterval = null; }
-    
-    // Na v3.9.5, a música CONTINUA tocando no menu se o usuário quiser
-    // soundMusic.pause(); // Opcional: pausar ou não. Deixaremos tocando para manter a vibe.
-
     executeSave();
     document.getElementById('gameUI').style.opacity = '0';
     setTimeout(() => {
@@ -478,71 +473,8 @@ function returnToMain() {
 }
 
 // --- SISTEMA DE NOTIFICAÇÕES ---
-const beeFacts = [
-    "Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.",
-    "Abelhas dançam para indicar onde há flores ricas em néctar.", "Para 1kg de mel, abelhas visitam 4 milhões de flores.",
-    "Abelhas existem há mais de 30 milhões de anos!", "A rainha pode viver 5 anos e põe 2.000 ovos por dia.",
-    "Abelhas têm 5 olhos: dois grandes e três ocelos no topo.", "Sem abelhas, a segurança alimentar global estaria em risco.",
-    "Elas batem as asas cerca de 200 vezes por segundo!", "Uma colmeia pode ter até 60.000 abelhas no verão.",
-    "Abelhas nunca dormem profundamente; fazem micro-cochilos.", "O olfato da abelha detecta pólen a quilômetros de distância.",
-    "Único inseto que produz alimento consumido por humanos.", "A extinção das abelhas causaria um colapso ecológico.",
-    "Plante flores nativas para ajudar as abelhas locais! 🌸", "Abelhas operárias são todas fêmeas.",
-    "Zangões não possuem ferrão e sua única função é reprodução.", "O mel nunca estraga; acharam mel comestível em egito.",
-    "Abelhas podem reconhecer rostos humanos individuais!", "Elas usam o sol como bússola para navegar.",
-    "Uma abelha voa a cerca de 24 km/h.", "O cérebro de uma abelha tem o tamanho de um grão de açúcar.",
-    "Abelhas são capazes de resolver problemas matemáticos.", "Elas mantêm a colmeia a 35°C constantes, mesmo no frio.",
-    "O ferrão da abelha tem farpas que ficam presas na pele.", "Abelhas comunicam o perigo através de feromônios.",
-    "Elas coletam própolis para selar frestas na colmeia.", "A geleia real define se uma larva será operária ou rainha.",
-    "Abelhas podem detectar campos elétricos de flores.", "Existem mais de 20.000 espécies de abelhas no mundo.",
-    "Algumas abelhas bebem lágrimas para obter sais minerais.", "Elas podem distinguir cores, exceto o vermelho.",
-    "Abelhas visitam entre 50 a 100 flores em uma viagem.", "O veneno da abelha é usado em terapias contra artrite.",
-    "Uma colmeia produz em média 25 a 45kg de mel por ano.", "Abelhas de mel morrem após picar mamíferos.",
-    "Elas batem as asas para ventilar e resfriar a colmeia.", "Abelhas são os principais polinizadores de café e cacau.",
-    "A rainha decide o sexo dos ovos que põe.", "Operárias limpam a colmeia e cuidam da prole.",
-    "Abelhas podem voar até 10km longe de casa.", "Elas usam resina de árvores como antibiótico natural.",
-    "O mel é néctar regurgitado e desidratado.", "Abelhas têm pelos nos olhos para coletar pólen.",
-    "Elas conseguem perceber a luz ultravioleta das flores.", "Uma abelha carregada de néctar pesa quase o seu peso.",
-    "O mel de abelhas sem ferrão é usado como remédio.", "Abelhas solitárias não vivem em colmeias nem têm rainha.",
-    "Elas ajudam na reprodução de árvores que geram oxigênio.", "No inverno, operárias vibram para aquecer a rainha.",
-    "Abelhas são atraídas por cores azuis e violetas.", "Elas possuem mandíbulas fortes para moldar a cera.",
-    "A cera de abelha é produzida por glândulas no abdômen.", "Elas evitam flores visitadas recentemente.",
-    "Abelhas bebem água para hidratar e resfriar o ninho.", "A polinização aumenta o tamanho e o sabor das frutas.",
-    "Algumas abelhas dormem dentro das flores à noite.", "O zumbido é causado pelo movimento rápido das asas.",
-    "Elas têm dois estômagos: um para mel e um para comida.", "Abelhas são fundamentais para the biodiversidade.",
-    "O mel escuro geralmente tem mais antioxidantes.", "Abelhas operárias vivem apenas 6 semanas no verão.",
-    "Elas não enxergam bem no escuro total.", "A rainha emite um aroma que mantém a colmeia unida.",
-    "Abelhas podem carregar metade do seu peso em pólen.", "O mel é a única fonte de energia delas no inverno.",
-    "Elas são higiênicas e não defecam dentro da colmeia.", "Abelhas sentem a umidade do ar com as antenas.",
-    "O uso de pesticidas é a maior ameaça às abelhas.", "Algumas fazem ninhos no chão ou buracos de madeira.",
-    "Elas são vitais para a produção de algodão e fibras.", "Abelhas mantêm o equilíbrio de pragas no jardim.",
-    "O pólen é a principal fonte de proteína das abelhas.", "Elas viajam o equivalente a 3 voltas na Terra coletando.",
-    "Abelhas evitam voar sob chuva intensa.", "Possuem sensores de CO2 nas antenas.",
-    "A colmeia é uma das estruturas mais eficientes da Terra.", "Abelhas ajudam a dispersar sementes de plantas.",
-    "Elas são bioindicadores de um ambiente saudável.", "Operárias têm profissões diferentes conforme a idade.",
-    "O mel de Manuka tem fortes propriedades curativas.", "Abelhas identificam campos eletromagnéticos.",
-    "Elas não gostam de cheiros fortes como álcool ou perfumes.", "Abelhas contribuem com bilhões para a economia.",
-    "Algumas espécies de abelhas são azuis metálicas!", "Elas usam as patas para limpar as antenas sempre.",
-    "A rainha acasala apenas uma vez na vida.", "Sem polinização, muitas sementes não germinariam.",
-    "Abelhas são símbolos de trabalho em equipe e lealdade.", "O hexágono dos favos economiza o máximo de cera.",
-    "Abelhas podem detectar a aproximação de tempestades.", "Preferem jardins com flores de formatos variados.",
-    "Algumas abelhas roubam néctar furando a base da flor.", "A fumaça as acalma simulando um incêndio.",
-    "Guardiãs conferem o cheiro de quem entra na colmeia.", "Podem aprender novas tarefas observando outras.",
-    "Bebem néctar usando uma língua tipo tromba.", "São essenciais para a produção de alfafa.",
-    "Proteger as abelhas é proteger o futuro da humanidade.", "Abelhas são amigas! Fique calmo se uma pósar em você."
-];
-
-const gameTips = [
-    "💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!",
-    "💡 DICA: Boosts de XP ajudam você a subir de nível mais rápido.",
-    "💡 DICA: O ícone 💾 indica que o progresso foi salvo.",
-    "💡 DICA: Os alvos 🎯 ajudam a focar nos cliques!",
-    "💡 DICA: Comprar durações maiores na loja vale mais a pena.",
-    "💡 DICA: O nível de player (Level) multiplica sua produção automática.",
-    "💡 DICA: Use a Flor (XP Boost) antes de clicar nos alvos!",
-    "💡 DICA: A produção offline rende 80% do valor normal.",
-    "💡 DICA: Desbloqueie o Auto-Mel o quanto antes!",
-    "💡 DICA: Conquistas raras aumentam permanentemente o mel."
-];
+const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Abelhas dançam para indicar onde há flores ricas em néctar.", "Para 1kg de mel, abelhas visitam 4 milhões de flores.", "Abelhas existem há mais de 30 milhões de anos!", "A rainha pode viver 5 anos e põe 2.000 ovos por dia.", "Abelhas têm 5 olhos: dois grandes e três ocelos no topo.", "Sem abelhas, a segurança alimentar global estaria em risco.", "Elas batem as asas cerca de 200 vezes por segundo!", "Uma colmeia pode ter até 60.000 abelhas no verão.", "Abelhas nunca dormem profundamente; fazem micro-cochilos.", "O olfato da abelha detecta pólen a quilômetros de distância.", "Único inseto que produz alimento consumido por humanos.", "A extinção das abelhas causaria um colapso ecológico.", "Plante flores nativas para ajudar as abelhas locais! 🌸", "Abelhas operárias são todas fêmeas.", "Zangões não possuem ferrão e sua única função é reprodução.", "O mel nunca estraga; acharam mel comestível em egito.", "Abelhas podem reconhecer rostos humanos individuais!", "Elas usam o sol como bússola para navegar.", "Uma abelha voa a cerca de 24 km/h.", "O cérebro de uma abelha tem o tamanho de um grão de açúcar.", "Abelhas são capazes de resolver problemas matemáticos.", "Elas mantêm a colmeia a 35°C constantes, mesmo no frio.", "O ferrão da abelha tem farpas que ficam presas na pele.", "Abelhas comunicam o perigo através de feromônios.", "Elas coletam própolis para selar frestas na colmeia.", "A geleia real define se uma larva será operária ou rainha.", "Abelhas podem detectar campos elétricos de flores.", "Existem mais de 20.000 espécies de abelhas no mundo.", "Algumas abelhas bebem lágrimas para obter sais minerais.", "Elas podem distinguir cores, exceto o vermelho.", "Abelhas visitam entre 50 a 100 flores em uma viagem.", "O veneno da abelha é usado em terapias contra artrite.", "Uma colmeia produz em média 25 a 45kg de mel por ano.", "Abelhas de mel morrem após picar mamíferos.", "Elas batem as asas para ventilar e resfriar a colmeia.", "Abelhas são os principais polinizadores de café e cacau.", "A rainha decide o sexo dos ovos que põe.", "Operárias limpam a colmeia e cuidam da prole.", "Abelhas podem voar até 10km longe de casa.", "Elas usam resina de árvores como antibiótico natural.", "O mel é néctar regurgitado e desidratado.", "Abelhas têm pelos nos olhos para coletar pólen.", "Elas conseguem perceber a luz ultravioleta das flores.", "Uma abelha carregada de néctar pesa quase o seu peso.", "O mel de abelhas sem ferrão é usado como remédio.", "Abelhas solitárias não vivem em colmeias nem têm rainha.", "Elas ajudam na reprodução de árvores que geram oxigênio.", "No inverno, operárias vibram para aquecer a rainha.", "Abelhas são atraídas por cores azuis e violetas.", "Elas possuem mandíbulas fortes para moldar a cera.", "A cera de abelha é produzida por glândulas no abdômen.", "Elas evitam flores visitadas recentemente.", "Abelhas bebem água para hidratar e resfriar o ninho.", "A polinização aumenta o tamanho e o sabor das frutas.", "Algumas abelhas dormem dentro das flores à noite.", "O zumbido é causado pelo movimento rápido das asas.", "Elas têm dois estômagos: um para mel e um para comida.", "Abelhas são fundamentais para a biodiversidade.", "O mel escuro geralmente tem mais antioxidantes.", "Abelhas operárias vivem apenas 6 semanas no verão.", "Elas não enxergam bem no escuro total.", "A rainha emite um aroma que mantém a colmeia unida.", "Abelhas podem carregar metade do seu peso em pólen.", "O mel é a única fonte de energia delas no inverno.", "Elas são higiênicas e não defecam dentro da colmeia.", "Abelhas sentem a umidade do ar com as antenas.", "O uso de pesticidas é a maior ameaça às abelhas.", "Algumas fazem ninhos no chão ou buracos de madeira.", "Elas são vitais para a produção de algodão e fibras.", "Abelhas mantêm o equilíbrio de pragas no jardim.", "O pólen é a principal fonte de proteína das abelhas.", "Elas viajam o equivalente a 3 voltas na Terra coletando.", "Abelhas evitam voar sob chuva intensa.", "Possuem sensores de CO2 nas antenas.", "A colmeia é uma das estruturas mais eficientes da Terra.", "Abelhas ajudam a dispersar sementes de plantas.", "Elas são bioindicadores de um ambiente saudável.", "Operárias têm profissões diferentes conforme a idade.", "O mel de Manuka tem fortes propriedades curativas.", "Abelhas identificam campos eletromagnéticos.", "Elas não gostam de cheiros fortes como álcool ou perfumes.", "Abelhas contribuem com bilhões para a economia.", "Algumas espécies de abelhas são azuis metálicas!", "Elas usam as patas para limpar as antenas sempre.", "A rainha acasala apenas uma vez na vida.", "Sem polinização, muitas sementes não germinariam.", "Abelhas são símbolos de trabalho em equipe e lealdade.", "O hexágono dos favos economiza o máximo de cera.", "Abelhas podem detectar a aproximação de tempestades.", "Preferem jardins com flores de formatos variados.", "Algumas abelhas roubam néctar furando a base da flor.", "A fumaça as acalma simulando um incêndio.", "Guardiãs conferem o cheiro de quem entra na colmeia.", "Podem aprender novas tarefas observando outras.", "Bebem néctar usando uma língua tipo tromba.", "São essenciais para a produção de alfafa.", "Proteger as abelhas é proteger o futuro da humanidade.", "Abelhas são amigas! Fique calmo se uma pósar em você."];
+const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!", "💡 DICA: Boosts de XP ajudam você a subir de nível mais rápido.", "💡 DICA: O ícone 💾 indica que o progresso foi salvo.", "💡 DICA: Os alvos 🎯 ajudam a focar nos cliques!", "💡 DICA: Comprar durações maiores na loja vale mais a pena.", "💡 DICA: O nível de player (Level) multiplica sua produção automática.", "💡 DICA: Use a Flor (XP Boost) antes de clicar nos alvos!", "💡 DICA: A produção offline rende 80% do valor normal.", "💡 DICA: Desbloqueie o Auto-Mel o quanto antes!", "💡 DICA: Conquistas raras aumentam permanentemente o mel."];
 
 let lastNotifType = "fact"; 
 
@@ -559,8 +491,7 @@ function showSystemNotification(text) {
     const container = document.getElementById("notifContainer");
     container.innerHTML = ""; 
     const div = document.createElement("div");
-    div.className = "popup";
-    div.innerHTML = `<span>${text}</span>`;
+    div.className = "popup"; div.innerHTML = `<span>${text}</span>`;
     container.appendChild(div);
     div.style.animation = "slideInNotif 10s ease-in-out forwards";
     setTimeout(() => { if(div) div.remove(); }, 10000);
@@ -645,8 +576,7 @@ function renderActiveBoosts() {
     for(let key in activeBoosts) {
         if(activeBoosts[key] > 0) {
             const div = document.createElement("div");
-            div.className = "active-boost-timer";
-            div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`;
+            div.className = "active-boost-timer"; div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`;
             container.appendChild(div);
         }
     }
@@ -655,23 +585,17 @@ function renderActiveBoosts() {
 function doClick() {
     playClickSound();
     const g = hPerClick * getGlobalBonus();
-    honey += g; totalHoneyEver += g;
-    addXP(g);
+    honey += g; totalHoneyEver += g; addXP(g);
     const bee = document.getElementById("beeContainer");
-    bee.style.transform = "scale(0.85)";
-    setTimeout(() => bee.style.transform = "scale(1)", 50);
-    clickBuffer.push(Date.now());
-    spawnFlake('gameSnowContainer');
-    updateUI();
+    bee.style.transform = "scale(0.85)"; setTimeout(() => bee.style.transform = "scale(1)", 50);
+    clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI();
 }
 
 function addXP(amt) {
     let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
     currentXP += (amt * m);
     while(currentXP >= nextLevelXP){
-        currentXP -= nextLevelXP;
-        level++;
-        nextLevelXP = Math.floor(nextLevelXP * 1.5);
+        currentXP -= nextLevelXP; level++; nextLevelXP = Math.floor(nextLevelXP * 1.5);
         notify({n:`Nível Real ${level}!`});
     }
 }
@@ -688,8 +612,7 @@ function startAutoProducing() {
     autoProduceInterval = setInterval(() => {
         if(autoUnlocked){
             let gain = getMPSBase() * getGlobalBonus();
-            honey += gain; totalHoneyEver += gain;
-            addXP(gain);
+            honey += gain; totalHoneyEver += gain; addXP(gain);
         }
     }, 1000);
 }
@@ -718,21 +641,13 @@ function executeSave(){
     const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, ownedCosmetics, equippedCosmetic, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const indicator = document.getElementById("saveIndicator");
-    if(indicator) {
-        indicator.classList.add("visible");
-        setTimeout(() => indicator.classList.remove("visible"), 1000);
-    }
+    if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
 }
 
 function load(){
-    initAchievements();
-    renderChangelog();
-    
-    // CARREGA AUDIO
+    initAchievements(); renderChangelog();
     const savedAudio = localStorage.getItem(AUDIO_KEY);
-    if(savedAudio) {
-        audioSettings = JSON.parse(savedAudio);
-    }
+    if(savedAudio) audioSettings = JSON.parse(savedAudio);
     document.getElementById('musicVol').value = audioSettings.music;
     document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
     document.getElementById('clickVol').value = audioSettings.click;
@@ -750,21 +665,17 @@ function load(){
             autoLevel = d.autoLevel || 1; autoCost = d.autoCost || 100;
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
-            
             if(autoUnlocked && d.timestamp) {
-                const now = Date.now();
-                const totalDiffSec = Math.floor((now - d.timestamp) / 1000);
+                const now = Date.now(); const totalDiffSec = Math.floor((now - d.timestamp) / 1000);
                 if(totalDiffSec > 10) {
-                    let offGain = 0; let offXP = 0;
+                    let offGain = 0, offXP = 0;
                     let cMPS = (autoLevel * 2) + (level * 1.5);
                     let bBase = (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10)) * getSkinBonus();
                     let xM = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
                     for(let i=0; i<totalDiffSec; i++){
                         let mult = bBase;
-                        if(activeBoosts.pepper > i*10) mult += 2;
-                        if(activeBoosts.energy > i*10) mult += 1;
-                        let perSec = cMPS * mult * 0.8; 
-                        offGain += perSec; offXP += perSec * xM;
+                        if(activeBoosts.pepper > i*10) mult += 2; if(activeBoosts.energy > i*10) mult += 1;
+                        let perSec = cMPS * mult * 0.8; offGain += perSec; offXP += perSec * xM;
                     }
                     pendingOfflineHoney = Math.floor(offGain); pendingOfflineXP = Math.floor(offXP);
                 }
@@ -775,27 +686,20 @@ function load(){
 }
 
 function enterGame() {
-    load();
-    soundMusic.play().catch(() => {});
+    load(); tryPlayMusic();
     const doc = document.documentElement;
     if (doc.requestFullscreen) doc.requestFullscreen();
     document.getElementById('startScreen').style.opacity = '0';
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
         const gameUI = document.getElementById('gameUI');
-        gameUI.style.display = 'flex';
-        gameUI.style.opacity = '1';
-        gameLoaded = true;
-        
-        startGameTicks();
-        if(autoUnlocked) startAutoProducing();
-        
+        gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; gameLoaded = true;
+        startGameTicks(); if(autoUnlocked) startAutoProducing();
         if(pendingOfflineHoney > 1) {
             document.getElementById("offlineText").innerHTML = `As abelhas do Dudu trabalharam duro!<br><br><b>Mel Coletado:</b> ${formatNum(pendingOfflineHoney)} 🍯<br><b>XP Ganhos:</b> ${formatNum(pendingOfflineXP)} ✨`;
             openModal('offlineModal');
         }
-        updateUI();
-        startDynamicNotifications();
+        updateUI(); startDynamicNotifications();
     }, 500);
 }
 
@@ -803,86 +707,57 @@ function openChangelog() { openModal('changelogModal'); }
 function openTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
+    document.getElementById(id).classList.add('active'); btn.classList.add('active');
     if(id === 'achievements') renderAchs();
 }
 function openSubShop(id, btn) {
     document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none');
     document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('shop_'+id).style.display = 'block';
-    btn.classList.add('active');
+    document.getElementById('shop_'+id).style.display = 'block'; btn.classList.add('active');
 }
-function setAchFilter(rarity, btn) {
-    currentAchFilter = rarity;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderAchs();
-}
-
+function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderAchs(); }
 function buildShop() {
     ['pepper', 'energy', 'flower'].forEach(type => {
         const grid = document.getElementById(`grid_${type}`);
-        if(!grid) return;
-        grid.innerHTML = "";
+        if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
             const cost = Math.floor(boostBases[type] * level * d.m);
             const btn = document.createElement("button");
-            btn.className = "buy-btn-small";
-            btn.disabled = honey < cost;
+            btn.className = "buy-btn-small"; btn.disabled = honey < cost;
             btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`;
             btn.onclick = () => buyBoost(type, d.t, d.m, d.label);
             grid.appendChild(btn);
         });
     });
 }
-
 function renderAchs() {
-    const l = document.getElementById("achList");
-    l.innerHTML = "";
+    const l = document.getElementById("achList"); l.innerHTML = "";
     achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => {
         l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:var(--dark); font-size:13px;">${a.n}</div><div style="font-size:11px; color:#666;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`;
     });
 }
-
 function notify(a) {
-    const container = document.getElementById("notifContainer");
-    const div = document.createElement("div");
+    const container = document.getElementById("notifContainer"); const div = document.createElement("div");
     div.className = `popup`; div.textContent = `${a.n} ${a.d ? '('+a.d+')' : ''}`;
-    container.innerHTML = ""; container.appendChild(div);
-    div.style.animation = "slideInNotif 4s ease-in-out forwards";
+    container.innerHTML = ""; container.appendChild(div); div.style.animation = "slideInNotif 4s ease-in-out forwards";
     setTimeout(() => { if(div) div.remove(); }, 4000);
 }
-
 function openModal(id) { 
-    // Atualiza a visibilidade do botão sair com base em onde estamos
     const exitBtn = document.getElementById('btnExitToMain');
     const isMainScreen = document.getElementById('startScreen').style.display !== 'none';
     exitBtn.style.display = isMainScreen ? 'none' : 'block';
-
     document.getElementById(id).style.display = 'flex'; 
 }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
 document.getElementById("btnCollectOffline").onclick = () => {
-    honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney;
-    addXP(pendingOfflineXP);
+    honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney; addXP(pendingOfflineXP);
     notify({n: "Recompensas Coletadas!", d: `+${formatNum(pendingOfflineHoney)} 🍯`});
     pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave();
 };
 
-document.getElementById("btnUpgradeClick").onclick = () => {
-    if(honey >= clickCost){ honey -= clickCost; hPerClick++; clickCost = Math.floor(clickCost * 1.9); updateUI(); executeSave(); }
-};
-
-document.getElementById("btnAutoAction").onclick = () => {
-    if(honey >= autoCost){
-        honey -= autoCost;
-        if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); }
-        else { autoLevel++; autoCost = Math.floor(autoCost * 2.2); }
-        updateUI(); executeSave();
-    }
-};
+document.getElementById("btnUpgradeClick").onclick = () => { if(honey >= clickCost){ honey -= clickCost; hPerClick++; clickCost = Math.floor(clickCost * 1.9); updateUI(); executeSave(); } };
+document.getElementById("btnAutoAction").onclick = () => { if(honey >= autoCost){ honey -= autoCost; if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } else { autoLevel++; autoCost = Math.floor(autoCost * 2.2); } updateUI(); executeSave(); } };
 
 ["clickZone", "beeContainer", "leftTarget", "rightTarget"].forEach(id => {
     const el = document.getElementById(id);
@@ -894,13 +769,10 @@ document.getElementById("btnAutoAction").onclick = () => {
 
 function spawnFlake(containerId) {
     const container = document.getElementById(containerId);
-    if(!container) return;
-    const flake = document.createElement('div');
-    flake.className = 'snowflake'; flake.innerHTML = '❄';
-    flake.style.left = (Math.random() * 95) + 'vw'; flake.style.opacity = Math.random();
-    flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
-    container.appendChild(flake);
-    setTimeout(() => flake.remove(), 6000);
+    if(!container) return; const flake = document.createElement('div');
+    flake.className = 'snowflake'; flake.innerHTML = '❄'; flake.style.left = (Math.random() * 95) + 'vw';
+    flake.style.opacity = Math.random(); flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    container.appendChild(flake); setTimeout(() => flake.remove(), 6000);
 }
 
 setInterval(() => spawnFlake('snowContainer'), 300);
