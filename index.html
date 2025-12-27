@@ -184,24 +184,31 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
 .modal-footer { padding: 0 20px 20px 20px; background: #fff; flex-shrink: 0; }
 
-.changelog-section-title { font-weight: 900; font-size: 15px; margin-bottom: 10px; color: var(--dark); border-left: 4px solid var(--accent); padding-left: 8px; }
-.changelog-item { display: flex; gap: 8px; margin-bottom: 10px; font-size: 13px; line-height: 1.4; }
+/* REFORMA NO CHANGELOG */
+.changelog-block { margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 20px; border: 1px solid #eee; }
+.changelog-section-title { font-weight: 900; font-size: 15px; margin-bottom: 12px; color: #1e3799; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 2px; }
+.changelog-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; color: #444; align-items: flex-start; }
+.changelog-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
 
 .popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 11px; color: #333; pointer-events: none; text-align: center; display: flex; align-items: center; justify-content: center; padding: 0 10px; opacity: 0; }
 @keyframes slideInNotif { 0% { transform: translateY(40px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
 
 .version-tag { color: rgba(255,255,255,0.7); margin-top: 15px; font-weight: bold; font-size: 13px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
-.ach-card, .mission-card { display: flex; align-items: center; padding: 12px; border-radius: 15px; background: #fcfcfc; border: 2px solid #eee; text-align: left; gap: 12px; margin-bottom: 8px; transition: 0.3s; }
+/* MISSÕES DIÁRIAS */
+.mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: #fff; border: 2px solid #f0f0f0; text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
+.mission-card.completed { border-color: var(--xp-bar); background: #f9fff9; }
+.mission-card.completed::after { content: 'COMPLETO'; position: absolute; top: 10px; right: 10px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: #e8f5e9; padding: 2px 6px; border-radius: 10px; }
+.mission-progress-bar { width: 100%; height: 8px; background: #f0f0f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.mission-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+.mission-card.completed .mission-progress-fill { background: var(--xp-bar); }
+.mission-reward-tag { display: inline-block; padding: 3px 8px; background: #fff3cd; color: #856404; font-size: 9px; font-weight: 900; border-radius: 6px; margin-top: 5px; }
+
+.ach-card { display: flex; align-items: center; padding: 12px; border-radius: 15px; background: #fcfcfc; border: 2px solid #eee; text-align: left; gap: 12px; margin-bottom: 8px; transition: 0.3s; }
 .ach-card.locked { opacity: 0.5; filter: grayscale(1); background: #f0f0f0; }
 .ach-card.unlocked.common { border-color: var(--common); background: #fff; }
 .ach-card.unlocked.rare { border-color: var(--rare); background: #ebf5ff; }
 .ach-card.unlocked.epic { border-color: var(--epic); background: #f5f0ff; }
-
-.mission-card.completed { border-color: var(--xp-bar); background: #f1f8f1; }
-.mission-progress-bar { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-top: 5px; overflow: hidden; }
-.mission-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
-.mission-card.completed .mission-progress-fill { background: var(--xp-bar); }
 </style>
 </head>
 
@@ -340,13 +347,12 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 <div class="modal" id="missionsModal">
     <div class="modal-box">
         <div class="modal-header">
-            <span>Desafios Diários 📝</span>
+            <span>Agenda Real (10 Missões) 📝</span>
             <span style="cursor:pointer" onclick="closeModal('missionsModal')">✖</span>
         </div>
-        <div class="modal-content-scroll" id="missionsList">
-            </div>
+        <div class="modal-content-scroll" id="missionsList"></div>
         <div class="modal-footer" style="text-align: center; font-size: 11px; padding-top: 10px; color: #666;">
-            Reseta diariamente às 22:00
+            Próximo Ciclo: 22:00 Diariamente
         </div>
     </div>
 </div>
@@ -358,7 +364,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
             <span style="cursor:pointer" onclick="closeModal('settingsModal')">✖</span>
         </div>
         <div class="modal-content-scroll">
-            
             <div class="config-row">
                 <div class="config-label">
                     <span>Volume da Música 🎵</span>
@@ -366,7 +371,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                 </div>
                 <input type="range" id="musicVol" min="0" max="100" value="50" oninput="updateVolume('music')">
             </div>
-
             <div class="config-row">
                 <div class="config-label">
                     <span>Volume do Clique 🔊</span>
@@ -374,9 +378,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                 </div>
                 <input type="range" id="clickVol" min="0" max="100" value="80" oninput="updateVolume('click')">
             </div>
-
             <button id="btnExitToMain" onclick="returnToMain()" style="background: #ffffff; color: #1e3799; box-shadow: 0 4px 0 #cbd5e0; margin-top: 20px;">SAIR PARA O INÍCIO</button>
-
         </div>
         <div class="modal-footer">
             <button onclick="closeModal('settingsModal')" style="margin-top: 0;">FECHAR</button>
@@ -387,7 +389,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 <div class="modal" id="changelogModal">
     <div class="modal-box">
         <div class="modal-header">
-            <span>Registro Real 📜</span>
+            <span>Histórico Real 📜</span>
             <span style="cursor:pointer" onclick="closeModal('changelogModal')">✖</span>
         </div>
         <div class="modal-content-scroll" id="changelogContent"></div>
@@ -412,46 +414,112 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 </div>
 
 <script>
-// --- SISTEMA DE VERSÃO E HISTÓRICO ---
+// --- HISTÓRICO DE ATUALIZAÇÕES ---
 const GAME_VERSION = "3.9.5";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
-const MISSION_KEY = "BeeRoyal_Missions_V1";
-const VERSION_KEY = "BeeRoyal_LastSeenVersion_" + GAME_VERSION.replace(/\./g, ""); 
+const MISSION_KEY = "BeeRoyal_Missions_V2";
 
-const updateHistory = [{version:"3.9.5",title:"⚙️ CONFIGURAÇÕES GLOBAIS",changes:[{type:"add",text:"Sistema de Missões Diárias (22h)."},{type:"add",text:"Botão de configurações na tela inicial."},{type:"mod",text:"Música agora inicia ao tocar em qualquer lugar da tela inicial."},{type:"fix",text:"Corrigido áudio mudo no menu inicial."}]}];
+const updateHistory = [
+    {
+        version: "3.9.5",
+        title: "⚙️ SISTEMA DE MISSÕES 2.0",
+        changes: [
+            { type: "add", text: "Painel com 10 Missões Diárias fixas." },
+            { type: "add", text: "Recompensas incluem Upgrades Grátis e Boosts Automáticos." },
+            { type: "mod", text: "Refatoração completa do layout do Changelog." },
+            { type: "fix", text: "Melhoria na sincronização do tempo de reset (22:00)." }
+        ]
+    },
+    {
+        version: "3.8.0",
+        title: "🎄 CLIMA DE NATAL",
+        changes: [
+            { type: "add", text: "Efeitos de neve acumulada na tela." },
+            { type: "add", text: "Skin limitada NoelBee com bônus de +15%." },
+            { type: "mod", text: "Paleta de cores ajustada para azul real e dourado." }
+        ]
+    },
+    {
+        version: "3.5.2",
+        title: "🔊 ÁUDIO E PERFORMANCE",
+        changes: [
+            { type: "add", text: "Sliders de volume independentes para música e cliques." },
+            { type: "fix", text: "Corrigido atraso no som de clique em dispositivos móveis." },
+            { type: "mod", text: "Redução de 30% no consumo de bateria." }
+        ]
+    },
+    {
+        version: "3.2.0",
+        title: "🏠 MENU INICIAL",
+        changes: [
+            { type: "add", text: "Nova tela inicial com logo flutuante." },
+            { type: "add", text: "Sistema de conquistas filtráveis (Comum, Raro, Épico)." },
+            { type: "mod", text: "Tutorial inicial mais intuitivo." }
+        ]
+    },
+    {
+        version: "3.0.0",
+        title: "👑 ROYAL UPDATE",
+        changes: [
+            { type: "add", text: "Lançamento oficial da versão Royal Edition." },
+            { type: "add", text: "Sistema de produção offline (80% de eficiência)." },
+            { type: "add", text: "Novos Boosts: Pimenta, Energético e Flor." }
+        ]
+    }
+];
 
 function renderChangelog() {
     const container = document.getElementById("changelogContent");
     container.innerHTML = "";
-    updateHistory.slice(0, 5).forEach(update => {
-        let html = `<div class="changelog-section-title">${update.title} (v${update.version})</div>`;
+    
+    // Pega as 5 últimas atualizações
+    const recentUpdates = updateHistory.slice(0, 5);
+    
+    recentUpdates.forEach(update => {
+        let blockHtml = `
+            <div class="changelog-block">
+                <div class="changelog-section-title">v${update.version} - ${update.title}</div>
+                <div class="changelog-list">
+        `;
+        
         update.changes.forEach(change => {
-            let icon = change.type === "add" ? "🟢" : (change.type === "rem" ? "🔴" : (change.type === "fix" ? "🔵" : "🟡"));
-            html += `<div class="changelog-item">${icon} <span>${change.text}</span></div>`;
+            let icon = "🔹";
+            if(change.type === "add") icon = "🟢";
+            if(change.type === "rem") icon = "🔴";
+            if(change.type === "fix") icon = "🔵";
+            if(change.type === "mod") icon = "🟡";
+            
+            blockHtml += `
+                <div class="changelog-item">
+                    <span class="changelog-icon">${icon}</span>
+                    <span>${change.text}</span>
+                </div>
+            `;
         });
-        container.innerHTML += html + `<div style="height:15px"></div>`;
+        
+        blockHtml += `</div></div>`;
+        container.innerHTML += blockHtml;
     });
 }
 
 // --- VARIÁVEIS DE JOGO ---
 let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
+let clickLvl = 1, autoLvlLvl = 1; 
+
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0 }, clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
 
-// VARIÁVEIS DE MISSÕES
 let dailyMissions = [];
 let lastMissionReset = 0;
 
-// SISTEMA DE ÁUDIO GLOBAL
 let audioSettings = { music: 50, click: 80 };
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
 soundMusic.loop = true;
 
-// --- FUNÇÃO PARA TENTAR TOCAR MÚSICA (RECORRENTE) ---
 function tryPlayMusic() {
     if(soundMusic.paused) {
         soundMusic.play().then(() => {
@@ -497,9 +565,8 @@ function returnToMain() {
     }, 500);
 }
 
-// --- SISTEMA DE NOTIFICAÇÕES ---
-const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Abelhas dançam para indicar onde há flores ricas em néctar.", "Para 1kg de mel, abelhas visitam 4 milhões de flores.", "Abelhas existem há mais de 30 milhões de anos!", "A rainha pode viver 5 anos e põe 2.000 ovos por dia.", "Abelhas têm 5 olhos: dois grandes e três ocelos no topo.", "Sem abelhas, a segurança alimentar global estaria em risco.", "Elas batem as asas cerca de 200 vezes por segundo!", "Uma colmeia pode ter até 60.000 abelhas no verão.", "Abelhas nunca dormem profundamente; fazem micro-cochilos.", "O olfato da abelha detecta pólen a quilômetros de distância.", "Único inseto que produz alimento consumido por humanos.", "A extinção das abelhas causaria um colapso ecológico.", "Plante flores nativas para ajudar as abelhas locais! 🌸", "Abelhas operárias são todas fêmeas.", "Zangões não possuem ferrão e sua única função é reprodução.", "O mel nunca estraga; acharam mel comestível em egito.", "Abelhas podem reconhecer rostos humanos individuais!", "Elas usam o sol como bússola para navegar.", "Uma abelha voa a cerca de 24 km/h.", "O cérebro de uma abelha tem o tamanho de um grão de açúcar.", "Abelhas são capazes de resolver problemas matemáticos.", "Elas mantêm a colmeia a 35°C constantes, mesmo no frio.", "O ferrão da abelha tem farpas que ficam presas na pele.", "Abelhas comunicam o perigo através de feromônios.", "Elas coletam própolis para selar frestas na colmeia.", "A geleia real define se uma larva será operária ou rainha.", "Abelhas podem detectar campos elétricos de flores.", "Existem mais de 20.000 espécies de abelhas no mundo.", "Algumas abelhas bebem lágrimas para obter sais minerais.", "Elas podem distinguir cores, exceeto o vermelho.", "Abelhas visitam entre 50 a 100 flores em uma viagem.", "O veneno da abelha é usado em terapias contra artrite.", "Uma colmeia produz em média 25 a 45kg de mel por ano.", "Abelhas de mel morrem após picar mamíferos.", "Elas batem as asas para ventilar e resfriar a colmeia.", "Abelhas são os principais polinizadores de café e cacau.", "A rainha decide o sexo dos ovos que põe.", "Operárias limpam a colmeia e cuidam da prole.", "Abelhas podem voar até 10km longe de casa.", "Elas usam resina de árvores como antibiótico natural.", "O mel é néctar regurgitado e desidratado.", "Abelhas têm pelos nos olhos para coletar pólen.", "Elas conseguem perceber a luz ultravioleta das flores.", "Uma abelha carregada de néctar pesa quase o seu peso.", "O mel de abelhas sem ferrão é usado como remédio.", "Abelhas solitárias não vivem em colmeias nem têm rainha.", "Elas ajudam na reprodução de árvores que geram oxigênio.", "No inverno, operárias vibram para aquecer a rainha.", "Abelhas são atraídas por cores azuis e violetas.", "Elas possuem mandíbulas fortes para moldar a cera.", "A cera de abelha é produzida por glândulas no abdômen.", "Elas evitam flores visitadas recentemente.", "Abelhas bebem água para hidratar e resfriar o ninho.", "A polinização aumenta o tamanho e o sabor das frutas.", "Algumas abelhas dormem dentro das flores à noite.", "O zumbido é causado pelo movimento rápido das asas.", "Elas têm dois estômagos: um para mel e um para comida.", "Abelhas são fundamentais para a biodiversidade.", "O mel escuro geralmente tem mais antioxidantes.", "Abelhas operárias vivem apenas 6 semanas no verão.", "Elas não enxergam bem no escuro total.", "A rainha emite um aroma que mantém a colmeia unida.", "Abelhas podem carregar metade do seu peso em pólen.", "O mel é a única fonte de energia delas no inverno.", "Elas são higiênicas e não defecam dentro da colmeia.", "Abelhas sentem a umidade do ar com as antenas.", "O uso de pesticidas é a maior ameaça às abelhas.", "Algumas fazem ninhos no chão ou buracos de madeira.", "Elas são vitais para a produção de algodão e fibras.", "Abelhas mantêm o equilíbrio de pragas no jardim.", "O pólen é a principal fonte de proteína das abelhas.", "Elas viajam o equivalente a 3 voltas na Terra coletando.", "Abelhas evitam voar sob chuva intensa.", "Possuem sensores de CO2 nas antenas.", "A colmeia é uma das estruturas mais eficientes da Terra.", "Abelhas ajudam a dispersar sementes de plantas.", "Elas são bioindicadores de um ambiente saudável.", "Operárias têm profissões diferentes conforme a idade.", "O mel de Manuka tem fortes propriedades curativas.", "Abelhas identificam campos eletromagnéticos.", "Elas não gostam de cheiros fortes como álcool ou perfumes.", "Abelhas contribuem com bilhões para a economia.", "Algumas espécies de abelhas são azuis metálicas!", "Elas usam as patas para limpar as antenas sempre.", "A rainha acasala apenas uma vez na vida.", "Sem polinização, muitas sementes não germinariam.", "Abelhas são símbolos de trabalho em equipe e lealdade.", "O hexágono dos favos economiza o máximo de cera.", "Abelhas podem detectar a aproximação de tempestades.", "Preferem jardins com flores de formatos variados.", "Algumas abelhas roubam néctar furando a base da flor.", "A fumaça as acalma simulando um incêndio.", "Guardiãs conferem o cheiro de quem entra na colmeia.", "Podem aprender novas tarefas observando outras.", "Bebem néctar usando uma língua tipo tromba.", "São essenciais para a produção de alfafa.", "Proteger as abelhas é proteger o futuro da humanidade.", "Abelhas são amigas! Fique calmo se uma pósar em você."];
-const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!", "💡 DICA: Boosts de XP ajudam você a subir de nível mais rápido.", "💡 DICA: O ícone 💾 indica que o progresso foi salvo.", "💡 DICA: Os alvos 🎯 ajudam a focar nos cliques!", "💡 DICA: Comprar durações maiores na loja vale mais a pena.", "💡 DICA: O nível de player (Level) multiplica sua produção automática.", "💡 DICA: Use a Flor (XP Boost) antes de clicar nos alvos!", "💡 DICA: A produção offline rende 80% do valor normal.", "💡 DICA: Desbloqueie o Auto-Mel o quanto antes!", "💡 DICA: Conquistas raras aumentam permanentemente o mel."];
+const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Uma colmeia pode ter até 60.000 abelhas no verão."];
+const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!", "💡 DICA: Complete as 10 missões para um crescimento explosivo!"];
 
 let lastNotifType = "fact"; 
 
@@ -522,40 +589,36 @@ function showSystemNotification(text) {
     setTimeout(() => { if(div) div.remove(); }, 10000);
 }
 
-// --- MECÂNICAS ---
 const durations = [{label:"30s",t:300,m:1},{label:"1m",t:600,m:1.8},{label:"5m",t:3000,m:8},{label:"1h",t:36000,m:70},{label:"24h",t:864000,m:1200}];
 const boostBases = { pepper: 500, energy: 300, flower: 1000 };
 const achievements = [];
-const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Doce Começo",r:"common",i:"🍭"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Mestre Gelado",r:"rare",i:"❄️"},{n:"Alquimista do Mel",r:"rare",i:"⚗️"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"},{n:"Divindade Alada",r:"epic",i:"✨"},{n:"Lenda do Inverno Eterno",r:"epic",i:"🌨️"}];
+const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
-// --- SISTEMA DE MISSÕES DIÁRIAS ---
+// --- MISSÕES ---
 const missionTemplates = [
-    { id: 'clicks', title: "Trabalho Braçal", desc: "Clique {target} vezes na abelha", goal: 200 },
-    { id: 'honey_gain', title: "Estoque de Inverno", desc: "Colete {target} de mel", goal: 5000 },
-    { id: 'buy_upgrade', title: "Evolução Real", desc: "Compre {target} Upgrades", goal: 5 },
-    { id: 'use_boost', title: "Abelha Turbinada", desc: "Use {target} Boosts da Loja", goal: 2 },
-    { id: 'target_clicks', title: "Mira de Elite", desc: "Clique nos alvos 🎯 {target} vezes", goal: 50 }
+    { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", goal: 250, reward: 'honey_xp' },
+    { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", goal: 10000, reward: 'boost_pepper' },
+    { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", goal: 50, reward: 'boost_energy' },
+    { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", goal: 8, reward: 'upgrade_free_click' },
+    { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", goal: 5000, reward: 'boost_flower' },
+    { id: 'm6', type: 'clicks', title: "Esforço Coletivo", desc: "Realize mais {target} cliques", goal: 500, reward: 'honey_xp_large' },
+    { id: 'm7', type: 'honey_gain', title: "Tesouro Dourado", desc: "Acumule {target} de Mel extra", goal: 25000, reward: 'boost_all' },
+    { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", goal: 4, reward: 'upgrade_free_auto' },
+    { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", goal: 100, reward: 'honey_xp_mega' },
+    { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Chegue a {target} cliques totais hoje", goal: 1000, reward: 'boost_extreme' }
 ];
 
 function checkMissionReset() {
     const now = new Date();
     const resetHour = 22;
-    let resetDate = new Date();
-    resetDate.setHours(resetHour, 0, 0, 0);
-    
-    const lastReset = new Date(lastMissionReset);
-    const timeSinceReset = now.getTime() - lastMissionReset;
-    
-    let shouldReset = false;
-    if(!lastMissionReset) shouldReset = true;
-    else {
-        const lastResetLimit = new Date(lastReset);
-        lastResetLimit.setHours(resetHour, 0, 0, 0);
-        if (lastReset < lastResetLimit && now >= lastResetLimit) shouldReset = true;
-        if (timeSinceReset > 86400000) shouldReset = true;
-    }
+    let resetLimit = new Date();
+    resetLimit.setHours(resetHour, 0, 0, 0);
 
-    if(shouldReset) {
+    if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
+        generateDailyMissions();
+        lastMissionReset = now.getTime();
+        executeSave();
+    } else if (!dailyMissions || dailyMissions.length < 10) {
         generateDailyMissions();
         lastMissionReset = now.getTime();
         executeSave();
@@ -564,82 +627,100 @@ function checkMissionReset() {
 
 function generateDailyMissions() {
     dailyMissions = [];
-    const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 3);
-
-    selected.forEach(m => {
-        let scale = 1 + (level * 0.5);
-        let target = Math.ceil(m.goal * scale);
-        let rewardHoney = Math.ceil(target * 10 * (level * 0.8));
-        let rewardXP = Math.ceil(target * 5 * (level * 0.5));
-
+    const scale = 1 + (level * 0.4);
+    missionTemplates.forEach(tmp => {
+        let target = Math.ceil(tmp.goal * scale);
+        let rewardLabel = "";
+        switch(tmp.reward) {
+            case 'honey_xp': rewardLabel = "Mel & XP"; break;
+            case 'honey_xp_large': rewardLabel = "Muito Mel & XP"; break;
+            case 'honey_xp_mega': rewardLabel = "Mega Mel & XP"; break;
+            case 'boost_pepper': rewardLabel = "10min Pimenta (3x Mel)"; break;
+            case 'boost_energy': rewardLabel = "10min Energético (2x Vel)"; break;
+            case 'boost_flower': rewardLabel = "10min Flor (5x XP)"; break;
+            case 'boost_all': rewardLabel = "Pack de Boosts (5min)"; break;
+            case 'boost_extreme': rewardLabel = "30min de Pimenta & Flor"; break;
+            case 'upgrade_free_click': rewardLabel = "+1 Nível Clique GRÁTIS"; break;
+            case 'upgrade_free_auto': rewardLabel = "+1 Nível Auto GRÁTIS"; break;
+        }
         dailyMissions.push({
-            id: m.id,
-            title: m.title,
-            desc: m.desc.replace("{target}", formatNum(target)),
-            target: target,
-            progress: 0,
-            rewardH: rewardHoney,
-            rewardX: rewardXP,
-            completed: false,
-            claimed: false
+            id: tmp.id, type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)),
+            target: target, progress: 0, completed: false, rewardType: tmp.reward, rewardLabel: rewardLabel
         });
     });
 }
 
-function updateMissionProgress(id, amt = 1) {
+function updateMissionProgress(type, amt = 1) {
+    let changed = false;
     dailyMissions.forEach(m => {
-        if(m.id === id && !m.completed) {
+        if (m.type === type && !m.completed) {
             m.progress += amt;
-            if(m.progress >= m.target) {
+            if (m.progress >= m.target) {
                 m.progress = m.target;
                 m.completed = true;
-                notify({n: "Missão Concluída!", d: m.title});
-                honey += m.rewardH;
-                addXP(m.rewardX);
-                m.claimed = true;
+                grantMissionReward(m);
+                changed = true;
             }
         }
     });
+    if (changed && document.getElementById('missionsModal').style.display === 'flex') renderMissions();
+}
+
+function grantMissionReward(m) {
+    const lvlBonus = 1 + (level * 0.5);
+    const baseH = m.target * 20 * lvlBonus;
+    const baseX = m.target * 10 * lvlBonus;
+
+    switch(m.rewardType) {
+        case 'honey_xp': honey += baseH; addXP(baseX); break;
+        case 'honey_xp_large': honey += baseH * 2; addXP(baseX * 2); break;
+        case 'honey_xp_mega': honey += baseH * 5; addXP(baseX * 5); break;
+        case 'boost_pepper': activeBoosts.pepper += 6000; break;
+        case 'boost_energy': activeBoosts.energy += 6000; break;
+        case 'boost_flower': activeBoosts.flower += 6000; break;
+        case 'boost_all': 
+            activeBoosts.pepper += 3000; activeBoosts.energy += 3000; activeBoosts.flower += 3000; 
+            break;
+        case 'boost_extreme':
+            activeBoosts.pepper += 18000; activeBoosts.flower += 18000;
+            break;
+        case 'upgrade_free_click':
+            clickLvl++; hPerClick += Math.floor(1 + (clickLvl * 0.2));
+            break;
+        case 'upgrade_free_auto':
+            if (autoUnlocked) autoLevel++;
+            else { autoUnlocked = true; startAutoProducing(); }
+            break;
+    }
+    notify({n: "Missão Concluída!", d: m.rewardLabel});
+    updateUI();
 }
 
 function renderMissions() {
     const list = document.getElementById("missionsList");
     list.innerHTML = "";
-    
     dailyMissions.forEach(m => {
         const perc = (m.progress / m.target) * 100;
         list.innerHTML += `
             <div class="mission-card ${m.completed ? 'completed' : ''}">
-                <div style="font-size: 24px">${m.completed ? '✅' : '📝'}</div>
+                <div style="font-size: 24px">${m.completed ? '✅' : '🐝'}</div>
                 <div style="flex: 1">
                     <div style="font-weight: 900; font-size: 14px; color: var(--dark)">${m.title}</div>
-                    <div style="font-size: 11px; color: #666; margin-bottom: 5px">${m.desc}</div>
-                    <div style="font-size: 10px; font-weight: bold; color: var(--xp-bar)">
-                        Recompensa: ${formatNum(m.rewardH)} 🍯 | ${formatNum(m.rewardX)} ✨
-                    </div>
+                    <div style="font-size: 11px; color: #666;">${m.desc}</div>
+                    <div class="mission-reward-tag">Recompensa: ${m.rewardLabel}</div>
                     <div class="mission-progress-bar">
                         <div class="mission-progress-fill" style="width: ${perc}%"></div>
                     </div>
                 </div>
-                <div style="font-size: 10px; font-weight: 800">${formatNum(m.progress)}/${formatNum(m.target)}</div>
+                <div style="font-size: 10px; font-weight: 800; min-width: 45px; text-align: right;">
+                    ${formatNum(m.progress)}/${formatNum(m.target)}
+                </div>
             </div>
         `;
     });
 }
 
-function initAchievements() {
-    achievements.length = 0;
-    for(let i=1; i<=200; i++) {
-        let val = Math.pow(1.58, i) * 120;
-        let rar = i < 80 ? "common" : (i < 160 ? "rare" : "epic");
-        let theme = achThemes[i % achThemes.length];
-        achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:rar,i:theme.i});
-    }
-}
-
 function formatNum(n) {
-    if (n >= 1e15) return (n/1e15).toFixed(2) + "Q";
     if (n >= 1e12) return (n/1e12).toFixed(2) + "T";
     if (n >= 1e9) return (n/1e9).toFixed(2) + "B";
     if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
@@ -655,9 +736,13 @@ function formatTime(t) {
     return Math.floor(m/60) + "h";
 }
 
-// LOGICA INFINITA: O ganho base escala com o nível de forma linear para manter o jogo equilibrado
-function getMPSBase() { return !autoUnlocked ? 0 : (autoLevel * 2) + (level * 1.5); }
+function getMPSBase() { 
+    if(!autoUnlocked) return 0;
+    return (autoLevel * (2 + (autoLevel * 0.1))) + (level * 1.5); 
+}
+
 function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
+
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length;
     let e = achievements.filter(a => a.u && a.r === 'epic').length;
@@ -674,7 +759,7 @@ function updateUI() {
     document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
-    document.getElementById("btnUpgradeClick").innerHTML = `Upgrade Clique<br>${formatNum(clickCost)} 🍯`;
+    document.getElementById("btnUpgradeClick").innerHTML = `Upgrade Clique (Lvl ${clickLvl})<br>${formatNum(clickCost)} 🍯`;
     document.getElementById("btnAutoAction").disabled = (honey < autoCost);
     document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `Desbloquear Auto<br>${formatNum(autoCost)} 🍯` : `Upgrade Auto (Lvl ${autoLevel})<br>${formatNum(autoCost)} 🍯`;
     buildShop();
@@ -712,11 +797,9 @@ function doClick(isTarget = false) {
     playClickSound();
     const g = hPerClick * getGlobalBonus();
     honey += g; totalHoneyEver += g; addXP(g);
-    
     updateMissionProgress('clicks', 1);
     updateMissionProgress('honey_gain', g);
     if(isTarget) updateMissionProgress('target_clicks', 1);
-
     const bee = document.getElementById("beeContainer");
     bee.style.transform = "scale(0.85)"; setTimeout(() => bee.style.transform = "scale(1)", 50);
     clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI();
@@ -725,26 +808,23 @@ function doClick(isTarget = false) {
 function addXP(amt) {
     let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
     currentXP += (amt * m);
+    updateMissionProgress('xp_gain', amt * m);
     while(currentXP >= nextLevelXP){
         currentXP -= nextLevelXP; level++; 
-        // PROGRESSÃO INFINITA DE NÍVEL: O custo de XP sobe 20% a cada nível (menos agressivo para permitir infinito)
-        nextLevelXP = Math.floor(nextLevelXP * 1.2);
+        nextLevelXP = Math.floor(nextLevelXP * 1.25);
         notify({n:`Nível Real ${level}!`});
     }
 }
 
 function buyBoostManual(type, ticks, cost, label) {
     if(honey >= cost) { 
-        honey -= cost; 
-        activeBoosts[type] += ticks; 
+        honey -= cost; activeBoosts[type] += ticks; 
         notify({n: "Boost Ativado!", d: `+${label}`}); 
-        updateMissionProgress('use_boost', 1);
-        updateUI(); 
-        executeSave(); 
+        updateUI(); executeSave(); 
     }
 }
 
-function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!", d: (id === "NoelBee" ? "+15% Bônus" : "")}); updateUI(); executeSave(); }
+function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!"}); updateUI(); executeSave(); }
 
 function startAutoProducing() {
     if(autoProduceInterval) clearInterval(autoProduceInterval);
@@ -776,17 +856,14 @@ function startGameTicks() {
             updateUI();
             checkMissionReset();
         }
-        if(Math.random() < (0.05 + (cps * 0.08))) spawnFlake('gameSnowContainer');
     }, 100);
 }
 
 function executeSave(){ 
-    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, ownedCosmetics, equippedCosmetic, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
+    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, equippedCosmetic, clickLvl, autoLvlLvl, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
-    
     const missionData = {dailyMissions, lastMissionReset};
     localStorage.setItem(MISSION_KEY, JSON.stringify(missionData));
-
     const indicator = document.getElementById("saveIndicator");
     if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
 }
@@ -795,20 +872,12 @@ function load(){
     initAchievements(); renderChangelog();
     const savedAudio = localStorage.getItem(AUDIO_KEY);
     if(savedAudio) audioSettings = JSON.parse(savedAudio);
-    document.getElementById('musicVol').value = audioSettings.music;
-    document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
-    document.getElementById('clickVol').value = audioSettings.click;
-    document.getElementById('clickVolLabel').textContent = audioSettings.click + '%';
-    soundMusic.volume = audioSettings.music / 100;
-    soundClick.volume = audioSettings.click / 100;
-
     const rawMissions = localStorage.getItem(MISSION_KEY);
     if(rawMissions) {
         const md = JSON.parse(rawMissions);
         dailyMissions = md.dailyMissions || [];
         lastMissionReset = md.lastMissionReset || 0;
     }
-
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         try {
@@ -817,23 +886,9 @@ function load(){
             clickCost = d.clickCost || 10; level = d.level || 1; currentXP = d.currentXP || 0;
             nextLevelXP = d.nextLevelXP || 1000; autoUnlocked = d.autoUnlocked || false;
             autoLevel = d.autoLevel || 1; autoCost = d.autoCost || 100;
+            clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1;
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
-            if(autoUnlocked && d.timestamp) {
-                const now = Date.now(); const totalDiffSec = Math.floor((now - d.timestamp) / 1000);
-                if(totalDiffSec > 10) {
-                    let offGain = 0, offXP = 0;
-                    let cMPS = (autoLevel * 2) + (level * 1.5);
-                    let bBase = (1 + (achievements.filter(a => a.u && a.r === 'rare').length * 0.02) + (achievements.filter(a => a.u && a.r === 'epic').length * 0.10)) * getSkinBonus();
-                    let xM = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus();
-                    for(let i=0; i<totalDiffSec; i++){
-                        let mult = bBase;
-                        if(activeBoosts.pepper > i*10) mult += 2; if(activeBoosts.energy > i*10) mult += 1;
-                        let perSec = cMPS * mult * 0.8; offGain += perSec; offXP += perSec * xM;
-                    }
-                    pendingOfflineHoney = Math.floor(offGain); pendingOfflineXP = Math.floor(offXP);
-                }
-            }
             if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
         } catch(e) { console.error(e); }
     }
@@ -842,23 +897,23 @@ function load(){
 
 function enterGame() {
     load(); tryPlayMusic();
-    const doc = document.documentElement;
-    if (doc.requestFullscreen) doc.requestFullscreen();
     document.getElementById('startScreen').style.opacity = '0';
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
         const gameUI = document.getElementById('gameUI');
         gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; gameLoaded = true;
         startGameTicks(); if(autoUnlocked) startAutoProducing();
-        if(pendingOfflineHoney > 1) {
-            document.getElementById("offlineText").innerHTML = `As abelhas do Dudu trabalharam duro!<br><br><b>Mel Coletado:</b> ${formatNum(pendingOfflineHoney)} 🍯<br><b>XP Ganhos:</b> ${formatNum(pendingOfflineXP)} ✨`;
-            openModal('offlineModal');
-        }
         updateUI(); startDynamicNotifications();
     }, 500);
 }
 
+function openModal(id) { 
+    document.getElementById(id).style.display = 'flex'; 
+    if(id === 'missionsModal') renderMissions();
+}
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function openChangelog() { openModal('changelogModal'); }
+
 function openTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -877,8 +932,7 @@ function buildShop() {
         const grid = document.getElementById(`grid_${type}`);
         if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
-            // AJUSTE INFINITO: Custo da loja agora escala linearmente com o nível para evitar travar a evolução
-            const cost = Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m);
+            const cost = Math.floor(boostBases[type] * (1 + (level * 0.18)) * d.m);
             const btn = document.createElement("button");
             btn.className = "buy-btn-small"; btn.disabled = honey < cost;
             btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`;
@@ -902,29 +956,11 @@ function notify(a) {
     setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
-function openModal(id) { 
-    const exitBtn = document.getElementById('btnExitToMain');
-    const isMainScreen = document.getElementById('startScreen').style.display !== 'none';
-    if(exitBtn) exitBtn.style.display = isMainScreen ? 'none' : 'block';
-    document.getElementById(id).style.display = 'flex'; 
-    if(id === 'missionsModal') renderMissions();
-}
-
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-document.getElementById("btnCollectOffline").onclick = () => {
-    honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney; addXP(pendingOfflineXP);
-    notify({n: "Recompensas Coletadas!", d: `+${formatNum(pendingOfflineHoney)} 🍯`});
-    pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave();
-};
-
-// BALANÇO INFINITO: Reduzi os multiplicadores para garantir que o mel produzido sempre consiga pagar o próximo nível
 document.getElementById("btnUpgradeClick").onclick = () => { 
     if(honey >= clickCost){ 
-        honey -= clickCost; 
-        hPerClick++; 
-        // Multiplicador de 1.4x (antes era 1.9x). Muito mais sustentável para leveis infinitos.
-        clickCost = Math.floor(clickCost * 1.4); 
+        honey -= clickCost; clickLvl++;
+        hPerClick += Math.floor(1 + (clickLvl * 0.2)); 
+        clickCost = Math.floor(clickCost * 1.45); 
         updateMissionProgress('buy_upgrade', 1);
         updateUI(); executeSave(); 
     } 
@@ -933,13 +969,8 @@ document.getElementById("btnUpgradeClick").onclick = () => {
 document.getElementById("btnAutoAction").onclick = () => { 
     if(honey >= autoCost){ 
         honey -= autoCost; 
-        if(!autoUnlocked){ 
-            autoUnlocked = true; autoCost = 500; startAutoProducing(); 
-        } else { 
-            autoLevel++; 
-            // Multiplicador de 1.6x (antes era 2.2x). Permite progressão constante.
-            autoCost = Math.floor(autoCost * 1.6); 
-        } 
+        if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } 
+        else { autoLevel++; autoCost = Math.floor(autoCost * 1.65); } 
         updateMissionProgress('buy_upgrade', 1);
         updateUI(); executeSave(); 
     } 
@@ -971,6 +1002,16 @@ function spawnFlake(containerId) {
 
 setInterval(() => spawnFlake('snowContainer'), 300);
 setInterval(() => { if(gameLoaded && document.getElementById('gameUI').style.opacity == '1') spawnFlake('gameSnowContainer'); }, 400);
+
+function initAchievements() {
+    achievements.length = 0;
+    for(let i=1; i<=200; i++) {
+        let val = Math.pow(1.58, i) * 120;
+        let rar = i < 80 ? "common" : (i < 160 ? "rare" : "epic");
+        let theme = achThemes[i % achThemes.length];
+        achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:rar,i:theme.i});
+    }
+}
 
 load();
 </script>
