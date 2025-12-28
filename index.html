@@ -28,7 +28,13 @@
   --panel-blur: blur(15px);
 }
 
-*{ box-sizing:border-box; user-select:none; -webkit-tap-highlight-color:transparent; }
+/* OTIMIZAÇÃO MOBILE: Impede zoom e comportamentos nativos */
+*{ 
+    box-sizing:border-box; 
+    user-select:none; 
+    -webkit-tap-highlight-color:transparent; 
+    touch-action: manipulation; /* Remove atraso de clique e zoom no iOS */
+}
 
 body, html {
   margin:0; padding: 0; width: 100%; height: 100%;
@@ -38,6 +44,7 @@ body, html {
   overflow: hidden;
   color: white;
   transition: background 0.3s ease;
+  touch-action: none; /* Bloqueia scroll e zoom global no body */
 }
 
 body { display: flex; align-items: center; justify-content: center; min-height: 100svh; }
@@ -205,7 +212,21 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 .stats{ margin-top:8px; font-size:18px; font-weight: 800; color: var(--accent); }
 
-.click-zone { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 160px; position: relative; touch-action: none; border-radius: 20px; overflow: hidden; background-size: cover; background-position: center; transition: background 0.3s ease; }
+/* CLICK ZONE OTIMIZADA */
+.click-zone { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%; 
+    height: 160px; 
+    position: relative; 
+    touch-action: none; /* Crucial para Safari Mobile */
+    border-radius: 20px; 
+    overflow: hidden; 
+    background-size: cover; 
+    background-position: center; 
+    transition: background 0.3s ease; 
+}
 
 .aura-wrapper { 
     position: relative; 
@@ -269,7 +290,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .tab-pane { display: none; height: 100%; flex-direction: column; }
 .tab-pane.active { display: flex; }
 
-.scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; }
+.scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; touch-action: pan-y; /* Permite scroll vertical interno */ }
 
 .section-title { font-weight: 900; font-size: 14px; color: var(--accent); margin-bottom: 12px; margin-top: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
 .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
@@ -294,7 +315,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 .buy-btn-small:not(:disabled):active { border-color: var(--accent); transform: scale(0.98); }
 
-button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:18px; font-size:14px; font-weight:800; background:var(--accent); color: var(--main-blue); box-shadow:0 4px 0 #b38f00; cursor: pointer; transition: 0.1s; }
+button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:18px; font-size:14px; font-weight:800; background:var(--accent); color: var(--main-blue); box-shadow:0 4px 0 #b38f00; cursor: pointer; transition: 0.1s; touch-action: manipulation; }
 button:active{ transform:translateY(2px); box-shadow:0 2px 0 #b38f00; }
 button:disabled { background:rgba(255,255,255,0.1) !important; color:rgba(255,255,255,0.2) !important; box-shadow: none !important; opacity: 0.5; }
 
@@ -308,7 +329,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .modal-box{ background: var(--card); backdrop-filter: var(--panel-blur); width:100%; max-width:380px; max-height: 85svh; border-radius:35px; overflow:hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transition: background 0.3s; }
 .modal-header{ padding:20px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; color: var(--main-blue); font-size: 18px; flex-shrink: 0; }
 
-.modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; color: white; }
+.modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; color: white; touch-action: pan-y; }
 .modal-footer { padding: 0 20px 20px 20px; background: transparent; flex-shrink: 0; }
 
 .game-card {
@@ -842,6 +863,26 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 </div>
 
 <script>
+/* BLOQUEIO DE ZOOM PARA MOBILE (SAFARI/CHROME) */
+document.addEventListener('touchstart', function (event) {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
+}, { passive: false });
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+  let now = (new Date()).getTime();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
+
+document.addEventListener('gesturestart', function (event) {
+  event.preventDefault();
+});
+
 let deferredPrompt;
 let newWorker;
 let pwaState = 'install';
@@ -932,12 +973,20 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.2.5",
+        title: "🛡️ BLINDAGEM MOBILE",
+        changes: [
+            { type: "mod", text: "Otimização completa para Safari/Chrome Mobile: Zoom de duplo toque desativado." },
+            { type: "mod", text: "Implementado CSS 'manipulation' para cliques instantâneos em botões iOS." },
+            { type: "fix", text: "Corrigido erro onde toques rápidos fora da abelha quebravam a imersão visual." }
+        ]
+    },
+    {
         version: "4.2.4",
         title: "🔔 NOTIFICAÇÕES INTELIGENTES",
         changes: [
             { type: "mod", text: "O brilho cromático do botão agora reativa automaticamente em cada nova atualização." },
-            { type: "mod", text: "O contorno pulsante só desaparece após o player ler as novidades da versão atual." },
-            { type: "add", text: "Sistema de comparação de versão persistente via LocalStorage." }
+            { type: "mod", text: "O contorno pulsante só desaparece após o player ler as novidades da versão atual." }
         ]
     },
     {
@@ -962,14 +1011,6 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Nome do jogo corrigido para BeeKind (sem espaços)." },
             { type: "add", text: "Nova frase inspiracional adicionada à tela inicial." }
-        ]
-    },
-    {
-        version: "4.2.0",
-        title: "✨ REBRANDING & SLOGAN",
-        changes: [
-            { type: "mod", text: "Alteração da identidade visual para o novo conceito BeeKind." },
-            { type: "add", text: "Inserção do slogan no painel de status do jogo." }
         ]
     }
 ];
@@ -1533,7 +1574,7 @@ function load(){
     if(raw){
         try {
             const d = JSON.parse(raw);
-            honey = validateNum(d.honey); totalHoneyEver = validateNum(totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 10; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
+            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 10; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
@@ -1562,7 +1603,6 @@ function closeModal(id) {
 }
 
 function openChangelog() { 
-    // MARCA A VERSÃO ATUAL COMO VISTA
     localStorage.setItem(CHANGELOG_VERSION_KEY, updateHistory[0].version);
     updateUI();
     renderChangelog(); 
