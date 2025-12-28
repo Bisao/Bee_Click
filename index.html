@@ -94,7 +94,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 
 /* INTERFACE DO JOGO */
 .game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; display: none; }
-.card{ background:var(--card); border-radius:26px; padding:20px; box-shadow:var(--shadow); text-align:center; position: relative; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.4); }
+.card{ background:var(--card); border-radius:26px; padding:20px; box-shadow:var(--shadow); text-align:center; position: relative; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.4); transition: transform 0.1s; }
 
 .notif-card { 
     height: 65px; 
@@ -142,7 +142,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .bee-container { position: relative; z-index: 2; animation: floatBee 3s infinite ease-in-out; cursor: pointer; transition: transform 0.05s; }
 
 @keyframes floatBee { 0%, 100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-12px) rotate(3deg);} }
-.target { height: 65px; width: 65px; border-radius: 20px; border: 3px dashed #ffeb3b; display: flex; align-items: center; justify-content: center; font-size: 28px; opacity: 0.7; background: rgba(255,255,255,0.4); backdrop-filter: blur(2px); }
+.target { height: 65px; width: 65px; border-radius: 20px; border: 3px dashed #ffeb3b; display: flex; align-items: center; justify-content: center; font-size: 28px; opacity: 0.7; background: rgba(255,255,255,0.4); backdrop-filter: blur(2px); transition: transform 0.1s; }
 
 #active-boosts { position: absolute; top: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; pointer-events: none; z-index: 5; }
 .active-boost-timer { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 12px; border: 1.5px solid var(--accent); font-size: 11px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -245,6 +245,53 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .ach-card.unlocked.common { border-color: var(--common); background: #fff; }
 .ach-card.unlocked.rare { border-color: var(--rare); background: #ebf5ff; }
 .ach-card.unlocked.epic { border-color: var(--epic); background: #f5f0ff; }
+
+/* ESTILOS DE VFX DE CLIQUE */
+.floating-num-container {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: floatUp 0.8s ease-out forwards;
+}
+
+.floating-num {
+    font-weight: 900;
+    font-size: 24px;
+    color: #ffcc00;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.super-critical-label {
+    font-weight: 900;
+    font-size: 14px;
+    color: #ff4757;
+    margin-top: -2px;
+    text-shadow: 0 0 10px rgba(255,71,87,0.5);
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+    100% { transform: translateY(-80px) scale(1); opacity: 0; }
+}
+
+.honey-particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: #ffcc00;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    animation: explode 0.5s ease-out forwards;
+}
+@keyframes explode {
+    to { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
 </style>
 </head>
 
@@ -273,7 +320,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 <div class="game" id="gameUI">
   <div class="snow-container" id="gameSnowContainer"></div>
   
-  <div class="card">
+  <div class="card" id="statsCard">
     <div id="saveIndicator" class="save-icon">💾</div>
     <div class="daily-mission-btn" onclick="openModal('missionsModal')">📝</div>
     <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
@@ -320,6 +367,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
               <div class="scroll-area">
                 <button id="btnUpgradeClick">Upgrade Clique – 10 🍯</button>
                 <button id="btnAutoAction">Desbloquear Auto – 100 🍯</button>
+                <button id="btnUpgradeLuck" style="background: #e17055; color: white; box-shadow: 0 4px 0 #b33939;">Upgrade Sorte (Lvl 1)<br>500 🍯</button>
               </div>
           </div>
 
@@ -342,10 +390,15 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                           <small id="status_energy" style="font-size:10px; color:#666;">Inativo</small>
                           <div class="shop-grid" id="grid_energy"></div>
                       </div>
-                      <div class="shop-section">
+                      <div class="shop-section" style="margin-bottom: 15px;">
                           <div style="font-weight:900;">🌼 Flor (5x XP)</div>
                           <small id="status_flower" style="font-size:10px; color:#666;">Inativo</small>
                           <div class="shop-grid" id="grid_flower"></div>
+                      </div>
+                      <div class="shop-section">
+                          <div style="font-weight:900;">🍀 Trevo (5x Chance Crítico)</div>
+                          <small id="status_luck" style="font-size:10px; color:#666;">Inativo</small>
+                          <div class="shop-grid" id="grid_luck"></div>
                       </div>
                   </div>
                   <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
@@ -552,8 +605,12 @@ let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
 let clickLvl = 1, autoLvlLvl = 1; 
 
+// NOVAS VARIÁVEIS DE SORTE
+let luckLvl = 1, luckCost = 500;
+
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
-let activeBoosts = { pepper: 0, energy: 0, flower: 0 }, clickBuffer = [], gameLoaded = false;
+let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0 }; 
+let clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
 
 let dailyMissions = [];
@@ -613,7 +670,6 @@ function startSnakeGame() {
     snakeInterval = setInterval(drawSnakeGame, 150);
 }
 
-// SUPORTE TECLADO
 window.addEventListener("keydown", (e) => {
     if(!mgRunning) return;
     const key = e.key.toLowerCase();
@@ -660,19 +716,16 @@ function drawSnakeGame() {
     snakeCtx.fillStyle = "#1a1a1a";
     snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
 
-    // Food (Flor)
     snakeCtx.fillStyle = "#ff4757";
     snakeCtx.beginPath();
     snakeCtx.arc(food.x + boxSize/2, food.y + boxSize/2, boxSize/2, 0, Math.PI * 2);
     snakeCtx.fill();
 
-    // Snake (Abelha)
     snake.forEach((part, index) => {
         snakeCtx.fillStyle = index === 0 ? "#ffcc00" : "#4a3b00";
         snakeCtx.fillRect(part.x, part.y, boxSize - 2, boxSize - 2);
     });
 
-    // Movimento
     const head = {x: snake[0].x + dx, y: snake[0].y + dy};
     snake.unshift(head);
 
@@ -706,8 +759,6 @@ function changeSnakeDir(dir) {
     if (dir === 'DOWN' && dy === 0) { dx = 0; dy = boxSize; }
 }
 
-// --- PERSISTÊNCIA E ÁUDIO ---
-
 function updateVolume(type) {
     tryPlayMusic();
     if(type === 'music') {
@@ -723,11 +774,9 @@ function updateVolume(type) {
 }
 
 function applyAudioSettings() {
-    // Aplica aos objetos de áudio
     soundMusic.volume = audioSettings.music / 100;
     soundClick.volume = audioSettings.click / 100;
     
-    // Atualiza sliders e labels na UI
     const mVol = document.getElementById('musicVol');
     const cVol = document.getElementById('clickVol');
     if(mVol) {
@@ -782,7 +831,6 @@ function returnToMain() {
     }, 500);
 }
 
-// --- NOTIFICAÇÕES E DINÂMICA ---
 const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Uma colmeia pode ter até 60.000 abelhas no verão."];
 const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!", "💡 DICA: Complete as 10 missões para um crescimento explosivo!"];
 let lastNotifType = "fact"; 
@@ -807,11 +855,10 @@ function showSystemNotification(text) {
 }
 
 const durations = [{label:"30s",t:300,m:1},{label:"1m",t:600,m:1.8},{label:"5m",t:3000,m:8},{label:"1h",t:36000,m:70},{label:"24h",t:864000,m:1200}];
-const boostBases = { pepper: 500, energy: 300, flower: 1000 };
+const boostBases = { pepper: 500, energy: 300, flower: 1000, luck: 1500 }; 
 const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
-// --- MISSÕES ---
 const missionTemplates = [
     { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", goal: 250, reward: 'honey_xp' },
     { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", goal: 10000, reward: 'boost_pepper' },
@@ -890,9 +937,9 @@ function grantMissionReward(m) {
     const baseX = m.target * 10 * lvlBonus;
 
     switch(m.rewardType) {
-        case 'honey_xp': honey += baseH; addXP(baseX); break;
-        case 'honey_xp_large': honey += baseH * 2; addXP(baseX * 2); break;
-        case 'honey_xp_mega': honey += baseH * 5; addXP(baseX * 5); break;
+        case 'honey_xp': honey += baseH; addXP(baseH/2); break;
+        case 'honey_xp_large': honey += baseH * 2; addXP(baseH); break;
+        case 'honey_xp_mega': honey += baseH * 5; addXP(baseH * 2); break;
         case 'boost_pepper': activeBoosts.pepper += 6000; break;
         case 'boost_energy': activeBoosts.energy += 6000; break;
         case 'boost_flower': activeBoosts.flower += 6000; break;
@@ -976,14 +1023,20 @@ function updateUI() {
     document.getElementById("lvlDisplay").textContent = level;
     document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    
+    // ATUALIZAÇÃO BOTÕES UPGRADE
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     document.getElementById("btnUpgradeClick").innerHTML = `Upgrade Clique (Lvl ${clickLvl})<br>${formatNum(clickCost)} 🍯`;
+    
     document.getElementById("btnAutoAction").disabled = (honey < autoCost);
     document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `Desbloquear Auto<br>${formatNum(autoCost)} 🍯` : `Upgrade Auto (Lvl ${autoLevel})<br>${formatNum(autoCost)} 🍯`;
+    
+    document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost);
+    document.getElementById("btnUpgradeLuck").innerHTML = `Upgrade Sorte (Lvl ${luckLvl})<br>${formatNum(luckCost)} 🍯`;
+
     buildShop();
     renderActiveBoosts();
     
-    // Atualizar UI de Skins
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`);
         if(!btn) return;
@@ -999,7 +1052,6 @@ function updateUI() {
         }
     });
 
-    // Atualizar UI de Backgrounds Animados (GIFs)
     const bgs = ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'];
     const clickZone = document.getElementById("clickZone");
     const clickCard = document.getElementById("clickCard");
@@ -1027,7 +1079,7 @@ function updateUI() {
 function renderActiveBoosts() {
     const container = document.getElementById("active-boosts");
     container.innerHTML = "";
-    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼' };
+    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
     for(let key in activeBoosts) {
         if(activeBoosts[key] > 0) {
             const div = document.createElement("div");
@@ -1037,16 +1089,133 @@ function renderActiveBoosts() {
     }
 }
 
-function doClick(isTarget = false) {
+function spawnFloatingNumber(amount, isTarget, isSuperCritical) {
+    const bee = document.getElementById("mainBeeSprite");
+    const rect = bee.getBoundingClientRect();
+    const centerX = rect.left + (rect.width / 2);
+    const centerY = rect.top + (rect.height / 2);
+
+    const container = document.createElement("div");
+    container.className = "floating-num-container";
+    
+    const numEl = document.createElement("div");
+    numEl.className = "floating-num";
+    numEl.textContent = `+${formatNum(amount)}`;
+
+    if(isSuperCritical) {
+        numEl.style.color = "#ff4757";
+        numEl.style.fontSize = "38px";
+        numEl.style.textShadow = "0 0 20px rgba(255,71,87,0.8)";
+        
+        const label = document.createElement("div");
+        label.className = "super-critical-label";
+        label.textContent = "SORTE REAL! (10x)";
+        container.appendChild(numEl);
+        container.appendChild(label);
+    } else if(isTarget) {
+        numEl.style.color = "#ffcc00";
+        numEl.style.fontSize = "32px";
+        numEl.style.textShadow = "0 0 12px rgba(255,204,0,0.8)";
+        container.appendChild(numEl);
+    } else {
+        container.appendChild(numEl);
+    }
+
+    container.style.left = `${centerX}px`;
+    container.style.top = `${centerY}px`;
+    container.style.transform = "translateX(-50%)";
+
+    document.body.appendChild(container);
+    setTimeout(() => container.remove(), 800);
+}
+
+function spawnHoneyParticles(isSuperCritical) {
+    const bee = document.getElementById("mainBeeSprite");
+    const rect = bee.getBoundingClientRect();
+    const centerX = rect.left + (rect.width / 2);
+    const centerY = rect.top + (rect.height / 2);
+
+    const count = isSuperCritical ? 20 : 8;
+
+    for(let i=0; i<count; i++) {
+        const p = document.createElement("div");
+        p.className = "honey-particle";
+        if(isSuperCritical) p.style.background = "#ff4757";
+        p.style.left = `${centerX}px`;
+        p.style.top = `${centerY}px`;
+        
+        const tx = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180);
+        const ty = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180);
+        p.style.setProperty('--tx', `${tx}px`);
+        p.style.setProperty('--ty', `${ty}px`);
+        
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 500);
+    }
+}
+
+function triggerImpact(isTarget, isSuperCritical) {
+    const card = document.getElementById("clickCard");
+    const stats = document.getElementById("statsCard");
+    
+    let scaleC = 0.98;
+    let scaleS = 1.01;
+    let time = 50;
+
+    if(isSuperCritical) {
+        scaleC = 0.90;
+        scaleS = 1.10;
+        time = 150;
+    } else if(isTarget) {
+        scaleC = 0.96;
+        scaleS = 1.04;
+    }
+
+    card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`;
+    stats.style.transform = `scale(${scaleS})`;
+    
+    setTimeout(() => {
+        card.style.transform = "scale(1) rotate(0deg)";
+        stats.style.transform = "scale(1)";
+    }, time);
+}
+
+function doClick(event, isTarget = false) {
     playClickSound();
-    const g = hPerClick * getGlobalBonus();
-    honey += g; totalHoneyEver += g; addXP(g);
+    
+    // CÁLCULO DE CHANCE DE SORTE REAL
+    // Base 0.001 (0.1%) + 0.0005 por nível de Upgrade
+    let baseChance = 0.001 + ((luckLvl - 1) * 0.0005);
+    // Se boost de sorte ativo, multiplica por 5
+    if(activeBoosts.luck > 0) baseChance *= 5;
+
+    const superCriticalChance = Math.random() < baseChance;
+    
+    let multiplier = 1;
+    if (isTarget) multiplier *= 2;
+    if (superCriticalChance) multiplier *= 10;
+    
+    const g = hPerClick * getGlobalBonus() * multiplier;
+    
+    honey += g; 
+    totalHoneyEver += g; 
+    addXP(g);
+    
     updateMissionProgress('clicks', 1);
     updateMissionProgress('honey_gain', g);
     if(isTarget) updateMissionProgress('target_clicks', 1);
+    
     const bee = document.getElementById("beeContainer");
-    bee.style.transform = "scale(0.85)"; setTimeout(() => bee.style.transform = "scale(1)", 50);
-    clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI();
+    bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
+    setTimeout(() => bee.style.transform = "scale(1)", 50);
+    
+    spawnFloatingNumber(g, isTarget, superCriticalChance);
+    spawnHoneyParticles(superCriticalChance);
+    triggerImpact(isTarget, superCriticalChance);
+
+    clickBuffer.push(Date.now()); 
+    spawnFlake('gameSnowContainer'); 
+    updateUI();
 }
 
 function addXP(amt) {
@@ -1106,7 +1275,7 @@ function startGameTicks() {
 }
 
 function executeSave(){ 
-    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
+    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const missionData = {dailyMissions, lastMissionReset};
     localStorage.setItem(MISSION_KEY, JSON.stringify(missionData));
@@ -1117,21 +1286,15 @@ function executeSave(){
 function load(){
     initAchievements(); 
     renderChangelog();
-
-    // Carrega áudio primeiro
     const savedAudio = localStorage.getItem(AUDIO_KEY);
-    if(savedAudio) {
-        audioSettings = JSON.parse(savedAudio);
-    }
+    if(savedAudio) audioSettings = JSON.parse(savedAudio);
     applyAudioSettings();
-
     const rawMissions = localStorage.getItem(MISSION_KEY);
     if(rawMissions) {
         const md = JSON.parse(rawMissions);
         dailyMissions = md.dailyMissions || [];
         lastMissionReset = md.lastMissionReset || 0;
     }
-
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         try {
@@ -1141,6 +1304,7 @@ function load(){
             nextLevelXP = d.nextLevelXP || 1000; autoUnlocked = d.autoUnlocked || false;
             autoLevel = d.autoLevel || 1; autoCost = d.autoCost || 100;
             clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1;
+            luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
             if(d.activeBoosts) activeBoosts = d.activeBoosts;
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
             if(d.equippedBackground) equippedBackground = d.equippedBackground;
@@ -1153,8 +1317,7 @@ function load(){
 function enterGame() {
     load(); 
     tryPlayMusic();
-    requestFullscreen(); // Ativa fullscreen ao clicar
-    
+    requestFullscreen();
     document.getElementById('startScreen').style.opacity = '0';
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
@@ -1186,7 +1349,7 @@ function openSubShop(id, btn) {
 function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderAchs(); }
 
 function buildShop() {
-    ['pepper', 'energy', 'flower'].forEach(type => {
+    ['pepper', 'energy', 'flower', 'luck'].forEach(type => {
         const grid = document.getElementById(`grid_${type}`);
         if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
@@ -1234,12 +1397,28 @@ document.getElementById("btnAutoAction").onclick = () => {
     } 
 };
 
-["clickZone", "beeContainer"].forEach(id => {
-    const el = document.getElementById(id);
-    if(el){
-        el.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(false); });
-        el.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(false); }, {passive: false});
+// BOTÃO UPGRADE SORTE
+document.getElementById("btnUpgradeLuck").onclick = () => {
+    if(honey >= luckCost) {
+        honey -= luckCost;
+        luckLvl++;
+        luckCost = Math.floor(luckCost * 2.2);
+        updateMissionProgress('buy_upgrade', 1);
+        updateUI(); executeSave();
     }
+};
+
+document.getElementById("beeContainer").addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
+document.getElementById("beeContainer").addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false});
+
+document.getElementById("leftTarget").addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
+document.getElementById("leftTarget").addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
+
+document.getElementById("rightTarget").addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
+document.getElementById("rightTarget").addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
+
+document.getElementById("clickZone").addEventListener("mousedown", (e) => { 
+    if(e.target.id === "clickZone") doClick(e, false);
 });
 
 function spawnFlake(containerId) {
@@ -1263,7 +1442,6 @@ function initAchievements() {
     }
 }
 
-// Carrega inicial para garantir volumes no menu também
 load();
 </script>
 </body>
