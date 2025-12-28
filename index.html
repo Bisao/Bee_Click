@@ -135,9 +135,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     justify-content: center; 
     align-items: center;
     overflow: visible; 
-    border-radius: 50%;
 }
-.aura { position: absolute; width: 150px; height: 150px; border-radius: 50%; filter: blur(25px); opacity: 0.3; background: radial-gradient(circle, rgba(255,204,0,0.5), transparent 70%); transition: 0.2s; pointer-events: none; }
 
 .bee-container { position: relative; z-index: 2; animation: floatBee 3s infinite ease-in-out; cursor: pointer; transition: transform 0.05s; }
 
@@ -345,7 +343,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     <div class="click-zone" id="clickZone">
       <div class="target" id="leftTarget">🎯</div>
       <div class="aura-wrapper">
-        <div class="aura" id="aura"></div>
         <div class="bee-container" id="beeContainer">
             <img id="mainBeeSprite" src="NoelBee.png" alt="Bee character" class="bee-img">
         </div>
@@ -486,10 +483,10 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     </div>
     <canvas id="snakeCanvas"></canvas>
     <div class="mg-controls">
-        <div class="dpad-btn" style="grid-area: up;" onclick="changeSnakeDir('UP')">▲</div>
-        <div class="dpad-btn" style="grid-area: left;" onclick="changeSnakeDir('LEFT')">◀</div>
-        <div class="dpad-btn" style="grid-area: down;" onclick="changeSnakeDir('DOWN')">▼</div>
-        <div class="dpad-btn" style="grid-area: right;" onclick="changeSnakeDir('RIGHT')">▶</div>
+        <div class="dpad-btn" style="grid-area: up;" ontouchstart="changeSnakeDir('UP')" onmousedown="changeSnakeDir('UP')">▲</div>
+        <div class="dpad-btn" style="grid-area: left;" ontouchstart="changeSnakeDir('LEFT')" onmousedown="changeSnakeDir('LEFT')">◀</div>
+        <div class="dpad-btn" style="grid-area: down;" ontouchstart="changeSnakeDir('DOWN')" onmousedown="changeSnakeDir('DOWN')">▼</div>
+        <div class="dpad-btn" style="grid-area: right;" ontouchstart="changeSnakeDir('RIGHT')" onmousedown="changeSnakeDir('RIGHT')">▶</div>
     </div>
 </div>
 
@@ -557,7 +554,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
             <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: #555;"></p>
         </div>
         <div class="modal-footer">
-            <button id="btnCollectOffline" style="background:var(--xp-bar); color:white; box-shadow:0 6px 0 #2d6630; height: 60px; font-size: 18px;">REIVINDICAR RECOMPENSAS</button>
+            <button id="btnCollectOffline" onclick="collectOfflineRewards()" style="background:var(--xp-bar); color:white; box-shadow:0 6px 0 #2d6630; height: 60px; font-size: 18px;">REIVINDICAR RECOMPENSAS</button>
         </div>
     </div>
 </div>
@@ -605,7 +602,6 @@ let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
 let clickLvl = 1, autoLvlLvl = 1; 
 
-// NOVAS VARIÁVEIS DE SORTE
 let luckLvl = 1, luckCost = 500;
 
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
@@ -626,6 +622,8 @@ let snake = [];
 let food = {x: 0, y: 0};
 let dx = 20;
 let dy = 0;
+let nextDx = 20; // Prevenção de Ghosting
+let nextDy = 0;
 let snakeScore = 0;
 let snakeInterval = null;
 let mgRunning = false;
@@ -663,11 +661,13 @@ function startSnakeGame() {
     snakeScore = 0;
     dx = boxSize;
     dy = 0;
+    nextDx = boxSize;
+    nextDy = 0;
     mgRunning = true;
     document.getElementById("snakeScore").textContent = "0";
     createFood();
     if(snakeInterval) clearInterval(snakeInterval);
-    snakeInterval = setInterval(drawSnakeGame, 150);
+    snakeInterval = setInterval(drawSnakeGame, 100); // 100ms para maior fluidez
 }
 
 window.addEventListener("keydown", (e) => {
@@ -708,6 +708,10 @@ function exitSnakeGame() {
 }
 
 function drawSnakeGame() {
+    // Aplica a direção pendente no início do frame
+    dx = nextDx;
+    dy = nextDy;
+
     if (checkSnakeCollision()) {
         showMgResult(snakeScore);
         return;
@@ -753,10 +757,12 @@ function checkSnakeCollision() {
 }
 
 function changeSnakeDir(dir) {
-    if (dir === 'LEFT' && dx === 0) { dx = -boxSize; dy = 0; }
-    if (dir === 'UP' && dy === 0) { dx = 0; dy = -boxSize; }
-    if (dir === 'RIGHT' && dx === 0) { dx = boxSize; dy = 0; }
-    if (dir === 'DOWN' && dy === 0) { dx = 0; dy = boxSize; }
+    if (!mgRunning) return;
+    // Prevenção de Ghosting: Não permite virar para a direção oposta
+    if (dir === 'LEFT' && dx === 0) { nextDx = -boxSize; nextDy = 0; }
+    if (dir === 'UP' && dy === 0) { nextDx = 0; nextDy = -boxSize; }
+    if (dir === 'RIGHT' && dx === 0) { nextDx = boxSize; nextDy = 0; }
+    if (dir === 'DOWN' && dy === 0) { nextDx = 0; nextDy = boxSize; }
 }
 
 function updateVolume(type) {
@@ -1024,7 +1030,6 @@ function updateUI() {
     document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     
-    // ATUALIZAÇÃO BOTÕES UPGRADE
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     document.getElementById("btnUpgradeClick").innerHTML = `Upgrade Clique (Lvl ${clickLvl})<br>${formatNum(clickCost)} 🍯`;
     
@@ -1183,10 +1188,7 @@ function triggerImpact(isTarget, isSuperCritical) {
 function doClick(event, isTarget = false) {
     playClickSound();
     
-    // CÁLCULO DE CHANCE DE SORTE REAL
-    // Base 0.001 (0.1%) + 0.0005 por nível de Upgrade
     let baseChance = 0.001 + ((luckLvl - 1) * 0.0005);
-    // Se boost de sorte ativo, multiplica por 5
     if(activeBoosts.luck > 0) baseChance *= 5;
 
     const superCriticalChance = Math.random() < baseChance;
@@ -1257,10 +1259,6 @@ function startGameTicks() {
     gameTickInterval = setInterval(() => {
         if(!gameLoaded) return;
         const now = Date.now();
-        clickBuffer = clickBuffer.filter(t => now - t < 1000);
-        const cps = clickBuffer.length;
-        document.getElementById("aura").style.transform = `scale(${1 + (cps * 0.15)})`;
-        document.getElementById("aura").style.opacity = 0.3 + (cps * 0.1);
         achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
         for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
         for(let b in activeBoosts) {
@@ -1281,6 +1279,36 @@ function executeSave(){
     localStorage.setItem(MISSION_KEY, JSON.stringify(missionData));
     const indicator = document.getElementById("saveIndicator");
     if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
+}
+
+function checkOfflineGains(lastTimestamp) {
+    if (!autoUnlocked) return;
+    const now = Date.now();
+    const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
+    if (diffInSeconds < 60) return;
+    const cappedSeconds = Math.min(diffInSeconds, 86400);
+    const mps = getMPSBase() * getGlobalBonus();
+    pendingOfflineHoney = Math.floor(mps * cappedSeconds * 0.5);
+    pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.3);
+    if (pendingOfflineHoney > 0) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        const minutes = Math.floor((diffInSeconds % 3600) / 60);
+        let timeStr = hours > 0 ? `${hours}h e ${minutes}m` : `${minutes}m`;
+        document.getElementById("offlineText").innerHTML = `Suas abelhas trabalharam por <b>${timeStr}</b> enquanto você descansava!<br><br>Produção Acumulada (50%):<br><span style="color:#f39c12; font-size: 20px;">🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style="color:#4caf50; font-size: 20px;">✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+        openModal('offlineModal');
+    }
+}
+
+function collectOfflineRewards() {
+    honey += pendingOfflineHoney;
+    totalHoneyEver += pendingOfflineHoney;
+    addXP(pendingOfflineXP);
+    pendingOfflineHoney = 0;
+    pendingOfflineXP = 0;
+    closeModal('offlineModal');
+    updateUI();
+    executeSave();
+    notify({n: "Recompensas Coletadas!", d: "Bem-vindo de volta!"});
 }
 
 function load(){
@@ -1309,6 +1337,7 @@ function load(){
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic;
             if(d.equippedBackground) equippedBackground = d.equippedBackground;
             if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
+            if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
     checkMissionReset();
@@ -1397,7 +1426,6 @@ document.getElementById("btnAutoAction").onclick = () => {
     } 
 };
 
-// BOTÃO UPGRADE SORTE
 document.getElementById("btnUpgradeLuck").onclick = () => {
     if(honey >= luckCost) {
         honey -= luckCost;
