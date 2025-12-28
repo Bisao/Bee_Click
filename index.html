@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#071B87">
+<link rel="apple-touch-icon" href="NoelBee.png">
+<link rel="manifest" href="manifest.json">
 
 <style>
 :root{
@@ -89,6 +91,48 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -58%);
     font-size: 1.1em; pointer-events: none;
+}
+
+.pwa-btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    z-index: 10;
+    margin-top: 5px;
+}
+
+.circular-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 22px;
+    transition: 0.3s;
+    position: relative;
+    padding: 0;
+}
+
+.circular-btn:active { transform: scale(0.9); }
+
+.aura-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    animation: auraEffect 1.5s infinite;
+}
+
+@keyframes auraEffect {
+    0% { transform: scale(1); opacity: 1; border-color: var(--accent); }
+    100% { transform: scale(1.5); opacity: 0; border-color: #00ff00; }
 }
 
 .game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; display: none; }
@@ -240,7 +284,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; color: white; }
 .modal-footer { padding: 0 20px 20px 20px; background: transparent; flex-shrink: 0; }
 
-/* ESTILIZAÇÃO DOS CARDS DE MINIJOGOS */
 .game-card {
     display: flex;
     flex-direction: column;
@@ -325,9 +368,23 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 .version-tag { color: rgba(255,255,255,0.6); margin-top: 15px; font-weight: bold; font-size: 13px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
+/* MISSÕES REESTRUTURADAS COM REROLL */
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: rgba(76, 175, 80, 0.1); }
-.mission-card.completed::after { content: 'COMPLETO'; position: absolute; top: 10px; right: 10px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
+.mission-card.completed::after { content: 'COMPLETO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
+
+.mission-reroll-btn { 
+    position: absolute; bottom: 8px; right: 8px; 
+    width: 32px; height: 32px; 
+    background: rgba(255,255,255,0.1); 
+    border: 1px solid rgba(255,255,255,0.2); 
+    border-radius: 10px; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 14px; cursor: pointer; transition: 0.2s; 
+    z-index: 5;
+}
+.mission-reroll-btn:active { transform: scale(0.9) rotate(45deg); background: var(--accent); color: var(--main-blue); }
+
 .mission-progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .mission-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 .mission-card.completed .mission-progress-fill { background: var(--xp-bar); }
@@ -383,6 +440,13 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 @keyframes explode {
     to { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
 }
+
+#downloadOverlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100000;
+    display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center;
+}
+.dl-step { margin-bottom: 20px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; max-width: 300px; }
+.dl-icon { width: 45px; height: 45px; background: var(--accent); color: var(--main-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; flex-shrink: 0; }
 </style>
 </head>
 
@@ -399,13 +463,21 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
         BEE CL<span class="letter-i-wrapper">I<span class="tree-overlay">🎄</span></span>CKER
     </div>
     
-    <div style="display: flex; flex-direction: column; gap: 10px; width: 240px; z-index: 10;">
+    <div style="display: flex; flex-direction: column; gap: 10px; width: 280px; z-index: 10;">
         <button style="font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
         <button id="btnChangelog" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openChangelog()">O QUE MUDOU?</button>
-        <button style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openModal('settingsModal')">CONFIGURAÇÕES ⚙️</button>
+        
+        <div class="pwa-btn-container">
+            <button style="flex: 1; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openModal('settingsModal')">
+                CONFIGURAÇÕES ⚙️
+            </button>
+            <button id="pwaMainActionBtn" class="circular-btn" onclick="handlePwaClick()">
+                <span id="pwaIcon">📥</span>
+            </button>
+        </div>
     </div>
 
-    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v4.0.8</div>
+    <div class="version-tag" id="mainVersionDisplay">🎄 CHRISTMAS UPDATE v4.1.5</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -559,8 +631,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                           <button onclick="prepareMinigame('flight')">INICIAR PARTIDA</button>
                       </div>
                   </div>
-
-                  <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 11px; margin-top: 20px; font-style: italic;">Novos jogos em desenvolvimento...</div>
               </div>
           </div>
 
@@ -579,6 +649,28 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
           </div>
       </div>
   </div>
+</div>
+
+<div id="downloadOverlay">
+    <h2 style="color: var(--accent); font-weight: 900;">COMO BAIXAR 🐝</h2>
+    <p style="font-size: 14px; margin-bottom: 30px; opacity: 0.8;">O seu navegador precisa de ajuda manual para instalar o app.</p>
+    
+    <div class="dl-step">
+        <div class="dl-icon">1</div>
+        <div>Toque no ícone de <b>Compartilhar</b> ou nos <b>três pontinhos</b> do navegador.</div>
+    </div>
+    
+    <div class="dl-step">
+        <div class="dl-icon">2</div>
+        <div>Selecione <b>"Instalar Aplicativo"</b> ou <b>"Adicionar à Tela de Início"</b>.</div>
+    </div>
+    
+    <div class="dl-step">
+        <div class="dl-icon">3</div>
+        <div>Pronto! A abelha aparecerá na sua tela inicial para jogar offline.</div>
+    </div>
+    
+    <button onclick="document.getElementById('downloadOverlay').style.display='none'" style="width: 200px; background: var(--xp-bar); color: white; margin-top: 20px;">ENTENDI!</button>
 </div>
 
 <div id="minigameOverlay">
@@ -633,6 +725,14 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
             <span style="cursor:pointer" onclick="closeModal('settingsModal')">✖</span>
         </div>
         <div class="modal-content-scroll">
+            <div class="section-title">GERENCIAMENTO DO APP 📲</div>
+            <div id="pwaStatusArea" style="margin-bottom: 20px;">
+                <button id="btnPwaAction" style="display: none; background: var(--xp-bar); color: white; border-bottom: 4px solid #2e7d32;"></button>
+                <div id="pwaInstalledMsg" style="display: none; text-align: center; font-size: 12px; color: var(--xp-bar); font-weight: 800;">
+                    APP INSTALADO E ATUALIZADO ✅
+                </div>
+            </div>
+
             <div class="section-title">ÁUDIO</div>
             <div class="config-row">
                 <div class="config-label">
@@ -700,7 +800,92 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 </div>
 
 <script>
-const GAME_VERSION = "4.0.8";
+let deferredPrompt;
+let newWorker;
+let pwaState = 'install';
+
+// PWA LOGIC INTEGRATION
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          syncPwaUI('update');
+        }
+      });
+    });
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  syncPwaUI('install');
+});
+
+if (!window.matchMedia('(display-mode: standalone)').matches) {
+    window.addEventListener('load', () => {
+        const btn = document.getElementById('pwaMainActionBtn');
+        if(btn) btn.style.display = 'flex';
+    });
+} else {
+    window.addEventListener('load', () => {
+        const btn = document.getElementById('pwaMainActionBtn');
+        const msg = document.getElementById('pwaInstalledMsg');
+        if(btn) btn.style.display = 'none';
+        if(msg) msg.style.display = 'block';
+    });
+}
+
+function syncPwaUI(state) {
+    pwaState = state;
+    const mainBtn = document.getElementById('pwaMainActionBtn');
+    const configBtn = document.getElementById('btnPwaAction');
+    const icon = document.getElementById('pwaIcon');
+
+    if (state === 'install') {
+        if(mainBtn) {
+            mainBtn.style.display = 'flex';
+            mainBtn.classList.remove('aura-pulse');
+            icon.textContent = '📥';
+        }
+        if(configBtn) {
+            configBtn.style.display = 'block';
+            configBtn.innerHTML = 'BAIXAR APP (OFFLINE) 📲';
+        }
+    } else if (state === 'update') {
+        if(mainBtn) {
+            mainBtn.style.display = 'flex';
+            mainBtn.classList.add('aura-pulse');
+            icon.textContent = '🔄';
+        }
+        if(configBtn) {
+            configBtn.style.display = 'block';
+            configBtn.innerHTML = 'ATUALIZAR JOGO AGORA 🚀';
+        }
+    }
+}
+
+async function handlePwaClick() {
+    if (pwaState === 'install') {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('pwaMainActionBtn').style.display = 'none';
+            }
+            deferredPrompt = null;
+        } else {
+            document.getElementById('downloadOverlay').style.display = 'flex';
+        }
+    } else if (pwaState === 'update') {
+        if (newWorker) newWorker.postMessage({ action: 'skipWaiting' });
+        window.location.reload();
+    }
+}
+
+const GAME_VERSION = "4.1.5";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const MISSION_KEY = "BeeRoyal_Missions_V2";
@@ -709,60 +894,59 @@ const RECORDS_KEY = "BeeRoyal_Records_V1";
 
 const updateHistory = [
     {
-        version: "4.0.8",
-        title: "⚙️ SISTEMA OFFLINE E MELHORIAS TÉCNICAS",
+        version: "4.1.5",
+        title: "🛡️ CORREÇÃO DE MISSÕES & REROLL",
         changes: [
-            { type: "mod", text: "Ganhos offline agora só aparecem após o início da partida." },
-            { type: "fix", text: "Snake agora responde a comandos de teclado (WASD/Arrows)." },
-            { type: "add", text: "Velocidade progressiva adicionada ao minijogo Snake." },
-            { type: "add", text: "Changelog agora exibe as últimas 5 atualizações reais." },
-            { type: "mod", text: "Curva de dificuldade das missões ajustada pelo nível." }
+            { type: "fix", text: "Corrigido erro que impedia a contagem de progresso das missões após carregar o jogo." },
+            { type: "add", text: "Adicionado botão de Reroll (🔄) individual nas missões para trocar tarefas indesejadas." },
+            { type: "add", text: "Sistema de confirmação adicionado ao trocar missões para evitar erros." },
+            { type: "mod", text: "Melhoria na persistência dos dados de progresso diário." }
         ]
     },
     {
-        version: "4.0.7",
-        title: "🌸 NOVO MINIGAME: FLOWER FLIGHT",
+        version: "4.1.4",
+        title: "📥 TUTORIAL DE DOWNLOAD INTERNO",
         changes: [
-            { type: "add", text: "Adicionado minijogo estilo Flappy para ganhos de Mel." },
-            { type: "add", text: "Painel de recordes agora visível na Central de Jogos." }
+            { type: "add", text: "Novo Overlay de Tutorial ensinando a baixar o jogo em iPhones." },
+            { type: "mod", text: "Otimização de rotas para funcionamento perfeito no GitHub Pages." }
         ]
     },
     {
-        version: "4.0.6",
-        title: "🎨 TEMAS E PERSONALIZAÇÃO",
+        version: "4.1.3",
+        title: "🛡️ FIX: VISIBILIDADE DO DOWNLOAD",
         changes: [
-            { type: "add", text: "Seletor de cor principal e opacidade nas configurações." },
-            { type: "mod", text: "Design dos painéis atualizado para gradiente real." }
+            { type: "fix", text: "Botão circular agora é forçado a aparecer em navegadores móveis." }
         ]
     },
     {
-        version: "4.0.5",
-        title: "📜 REESTRUTURAÇÃO DE MISSÕES",
+        version: "4.1.2",
+        title: "✨ ICONE DE DOWNLOAD CIRCULAR",
         changes: [
-            { type: "mod", text: "Recompensas agora escalam baseadas no poder de clique." },
-            { type: "mod", text: "Objetivos de missões seguem curva logarítmica." }
+            { type: "add", text: "Botão circular de instalação adicionado à Tela Inicial." }
         ]
     },
     {
-        version: "4.0.4",
-        title: "🎄 CHRISTMAS EVENT",
+        version: "4.1.1",
+        title: "📲 BOTÃO DE DOWNLOAD & UPDATE",
         changes: [
-            { type: "add", text: "Neve caindo na interface e novo cenário natalino." },
-            { type: "add", text: "Skin NoelBee com bônus especial de +15%." }
+            { type: "add", text: "Botão 'Baixar' adicionado nas configurações (PWA)." }
         ]
     }
 ];
 
+function validateNum(n) {
+    if (isNaN(n) || n === undefined || n === null || n < 0) return 0;
+    return parseFloat(n);
+}
+
 function renderChangelog() {
     const container = document.getElementById("changelogContent");
     container.innerHTML = "";
-    const recentUpdates = updateHistory.slice(0, 5);
-    recentUpdates.forEach(update => {
+    updateHistory.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
         update.changes.forEach(change => {
             let icon = "🔹";
             if(change.type === "add") icon = "🟢";
-            if(change.type === "rem") icon = "🔴";
             if(change.type === "fix") icon = "🔵";
             if(change.type === "mod") icon = "🟡";
             blockHtml += `<div class="changelog-item"><span class="changelog-icon">${icon}</span><span>${change.text}</span></div>`;
@@ -810,7 +994,6 @@ let fPipes = [];
 const flightCanvas = document.getElementById("flightCanvas");
 const flightCtx = flightCanvas.getContext("2d");
 
-// TECLADO
 window.addEventListener('keydown', (e) => {
     if(!mgRunning) return;
     if(activeMG === 'snake') {
@@ -953,7 +1136,7 @@ function finishMG() {
     if(mgScore > records[activeMG]) { records[activeMG] = mgScore; localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); updateRecordsUI(); }
     let multiplier = activeMG === 'snake' ? 50 : 150;
     let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
-    honey += hGain; addXP(xGain);
+    honey = validateNum(honey + hGain); addXP(xGain);
     document.getElementById("mgResultScore").textContent = mgScore;
     document.getElementById("mgResultReward").innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
     document.getElementById("mgResultScreen").style.display = "flex";
@@ -1015,8 +1198,7 @@ function startDynamicNotifications() {
 }
 
 function showSystemNotification(text) {
-    const container = document.getElementById("notifContainer"); container.innerHTML = ""; 
-    const div = document.createElement("div"); div.className = "popup"; div.innerHTML = `<span>${text}</span>`;
+    const container = document.getElementById("notifContainer"), div = document.createElement("div"); div.className = "popup"; div.innerHTML = `<span>${text}</span>`;
     container.appendChild(div); div.style.animation = "slideInNotif 10s ease-in-out forwards";
     setTimeout(() => { if(div) div.remove(); }, 10000);
 }
@@ -1048,34 +1230,83 @@ function checkMissionReset() {
 function generateDailyMissions() {
     dailyMissions = []; const scaleFactor = Math.pow(level, 1.1), clickPowerFactor = hPerClick;
     missionTemplates.forEach((tmp, index) => {
-        let target = 0, rewardHoney = 0, rewardXP = 0;
-        if (tmp.type === 'clicks' || tmp.type === 'target_clicks') target = Math.ceil(tmp.baseGoal * scaleFactor);
-        else if (tmp.type === 'honey_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * clickPowerFactor * 5);
-        else if (tmp.type === 'xp_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * 3);
-        else if (tmp.type === 'buy_upgrade') target = Math.ceil(tmp.baseGoal + Math.floor(level/10));
-        const hourlyMPS = (getMPSBase() * getGlobalBonus()) * 3600, clickValue = hPerClick * getGlobalBonus();
-        rewardHoney = Math.max(target * clickValue * 2, hourlyMPS * 0.1) * tmp.rewardMult; rewardXP = (nextLevelXP * 0.05) * tmp.rewardMult;
-        dailyMissions.push({ id: tmp.id, type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), target: target, progress: 0, completed: false, rewardHoney: rewardHoney, rewardXP: rewardXP, rewardLabel: `${formatNum(rewardHoney)} 🍯 | ${formatNum(rewardXP)} XP` });
+        dailyMissions.push(createSingleMission(tmp, scaleFactor, clickPowerFactor));
     });
 }
 
+function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
+    let target = 0, rewardHoney = 0, rewardXP = 0;
+    if (tmp.type === 'clicks' || tmp.type === 'target_clicks') target = Math.ceil(tmp.baseGoal * scaleFactor);
+    else if (tmp.type === 'honey_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * clickPowerFactor * 5);
+    else if (tmp.type === 'xp_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * 3);
+    else if (tmp.type === 'buy_upgrade') target = Math.ceil(tmp.baseGoal + Math.floor(level/10));
+    
+    const clickValue = hPerClick * getGlobalBonus();
+    rewardHoney = Math.max(target * clickValue * 2, 50) * tmp.rewardMult; 
+    rewardXP = (nextLevelXP * 0.05) * tmp.rewardMult;
+    
+    return { 
+        id: tmp.id, type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
+        target: target, progress: 0, completed: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
+        rewardLabel: `${formatNum(rewardHoney)} 🍯 | ${formatNum(rewardXP)} XP` 
+    };
+}
+
 function updateMissionProgress(type, amt = 1) {
+    if (!gameLoaded) return;
     let changed = false;
-    dailyMissions.forEach(m => { if (m.type === type && !m.completed) { m.progress += amt; if (m.progress >= m.target) { m.progress = m.target; m.completed = true; grantMissionReward(m); changed = true; } } });
+    dailyMissions.forEach(m => { 
+        if (m.type === type && !m.completed) { 
+            m.progress = validateNum(m.progress + amt); 
+            if (m.progress >= m.target) { 
+                m.progress = m.target; 
+                m.completed = true; 
+                grantMissionReward(m); 
+            }
+            changed = true; 
+        } 
+    });
     if (changed && document.getElementById('missionsModal').style.display === 'flex') renderMissions();
 }
 
-function grantMissionReward(m) { honey += m.rewardHoney; addXP(m.rewardXP); notify({n: "Missão Concluída!", d: m.rewardLabel}); updateUI(); }
+function rerollMission(id) {
+    if(confirm("Deseja trocar esta missão por uma nova tarefa real?")) {
+        const index = dailyMissions.findIndex(m => m.id === id);
+        if(index !== -1) {
+            const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
+            const scaleFactor = Math.pow(level, 1.1), clickPowerFactor = hPerClick;
+            dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, clickPowerFactor);
+            renderMissions();
+            executeSave();
+        }
+    }
+}
+
+function grantMissionReward(m) { honey = validateNum(honey + m.rewardHoney); addXP(m.rewardXP); notify({n: "Missão Concluída!", d: m.rewardLabel}); updateUI(); executeSave(); }
 
 function renderMissions() {
     const list = document.getElementById("missionsList"); list.innerHTML = "";
     dailyMissions.forEach(m => {
-        const perc = (m.progress / m.target) * 100;
-        list.innerHTML += `<div class="mission-card ${m.completed ? 'completed' : ''}"><div style="font-size: 24px">${m.completed ? '✅' : '🐝'}</div><div style="flex: 1"><div style="font-weight: 900; font-size: 14px; color: white">${m.title}</div><div style="font-size: 11px; color: rgba(255,255,255,0.8);">${m.desc}</div><div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div><div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div></div><div style="font-size: 10px; font-weight: 800; min-width: 45px; text-align: right;">${formatNum(m.progress)}/${formatNum(m.target)}</div></div>`;
+        const perc = Math.min(100, (m.progress / m.target) * 100);
+        list.innerHTML += `
+            <div class="mission-card ${m.completed ? 'completed' : ''}">
+                <div style="font-size: 24px">${m.completed ? '✅' : '🐝'}</div>
+                <div style="flex: 1">
+                    <div style="font-weight: 900; font-size: 14px; color: white">${m.title}</div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.8);">${m.desc}</div>
+                    <div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div>
+                    <div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div>
+                </div>
+                <div style="font-size: 10px; font-weight: 800; min-width: 50px; text-align: right; padding-right: 5px;">
+                    ${formatNum(m.progress)}/${formatNum(m.target)}
+                </div>
+                ${!m.completed ? `<div class="mission-reroll-btn" onclick="rerollMission('${m.id}')" title="Trocar Missão">🔄</div>` : ''}
+            </div>`;
     });
 }
 
 function formatNum(n) {
+    n = validateNum(n);
     if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return Math.floor(n).toString();
 }
 
@@ -1091,7 +1322,9 @@ function getGlobalBonus() {
 }
 
 function updateUI() {
-    document.getElementById("honey").textContent = formatNum(honey); document.getElementById("mps").textContent = formatNum(getMPSBase() * getGlobalBonus());
+    honey = validateNum(honey);
+    document.getElementById("honey").textContent = formatNum(honey); 
+    document.getElementById("mps").textContent = formatNum(getMPSBase() * getGlobalBonus());
     document.getElementById("lvlDisplay").textContent = level; document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
     document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost); document.getElementById("btnUpgradeClick").innerHTML = `<b>Upgrade Clique (Lvl ${clickLvl})</b><br>${formatNum(clickCost)} 🍯`;
@@ -1150,8 +1383,12 @@ function triggerImpact(isTarget, isSuperCritical) {
 function doClick(event, isTarget = false) {
     playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); if(activeBoosts.luck > 0) baseChance *= 5;
     const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
-    const g = hPerClick * getGlobalBonus() * multiplier; honey += g; totalHoneyEver += g; addXP(g);
-    updateMissionProgress('clicks', 1); updateMissionProgress('honey_gain', g); if(isTarget) updateMissionProgress('target_clicks', 1);
+    const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
+    
+    updateMissionProgress('clicks', 1); 
+    updateMissionProgress('honey_gain', g); 
+    if(isTarget) updateMissionProgress('target_clicks', 1);
+    
     const bee = document.getElementById("beeContainer"); bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
     setTimeout(() => bee.style.transform = "scale(1)", 50);
     spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance);
@@ -1159,15 +1396,18 @@ function doClick(event, isTarget = false) {
 }
 
 function addXP(amt) {
-    let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); currentXP += (amt * m); updateMissionProgress('xp_gain', amt * m);
-    while(currentXP >= nextLevelXP){ currentXP -= nextLevelXP; level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); notify({n:`Nível Real ${level}!`}); }
+    let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); currentXP = validateNum(currentXP + (amt * m)); updateMissionProgress('xp_gain', amt * m);
+    while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); notify({n:`Nível Real ${level}!`}); }
 }
 
-function buyBoostManual(type, ticks, cost, label) { if(honey >= cost) { honey -= cost; activeBoosts[type] += ticks; notify({n: "Boost Ativado!", d: `+${label}`}); updateUI(); executeSave(); } }
+function buyBoostManual(type, ticks, cost, label) { 
+    cost = validateNum(cost);
+    if(honey >= cost) { honey = validateNum(honey - cost); activeBoosts[type] += ticks; notify({n: "Boost Ativado!", d: `+${label}`}); updateUI(); executeSave(); } 
+}
 function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!"}); updateUI(); executeSave(); }
 function handleBackground(id) { equippedBackground = id; notify({n: "Cenário Alterado!"}); updateUI(); executeSave(); }
 
-function startAutoProducing() { if(autoProduceInterval) clearInterval(autoProduceInterval); autoProduceInterval = setInterval(() => { if(autoUnlocked){ let gain = getMPSBase() * getGlobalBonus(); honey += gain; totalHoneyEver += gain; addXP(gain); updateMissionProgress('honey_gain', gain); } }, 1000); }
+function startAutoProducing() { if(autoProduceInterval) clearInterval(autoProduceInterval); autoProduceInterval = setInterval(() => { if(autoUnlocked){ let gain = getMPSBase() * getGlobalBonus(); honey = validateNum(honey + gain); totalHoneyEver = validateNum(totalHoneyEver + gain); addXP(gain); updateMissionProgress('honey_gain', gain); } }, 1000); }
 
 function startGameTicks() {
     if(gameTickInterval) clearInterval(gameTickInterval);
@@ -1181,7 +1421,7 @@ function startGameTicks() {
 }
 
 function executeSave(){ 
-    const data = {honey, totalHoneyEver, hPerClick, clickCost, level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost, activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
+    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
     const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
@@ -1197,21 +1437,28 @@ function checkOfflineGains(lastTimestamp) {
     }
 }
 
-function collectOfflineRewards() { honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney; addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave(); }
+function collectOfflineRewards() { 
+    honey = validateNum(honey + pendingOfflineHoney); totalHoneyEver = validateNum(totalHoneyEver + pendingOfflineHoney); 
+    addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; 
+    closeModal('offlineModal'); updateUI(); executeSave(); 
+}
 
 function load(){
     initAchievements(); renderChangelog();
     const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings();
     const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); document.getElementById('uiMainColor').value = themeSettings.mainColor; document.getElementById('uiOpacity').value = themeSettings.opacity * 100; document.getElementById('uiOpacityLabel').textContent = (themeSettings.opacity * 100) + '%'; applyTheme(); }
     const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords);
-    const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; }
+    const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { 
+        const md = JSON.parse(rawMissions); 
+        dailyMissions = md.dailyMissions || []; 
+        lastMissionReset = md.lastMissionReset || 0; 
+    }
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         try {
             const d = JSON.parse(raw);
-            honey = d.honey || 0; totalHoneyEver = d.totalHoneyEver || 0; hPerClick = d.hPerClick || 1; clickCost = d.clickCost || 10; level = d.level || 1; currentXP = d.currentXP || 0; nextLevelXP = d.nextLevelXP || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = d.autoCost || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
+            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 10; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
-            // ARMAZENA O GANHO OFFLINE PARA MOSTRAR DEPOIS
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
@@ -1224,7 +1471,6 @@ function enterGame() {
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
         const gameUI = document.getElementById('gameUI'); gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; gameLoaded = true;
-        // DISPARA O MODAL OFFLINE SOMENTE AQUI
         if(pendingOfflineHoney > 0) openModal('offlineModal');
         startGameTicks(); if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
     }, 500);
@@ -1258,7 +1504,7 @@ function buildShop() {
     ['pepper', 'energy', 'flower', 'luck'].forEach(type => {
         const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
-            const cost = Math.floor(boostBases[type] * (1 + (level * 0.18)) * d.m);
+            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.18)) * d.m));
             const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn);
         });
     });
@@ -1276,9 +1522,32 @@ function notify(a) {
     container.innerHTML = ""; container.appendChild(div); div.style.animation = "slideInNotif 4s ease-in-out forwards"; setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
-document.getElementById("btnUpgradeClick").onclick = () => { if(honey >= clickCost){ honey -= clickCost; clickLvl++; hPerClick += Math.floor(1 + (clickLvl * 0.2)); clickCost = Math.floor(clickCost * 1.45); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } };
-document.getElementById("btnAutoAction").onclick = () => { if(honey >= autoCost){ honey -= autoCost; if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } else { autoLevel++; autoCost = Math.floor(autoCost * 1.65); } updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } };
-document.getElementById("btnUpgradeLuck").onclick = () => { if(honey >= luckCost) { honey -= luckCost; luckLvl++; luckCost = Math.floor(luckCost * 2.2); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } };
+document.getElementById("btnUpgradeClick").onclick = () => { 
+    const cost = validateNum(clickCost);
+    if(honey >= cost){ 
+        honey = validateNum(honey - cost); 
+        clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.2))); 
+        clickCost = validateNum(Math.floor(clickCost * 1.45)); 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
+    } 
+};
+document.getElementById("btnAutoAction").onclick = () => { 
+    const cost = validateNum(autoCost);
+    if(honey >= cost){ 
+        honey = validateNum(honey - cost); 
+        if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } 
+        else { autoLevel++; autoCost = validateNum(Math.floor(autoCost * 1.65)); } 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
+    } 
+};
+document.getElementById("btnUpgradeLuck").onclick = () => { 
+    const cost = validateNum(luckCost);
+    if(honey >= cost) { 
+        honey = validateNum(honey - cost); 
+        luckLvl++; luckCost = validateNum(Math.floor(luckCost * 2.2)); 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
+    } 
+};
 
 document.getElementById("beeContainer").addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
 document.getElementById("beeContainer").addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false});
