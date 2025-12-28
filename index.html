@@ -31,7 +31,6 @@ body, html {
 
 body { display: flex; align-items: center; justify-content: center; min-height: 100svh; }
 
-/* AJUSTE PARA AS IMAGENS DA ABELHA */
 .bee-img {
     width: 90px;
     height: 90px;
@@ -43,7 +42,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     object-fit: contain;
 }
 
-/* PREVIEW NA LOJA */
 .skin-preview {
     width: 40px;
     height: 40px;
@@ -51,7 +49,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     margin-bottom: 5px;
 }
 
-/* TELA INICIAL NATALINA */
 #startScreen {
     position: fixed; inset: 0; background: var(--bg-gradient);
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -92,7 +89,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
 }
 
-/* INTERFACE DO JOGO */
 .game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; display: none; }
 .card{ background:var(--card); border-radius:26px; padding:20px; box-shadow:var(--shadow); text-align:center; position: relative; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.4); transition: transform 0.1s; }
 
@@ -113,7 +109,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .save-icon.visible { opacity: 1; animation: pulseSave 1s ease-out; }
 @keyframes pulseSave { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 
-/* BOTÕES DE TOPO */
 .settings-gear { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; }
 .settings-gear:active { transform: rotate(90deg) scale(1.2); }
 .daily-mission-btn { position: absolute; top: 18px; right: 55px; font-size: 24px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; }
@@ -170,12 +165,10 @@ button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:15p
 button:active{ transform:translateY(2px); box-shadow:0 2px 0 #d1ad00; }
 button:disabled { background:#e0e0e0 !important; color:#aaa !important; box-shadow: none !important; opacity: 0.6; }
 
-/* ESTILOS DE CONFIGURAÇÃO */
 .config-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
 .config-label { font-weight: 800; font-size: 14px; color: var(--dark); display: flex; justify-content: space-between; }
 input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
-/* MODAIS */
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(12px); display:none; justify-content:center; align-items:center; z-index:10001; padding: 20px; }
 .modal-box{ background:#fff; width:100%; max-width:380px; max-height: 85svh; border-radius:35px; overflow:hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; }
 .modal-header{ padding:20px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; color: var(--dark); font-size: 18px; flex-shrink: 0; }
@@ -183,7 +176,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
 .modal-footer { padding: 0 20px 20px 20px; background: #fff; flex-shrink: 0; }
 
-/* EVENT LIST */
 .event-item {
     display: flex;
     justify-content: space-between;
@@ -199,26 +191,23 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .event-reward { font-size: 11px; color: #666; }
 .btn-play-event { width: 80px; margin-top: 0; padding: 10px; font-size: 12px; }
 
-/* MINIGAME FULLSCREEN OVERLAY */
 #minigameOverlay {
     position: fixed; inset: 0; background: #000; z-index: 20000;
     display: none; flex-direction: column; align-items: center; justify-content: center;
 }
-#snakeCanvas { background: #1a1a1a; border: 4px solid var(--accent); border-radius: 10px; max-width: 90vw; max-height: 50vh; }
+#snakeCanvas, #flightCanvas { background: #1a1a1a; border: 4px solid var(--accent); border-radius: 10px; max-width: 90vw; max-height: 50vh; display: none; }
 .mg-header { width: 100%; padding: 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
 .mg-stats { font-weight: 900; font-size: 20px; color: var(--accent); }
 .mg-controls { margin-top: 20px; display: grid; grid-template-areas: ". up ." "left down right"; gap: 10px; }
 .dpad-btn { width: 65px; height: 65px; background: rgba(255,255,255,0.2); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; border: 2px solid rgba(255,255,255,0.3); }
 .dpad-btn:active { background: var(--accent); color: var(--dark); }
 
-/* TIMER E TELA FINAL MINIGAME */
 #mgCountdown { position: absolute; font-size: 120px; color: var(--accent); font-weight: 900; text-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 20005; display: none; }
 #mgResultScreen {
     position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 20010;
     display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 30px;
 }
 
-/* REFORMA NO CHANGELOG */
 .changelog-block { margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 20px; border: 1px solid #eee; }
 .changelog-section-title { font-weight: 900; font-size: 15px; margin-bottom: 12px; color: #1e3799; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 2px; }
 .changelog-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; color: #444; align-items: flex-start; }
@@ -229,7 +218,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 .version-tag { color: rgba(255,255,255,0.7); margin-top: 15px; font-weight: bold; font-size: 13px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
-/* MISSÕES DIÁRIAS */
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: #fff; border: 2px solid #f0f0f0; text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: #f9fff9; }
 .mission-card.completed::after { content: 'COMPLETO'; position: absolute; top: 10px; right: 10px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: #e8f5e9; padding: 2px 6px; border-radius: 10px; }
@@ -244,7 +232,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .ach-card.unlocked.rare { border-color: var(--rare); background: #ebf5ff; }
 .ach-card.unlocked.epic { border-color: var(--epic); background: #f5f0ff; }
 
-/* ESTILOS DE VFX DE CLIQUE */
 .floating-num-container {
     position: fixed;
     pointer-events: none;
@@ -443,10 +430,17 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                   <div class="event-item">
                       <div class="event-info">
                           <div class="event-name">Bee-Line (Snake) 🐍</div>
-                          <div class="event-reward">Ganhos: Mel & XP p/ ponto</div>
+                          <div class="event-reward">Ganhos: Médio Mel & XP</div>
                       </div>
                       <button class="btn-play-event" onclick="prepareMinigame('snake')">PLAY</button>
                   </div>
+                  <div class="event-item">
+                    <div class="event-info">
+                        <div class="event-name">Flower Flight 🌸</div>
+                        <div class="event-reward">Ganhos: Alto Mel & XP</div>
+                    </div>
+                    <button class="btn-play-event" onclick="prepareMinigame('flight')">PLAY</button>
+                </div>
                   <div style="text-align: center; color: #999; font-size: 11px; margin-top: 20px;">Novos minijogos em breve!</div>
               </div>
           </div>
@@ -478,16 +472,22 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     </div>
 
     <div class="mg-header">
-        <div class="mg-stats">PONTOS: <span id="snakeScore">0</span></div>
-        <button onclick="exitSnakeGame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: #ff4757; color: white;">DESISTIR</button>
+        <div class="mg-stats">PONTOS: <span id="mgCurrentScore">0</span></div>
+        <button onclick="exitMinigame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: #ff4757; color: white;">DESISTIR</button>
     </div>
+    
     <canvas id="snakeCanvas"></canvas>
-    <div class="mg-controls">
+    <canvas id="flightCanvas"></canvas>
+
+    <div id="snakeControls" class="mg-controls" style="display: none;">
         <div class="dpad-btn" style="grid-area: up;" ontouchstart="changeSnakeDir('UP')" onmousedown="changeSnakeDir('UP')">▲</div>
         <div class="dpad-btn" style="grid-area: left;" ontouchstart="changeSnakeDir('LEFT')" onmousedown="changeSnakeDir('LEFT')">◀</div>
         <div class="dpad-btn" style="grid-area: down;" ontouchstart="changeSnakeDir('DOWN')" onmousedown="changeSnakeDir('DOWN')">▼</div>
         <div class="dpad-btn" style="grid-area: right;" ontouchstart="changeSnakeDir('RIGHT')" onmousedown="changeSnakeDir('RIGHT')">▶</div>
     </div>
+
+    <div id="flightControls" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;" ontouchstart="flightJump()" onmousedown="flightJump()"></div>
+    <div id="flightHint" style="display: none; color: white; margin-top: 10px; font-weight: 800;">CLIQUE NA TELA PARA VOAR!</div>
 </div>
 
 <div class="modal" id="missionsModal">
@@ -560,7 +560,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 </div>
 
 <script>
-// --- HISTÓRICO DE ATUALIZAÇÕES ---
 const GAME_VERSION = "4.0.8";
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
@@ -569,11 +568,11 @@ const MISSION_KEY = "BeeRoyal_Missions_V2";
 const updateHistory = [
     {
         version: "4.0.8",
-        title: "🛠️ CORREÇÕES DE SISTEMA",
+        title: "🌸 NOVO MINIGAME: FLOWER FLIGHT",
         changes: [
-            { type: "fix", text: "Corrigido persistência de volume ao reiniciar." },
-            { type: "fix", text: "Ativado Fullscreen automático ao entrar no jogo." },
-            { type: "mod", text: "Melhorada a detecção de input de áudio inicial." }
+            { type: "add", text: "Adicionado minijogo Flower Flight na aba eventos." },
+            { type: "fix", text: "Corrigido input lag nos controles do Snake." },
+            { type: "mod", text: "Balanceamento de Mel offline ajustado." }
         ]
     }
 ];
@@ -597,43 +596,50 @@ function renderChangelog() {
     });
 }
 
-// --- VARIÁVEIS DE JOGO ---
 let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
 let clickLvl = 1, autoLvlLvl = 1; 
-
 let luckLvl = 1, luckCost = 500;
-
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0 }; 
 let clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
-
 let dailyMissions = [];
 let lastMissionReset = 0;
-
 let audioSettings = { music: 50, click: 80 };
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
 soundMusic.loop = true;
 
-// --- LÓGICA DO MINIGAME SNAKE ---
-let snake = [];
-let food = {x: 0, y: 0};
-let dx = 20;
-let dy = 0;
-let nextDx = 20; // Prevenção de Ghosting
-let nextDy = 0;
-let snakeScore = 0;
-let snakeInterval = null;
+// VARIÁVEIS MINIGAMES
+let activeMG = null;
+let mgInterval = null;
 let mgRunning = false;
+let mgScore = 0;
+
+// SNAKE VARS
+let snake = [];
+let snakeFood = {x: 0, y: 0};
+let sdx = 20, sdy = 0, snextDx = 20, snextDy = 0;
 const snakeCanvas = document.getElementById("snakeCanvas");
 const snakeCtx = snakeCanvas.getContext("2d");
-const boxSize = 20;
+
+// FLIGHT VARS
+let fBeeY = 150, fVelocity = 0, fGravity = 0.5, fJump = -7;
+let fPipes = [];
+const flightCanvas = document.getElementById("flightCanvas");
+const flightCtx = flightCanvas.getContext("2d");
 
 function prepareMinigame(type) {
+    activeMG = type;
     document.getElementById("minigameOverlay").style.display = "flex";
     document.getElementById("mgResultScreen").style.display = "none";
+    document.getElementById("snakeCanvas").style.display = "none";
+    document.getElementById("flightCanvas").style.display = "none";
+    document.getElementById("snakeControls").style.display = "none";
+    document.getElementById("flightControls").style.display = "none";
+    document.getElementById("flightHint").style.display = "none";
+
     const countdownEl = document.getElementById("mgCountdown");
     countdownEl.style.display = "block";
     
@@ -649,121 +655,134 @@ function prepareMinigame(type) {
         } else {
             clearInterval(countTimer);
             countdownEl.style.display = "none";
-            if(type === 'snake') startSnakeGame();
+            startMG();
         }
     }, 1000);
 }
 
-function startSnakeGame() {
-    snakeCanvas.width = 300;
-    snakeCanvas.height = 300;
-    snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
-    snakeScore = 0;
-    dx = boxSize;
-    dy = 0;
-    nextDx = boxSize;
-    nextDy = 0;
+function startMG() {
+    mgScore = 0;
+    document.getElementById("mgCurrentScore").textContent = "0";
     mgRunning = true;
-    document.getElementById("snakeScore").textContent = "0";
-    createFood();
-    if(snakeInterval) clearInterval(snakeInterval);
-    snakeInterval = setInterval(drawSnakeGame, 100); // 100ms para maior fluidez
+
+    if(activeMG === 'snake') {
+        document.getElementById("snakeCanvas").style.display = "block";
+        document.getElementById("snakeControls").style.display = "grid";
+        initSnake();
+    } else {
+        document.getElementById("flightCanvas").style.display = "block";
+        document.getElementById("flightControls").style.display = "block";
+        document.getElementById("flightHint").style.display = "block";
+        initFlight();
+    }
 }
 
-window.addEventListener("keydown", (e) => {
-    if(!mgRunning) return;
-    const key = e.key.toLowerCase();
-    if ((key === "arrowleft" || key === "a")) changeSnakeDir('LEFT');
-    if ((key === "arrowup" || key === "w")) changeSnakeDir('UP');
-    if ((key === "arrowright" || key === "d")) changeSnakeDir('RIGHT');
-    if ((key === "arrowdown" || key === "s")) changeSnakeDir('DOWN');
-});
-
-function showMgResult(score) {
-    mgRunning = false;
-    clearInterval(snakeInterval);
-    
-    let hGain = score * 50 * (1 + level * 0.1);
-    let xGain = score * 25 * (1 + level * 0.1);
-    
-    honey += hGain;
-    addXP(xGain);
-    
-    document.getElementById("mgResultScore").textContent = score;
-    document.getElementById("mgResultReward").innerHTML = `RECOMPENSA:<br>+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
-    document.getElementById("mgResultScreen").style.display = "flex";
-    
-    updateUI();
-    executeSave();
+function initSnake() {
+    snakeCanvas.width = 300; snakeCanvas.height = 300;
+    snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
+    sdx = 20; sdy = 0; snextDx = 20; snextDy = 0;
+    createSnakeFood();
+    if(mgInterval) clearInterval(mgInterval);
+    mgInterval = setInterval(drawSnake, 100);
 }
 
-function closeMgResult() {
-    document.getElementById("minigameOverlay").style.display = "none";
+function createSnakeFood() {
+    snakeFood.x = Math.floor(Math.random() * (snakeCanvas.width / 20)) * 20;
+    snakeFood.y = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20;
 }
 
-function exitSnakeGame() {
-    clearInterval(snakeInterval);
-    mgRunning = false;
-    document.getElementById("minigameOverlay").style.display = "none";
-}
+function drawSnake() {
+    sdx = snextDx; sdy = snextDy;
+    const head = {x: snake[0].x + sdx, y: snake[0].y + sdy};
 
-function drawSnakeGame() {
-    // Aplica a direção pendente no início do frame
-    dx = nextDx;
-    dy = nextDy;
-
-    if (checkSnakeCollision()) {
-        showMgResult(snakeScore);
-        return;
+    if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height || snake.some(s => s.x === head.x && s.y === head.y)) {
+        finishMG(); return;
     }
 
-    snakeCtx.fillStyle = "#1a1a1a";
-    snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-
-    snakeCtx.fillStyle = "#ff4757";
-    snakeCtx.beginPath();
-    snakeCtx.arc(food.x + boxSize/2, food.y + boxSize/2, boxSize/2, 0, Math.PI * 2);
-    snakeCtx.fill();
-
-    snake.forEach((part, index) => {
-        snakeCtx.fillStyle = index === 0 ? "#ffcc00" : "#4a3b00";
-        snakeCtx.fillRect(part.x, part.y, boxSize - 2, boxSize - 2);
-    });
-
-    const head = {x: snake[0].x + dx, y: snake[0].y + dy};
     snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-        snakeScore++;
-        document.getElementById("snakeScore").textContent = snakeScore;
-        createFood();
+    if(head.x === snakeFood.x && head.y === snakeFood.y) {
+        mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore;
+        createSnakeFood();
     } else {
         snake.pop();
     }
-}
 
-function createFood() {
-    food.x = Math.floor(Math.random() * (snakeCanvas.width / boxSize)) * boxSize;
-    food.y = Math.floor(Math.random() * (snakeCanvas.height / boxSize)) * boxSize;
-}
-
-function checkSnakeCollision() {
-    const head = snake[0];
-    if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height) return true;
-    for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) return true;
-    }
-    return false;
+    snakeCtx.fillStyle = "#1a1a1a"; snakeCtx.fillRect(0, 0, 300, 300);
+    snakeCtx.fillStyle = "#ff4757"; snakeCtx.beginPath();
+    snakeCtx.arc(snakeFood.x + 10, snakeFood.y + 10, 8, 0, Math.PI * 2); snakeCtx.fill();
+    snake.forEach((p, i) => {
+        snakeCtx.fillStyle = i === 0 ? "#ffcc00" : "#4a3b00";
+        snakeCtx.fillRect(p.x, p.y, 18, 18);
+    });
 }
 
 function changeSnakeDir(dir) {
-    if (!mgRunning) return;
-    // Prevenção de Ghosting: Não permite virar para a direção oposta
-    if (dir === 'LEFT' && dx === 0) { nextDx = -boxSize; nextDy = 0; }
-    if (dir === 'UP' && dy === 0) { nextDx = 0; nextDy = -boxSize; }
-    if (dir === 'RIGHT' && dx === 0) { nextDx = boxSize; nextDy = 0; }
-    if (dir === 'DOWN' && dy === 0) { nextDx = 0; nextDy = boxSize; }
+    if (dir === 'LEFT' && sdx === 0) { snextDx = -20; snextDy = 0; }
+    if (dir === 'UP' && sdy === 0) { snextDx = 0; snextDy = -20; }
+    if (dir === 'RIGHT' && sdx === 0) { snextDx = 20; snextDy = 0; }
+    if (dir === 'DOWN' && sdy === 0) { snextDx = 0; snextDy = 20; }
 }
+
+function initFlight() {
+    flightCanvas.width = 300; flightCanvas.height = 300;
+    fBeeY = 150; fVelocity = 0; fPipes = [];
+    if(mgInterval) clearInterval(mgInterval);
+    mgInterval = setInterval(drawFlight, 30);
+}
+
+function flightJump() { if(mgRunning && activeMG === 'flight') fVelocity = fJump; }
+
+function drawFlight() {
+    fVelocity += fGravity; fBeeY += fVelocity;
+    if(fBeeY < 0 || fBeeY > 285) { finishMG(); return; }
+
+    if(fPipes.length === 0 || fPipes[fPipes.length-1].x < 150) {
+        let gap = 100;
+        let topH = Math.random() * (200 - gap) + 20;
+        fPipes.push({x: 300, topH: topH, gap: gap, passed: false});
+    }
+
+    flightCtx.fillStyle = "#1a1a1a"; flightCtx.fillRect(0, 0, 300, 300);
+    flightCtx.fillStyle = "#ffcc00"; flightCtx.fillRect(40, fBeeY, 20, 15);
+
+    fPipes.forEach((p, i) => {
+        p.x -= 3;
+        flightCtx.fillStyle = "#4caf50";
+        flightCtx.fillRect(p.x, 0, 40, p.topH);
+        flightCtx.fillRect(p.x, p.topH + p.gap, 40, 300);
+
+        if(p.x < 60 && p.x + 40 > 40) {
+            if(fBeeY < p.topH || fBeeY + 15 > p.topH + p.gap) { finishMG(); return; }
+        }
+        if(!p.passed && p.x < 40) {
+            p.passed = true; mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore;
+        }
+    });
+    fPipes = fPipes.filter(p => p.x > -50);
+}
+
+function finishMG() {
+    mgRunning = false;
+    clearInterval(mgInterval);
+    
+    let multiplier = activeMG === 'snake' ? 50 : 150;
+    let hGain = mgScore * multiplier * (1 + level * 0.1);
+    let xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
+    
+    honey += hGain; addXP(xGain);
+    
+    document.getElementById("mgResultScore").textContent = mgScore;
+    document.getElementById("mgResultReward").innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
+    document.getElementById("mgResultScreen").style.display = "flex";
+    updateUI(); executeSave();
+}
+
+function exitMinigame() {
+    clearInterval(mgInterval); mgRunning = false;
+    document.getElementById("minigameOverlay").style.display = "none";
+}
+
+function closeMgResult() { document.getElementById("minigameOverlay").style.display = "none"; }
 
 function updateVolume(type) {
     tryPlayMusic();
@@ -782,15 +801,12 @@ function updateVolume(type) {
 function applyAudioSettings() {
     soundMusic.volume = audioSettings.music / 100;
     soundClick.volume = audioSettings.click / 100;
-    
-    const mVol = document.getElementById('musicVol');
-    const cVol = document.getElementById('clickVol');
-    if(mVol) {
-        mVol.value = audioSettings.music;
+    if(document.getElementById('musicVol')) {
+        document.getElementById('musicVol').value = audioSettings.music;
         document.getElementById('musicVolLabel').textContent = audioSettings.music + '%';
     }
-    if(cVol) {
-        cVol.value = audioSettings.click;
+    if(document.getElementById('clickVol')) {
+        document.getElementById('clickVol').value = audioSettings.click;
         document.getElementById('clickVolLabel').textContent = audioSettings.click + '%';
     }
 }
@@ -817,16 +833,14 @@ function requestFullscreen() {
     const docEl = doc.documentElement;
     const request = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
     if (request && !doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-        request.call(docEl).catch(err => {
-            console.warn(`Erro ao tentar ativar Fullscreen: ${err.message}`);
-        });
+        request.call(docEl).catch(err => { console.warn(err.message); });
     }
 }
 
 function returnToMain() {
     closeModal('settingsModal');
-    if(autoProduceInterval) { clearInterval(autoProduceInterval); autoProduceInterval = null; }
-    if(gameTickInterval) { clearInterval(gameTickInterval); gameTickInterval = null; }
+    if(autoProduceInterval) clearInterval(autoProduceInterval);
+    if(gameTickInterval) clearInterval(gameTickInterval);
     executeSave();
     document.getElementById('gameUI').style.opacity = '0';
     setTimeout(() => {
@@ -883,7 +897,6 @@ function checkMissionReset() {
     const resetHour = 22;
     let resetLimit = new Date();
     resetLimit.setHours(resetHour, 0, 0, 0);
-
     if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
         generateDailyMissions();
         lastMissionReset = now.getTime();
@@ -908,8 +921,7 @@ function generateDailyMissions() {
             case 'boost_pepper': rewardLabel = "10min Pimenta (3x Mel)"; break;
             case 'boost_energy': rewardLabel = "10min Energético (2x Vel)"; break;
             case 'boost_flower': rewardLabel = "10min Flor (5x XP)"; break;
-            case 'boost_all': 
-                rewardLabel = "Pack de Boosts (5min)"; break;
+            case 'boost_all': rewardLabel = "Pack de Boosts (5min)"; break;
             case 'boost_extreme': rewardLabel = "30min de Pimenta & Flor"; break;
             case 'upgrade_free_click': rewardLabel = "+1 Nível Clique GRÁTIS"; break;
             case 'upgrade_free_auto': rewardLabel = "+1 Nível Auto GRÁTIS"; break;
@@ -927,10 +939,7 @@ function updateMissionProgress(type, amt = 1) {
         if (m.type === type && !m.completed) {
             m.progress += amt;
             if (m.progress >= m.target) {
-                m.progress = m.target;
-                m.completed = true;
-                grantMissionReward(m);
-                changed = true;
+                m.progress = m.target; m.completed = true; grantMissionReward(m); changed = true;
             }
         }
     });
@@ -940,8 +949,6 @@ function updateMissionProgress(type, amt = 1) {
 function grantMissionReward(m) {
     const lvlBonus = 1 + (level * 0.5);
     const baseH = m.target * 20 * lvlBonus;
-    const baseX = m.target * 10 * lvlBonus;
-
     switch(m.rewardType) {
         case 'honey_xp': honey += baseH; addXP(baseH/2); break;
         case 'honey_xp_large': honey += baseH * 2; addXP(baseH); break;
@@ -949,19 +956,10 @@ function grantMissionReward(m) {
         case 'boost_pepper': activeBoosts.pepper += 6000; break;
         case 'boost_energy': activeBoosts.energy += 6000; break;
         case 'boost_flower': activeBoosts.flower += 6000; break;
-        case 'boost_all': 
-            activeBoosts.pepper += 3000; activeBoosts.energy += 3000; activeBoosts.flower += 3000; 
-            break;
-        case 'boost_extreme':
-            activeBoosts.pepper += 18000; activeBoosts.flower += 18000;
-            break;
-        case 'upgrade_free_click':
-            clickLvl++; hPerClick += Math.floor(1 + (clickLvl * 0.2));
-            break;
-        case 'upgrade_free_auto':
-            if (autoUnlocked) autoLevel++;
-            else { autoUnlocked = true; startAutoProducing(); }
-            break;
+        case 'boost_all': activeBoosts.pepper += 3000; activeBoosts.energy += 3000; activeBoosts.flower += 3000; break;
+        case 'boost_extreme': activeBoosts.pepper += 18000; activeBoosts.flower += 18000; break;
+        case 'upgrade_free_click': clickLvl++; hPerClick += Math.floor(1 + (clickLvl * 0.2)); break;
+        case 'upgrade_free_auto': if (autoUnlocked) autoLevel++; else { autoUnlocked = true; startAutoProducing(); } break;
     }
     notify({n: "Missão Concluída!", d: m.rewardLabel});
     updateUI();
@@ -1032,15 +1030,12 @@ function updateUI() {
     
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost);
     document.getElementById("btnUpgradeClick").innerHTML = `Upgrade Clique (Lvl ${clickLvl})<br>${formatNum(clickCost)} 🍯`;
-    
     document.getElementById("btnAutoAction").disabled = (honey < autoCost);
     document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `Desbloquear Auto<br>${formatNum(autoCost)} 🍯` : `Upgrade Auto (Lvl ${autoLevel})<br>${formatNum(autoCost)} 🍯`;
-    
     document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost);
     document.getElementById("btnUpgradeLuck").innerHTML = `Upgrade Sorte (Lvl ${luckLvl})<br>${formatNum(luckCost)} 🍯`;
 
-    buildShop();
-    renderActiveBoosts();
+    buildShop(); renderActiveBoosts();
     
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`);
@@ -1060,23 +1055,15 @@ function updateUI() {
     const bgs = ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'];
     const clickZone = document.getElementById("clickZone");
     const clickCard = document.getElementById("clickCard");
-    
     bgs.forEach(id => {
         const btn = document.getElementById(`btn_bg_${id}`);
         if(!btn) return;
         if(equippedBackground === id) {
-            btn.style.background = "var(--xp-bar)";
-            btn.style.color = "white";
+            btn.style.background = "var(--xp-bar)"; btn.style.color = "white";
             clickZone.style.backgroundImage = `url('${id}.gif')`;
-            if(id === 'BgPadrao') {
-                clickCard.style.background = "rgba(255,255,255,0.85)";
-            } else {
-                clickCard.style.background = "rgba(255,255,255,0.35)"; 
-                clickCard.style.backdropFilter = "blur(3px)";
-            }
+            clickCard.style.background = id === 'BgPadrao' ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)";
         } else {
-            btn.style.background = "#f9f9f9";
-            btn.style.color = "var(--dark)";
+            btn.style.background = "#f9f9f9"; btn.style.color = "var(--dark)";
         }
     });
 }
@@ -1099,37 +1086,21 @@ function spawnFloatingNumber(amount, isTarget, isSuperCritical) {
     const rect = bee.getBoundingClientRect();
     const centerX = rect.left + (rect.width / 2);
     const centerY = rect.top + (rect.height / 2);
-
     const container = document.createElement("div");
     container.className = "floating-num-container";
-    
     const numEl = document.createElement("div");
     numEl.className = "floating-num";
     numEl.textContent = `+${formatNum(amount)}`;
-
     if(isSuperCritical) {
-        numEl.style.color = "#ff4757";
-        numEl.style.fontSize = "38px";
-        numEl.style.textShadow = "0 0 20px rgba(255,71,87,0.8)";
-        
+        numEl.style.color = "#ff4757"; numEl.style.fontSize = "38px";
         const label = document.createElement("div");
-        label.className = "super-critical-label";
-        label.textContent = "SORTE REAL! (10x)";
-        container.appendChild(numEl);
-        container.appendChild(label);
+        label.className = "super-critical-label"; label.textContent = "SORTE REAL! (10x)";
+        container.appendChild(numEl); container.appendChild(label);
     } else if(isTarget) {
-        numEl.style.color = "#ffcc00";
-        numEl.style.fontSize = "32px";
-        numEl.style.textShadow = "0 0 12px rgba(255,204,0,0.8)";
+        numEl.style.color = "#ffcc00"; numEl.style.fontSize = "32px";
         container.appendChild(numEl);
-    } else {
-        container.appendChild(numEl);
-    }
-
-    container.style.left = `${centerX}px`;
-    container.style.top = `${centerY}px`;
-    container.style.transform = "translateX(-50%)";
-
+    } else container.appendChild(numEl);
+    container.style.left = `${centerX}px`; container.style.top = `${centerY}px`;
     document.body.appendChild(container);
     setTimeout(() => container.remove(), 800);
 }
@@ -1139,21 +1110,15 @@ function spawnHoneyParticles(isSuperCritical) {
     const rect = bee.getBoundingClientRect();
     const centerX = rect.left + (rect.width / 2);
     const centerY = rect.top + (rect.height / 2);
-
     const count = isSuperCritical ? 20 : 8;
-
     for(let i=0; i<count; i++) {
         const p = document.createElement("div");
         p.className = "honey-particle";
         if(isSuperCritical) p.style.background = "#ff4757";
-        p.style.left = `${centerX}px`;
-        p.style.top = `${centerY}px`;
-        
+        p.style.left = `${centerX}px`; p.style.top = `${centerY}px`;
         const tx = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180);
         const ty = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180);
-        p.style.setProperty('--tx', `${tx}px`);
-        p.style.setProperty('--ty', `${ty}px`);
-        
+        p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`);
         document.body.appendChild(p);
         setTimeout(() => p.remove(), 500);
     }
@@ -1162,62 +1127,32 @@ function spawnHoneyParticles(isSuperCritical) {
 function triggerImpact(isTarget, isSuperCritical) {
     const card = document.getElementById("clickCard");
     const stats = document.getElementById("statsCard");
-    
-    let scaleC = 0.98;
-    let scaleS = 1.01;
-    let time = 50;
-
-    if(isSuperCritical) {
-        scaleC = 0.90;
-        scaleS = 1.10;
-        time = 150;
-    } else if(isTarget) {
-        scaleC = 0.96;
-        scaleS = 1.04;
-    }
-
+    let scaleC = isSuperCritical ? 0.90 : (isTarget ? 0.96 : 0.98);
     card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`;
-    stats.style.transform = `scale(${scaleS})`;
-    
+    stats.style.transform = `scale(${isSuperCritical ? 1.10 : 1.01})`;
     setTimeout(() => {
         card.style.transform = "scale(1) rotate(0deg)";
         stats.style.transform = "scale(1)";
-    }, time);
+    }, isSuperCritical ? 150 : 50);
 }
 
 function doClick(event, isTarget = false) {
     playClickSound();
-    
     let baseChance = 0.001 + ((luckLvl - 1) * 0.0005);
     if(activeBoosts.luck > 0) baseChance *= 5;
-
     const superCriticalChance = Math.random() < baseChance;
-    
-    let multiplier = 1;
-    if (isTarget) multiplier *= 2;
-    if (superCriticalChance) multiplier *= 10;
-    
+    let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier;
-    
-    honey += g; 
-    totalHoneyEver += g; 
-    addXP(g);
-    
-    updateMissionProgress('clicks', 1);
-    updateMissionProgress('honey_gain', g);
+    honey += g; totalHoneyEver += g; addXP(g);
+    updateMissionProgress('clicks', 1); updateMissionProgress('honey_gain', g);
     if(isTarget) updateMissionProgress('target_clicks', 1);
-    
     const bee = document.getElementById("beeContainer");
     bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
     setTimeout(() => bee.style.transform = "scale(1)", 50);
-    
     spawnFloatingNumber(g, isTarget, superCriticalChance);
     spawnHoneyParticles(superCriticalChance);
     triggerImpact(isTarget, superCriticalChance);
-
-    clickBuffer.push(Date.now()); 
-    spawnFlake('gameSnowContainer'); 
-    updateUI();
+    clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI();
 }
 
 function addXP(amt) {
@@ -1240,7 +1175,6 @@ function buyBoostManual(type, ticks, cost, label) {
 }
 
 function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!"}); updateUI(); executeSave(); }
-
 function handleBackground(id) { equippedBackground = id; notify({n: "Cenário Alterado!"}); updateUI(); executeSave(); }
 
 function startAutoProducing() {
@@ -1265,10 +1199,7 @@ function startGameTicks() {
             const el = document.getElementById(`status_${b}`);
             if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo";
         }
-        if(now % 1000 < 150) {
-            updateUI();
-            checkMissionReset();
-        }
+        if(now % 1000 < 150) { updateUI(); checkMissionReset(); }
     }, 100);
 }
 
@@ -1293,35 +1224,26 @@ function checkOfflineGains(lastTimestamp) {
     if (pendingOfflineHoney > 0) {
         const hours = Math.floor(diffInSeconds / 3600);
         const minutes = Math.floor((diffInSeconds % 3600) / 60);
-        let timeStr = hours > 0 ? `${hours}h e ${minutes}m` : `${minutes}m`;
-        document.getElementById("offlineText").innerHTML = `Suas abelhas trabalharam por <b>${timeStr}</b> enquanto você descansava!<br><br>Produção Acumulada (50%):<br><span style="color:#f39c12; font-size: 20px;">🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style="color:#4caf50; font-size: 20px;">✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+        document.getElementById("offlineText").innerHTML = `Suas abelhas trabalharam por <b>${hours > 0 ? hours+'h e '+minutes+'m' : minutes+'m'}</b>!<br><br>Produção (50%):<br><span style='color:#f39c12'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
         openModal('offlineModal');
     }
 }
 
 function collectOfflineRewards() {
-    honey += pendingOfflineHoney;
-    totalHoneyEver += pendingOfflineHoney;
-    addXP(pendingOfflineXP);
-    pendingOfflineHoney = 0;
-    pendingOfflineXP = 0;
-    closeModal('offlineModal');
-    updateUI();
-    executeSave();
-    notify({n: "Recompensas Coletadas!", d: "Bem-vindo de volta!"});
+    honey += pendingOfflineHoney; totalHoneyEver += pendingOfflineHoney; addXP(pendingOfflineXP);
+    pendingOfflineHoney = 0; pendingOfflineXP = 0;
+    closeModal('offlineModal'); updateUI(); executeSave();
 }
 
 function load(){
-    initAchievements(); 
-    renderChangelog();
+    initAchievements(); renderChangelog();
     const savedAudio = localStorage.getItem(AUDIO_KEY);
     if(savedAudio) audioSettings = JSON.parse(savedAudio);
     applyAudioSettings();
     const rawMissions = localStorage.getItem(MISSION_KEY);
     if(rawMissions) {
         const md = JSON.parse(rawMissions);
-        dailyMissions = md.dailyMissions || [];
-        lastMissionReset = md.lastMissionReset || 0;
+        dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0;
     }
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
@@ -1344,9 +1266,7 @@ function load(){
 }
 
 function enterGame() {
-    load(); 
-    tryPlayMusic();
-    requestFullscreen();
+    load(); tryPlayMusic(); requestFullscreen();
     document.getElementById('startScreen').style.opacity = '0';
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
@@ -1357,13 +1277,9 @@ function enterGame() {
     }, 500);
 }
 
-function openModal(id) { 
-    document.getElementById(id).style.display = 'flex'; 
-    if(id === 'missionsModal') renderMissions();
-}
+function openModal(id) { document.getElementById(id).style.display = 'flex'; if(id === 'missionsModal') renderMissions(); }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function openChangelog() { openModal('changelogModal'); }
-
 function openTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1400,54 +1316,39 @@ function renderAchs() {
 }
 
 function notify(a) {
-    const container = document.getElementById("notifContainer"); const div = document.createElement("div");
-    div.className = `popup`; div.textContent = `${a.n} ${a.d ? '('+a.d+')' : ''}`;
+    const container = document.getElementById("notifContainer");
+    const div = document.createElement("div"); div.className = `popup`;
+    div.textContent = `${a.n} ${a.d ? '('+a.d+')' : ''}`;
     container.innerHTML = ""; container.appendChild(div); div.style.animation = "slideInNotif 4s ease-in-out forwards";
     setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
 document.getElementById("btnUpgradeClick").onclick = () => { 
     if(honey >= clickCost){ 
-        honey -= clickCost; clickLvl++;
-        hPerClick += Math.floor(1 + (clickLvl * 0.2)); 
-        clickCost = Math.floor(clickCost * 1.45); 
-        updateMissionProgress('buy_upgrade', 1);
-        updateUI(); executeSave(); 
+        honey -= clickCost; clickLvl++; hPerClick += Math.floor(1 + (clickLvl * 0.2)); 
+        clickCost = Math.floor(clickCost * 1.45); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
-
 document.getElementById("btnAutoAction").onclick = () => { 
     if(honey >= autoCost){ 
-        honey -= autoCost; 
-        if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } 
+        honey -= autoCost; if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } 
         else { autoLevel++; autoCost = Math.floor(autoCost * 1.65); } 
-        updateMissionProgress('buy_upgrade', 1);
-        updateUI(); executeSave(); 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
-
 document.getElementById("btnUpgradeLuck").onclick = () => {
     if(honey >= luckCost) {
-        honey -= luckCost;
-        luckLvl++;
-        luckCost = Math.floor(luckCost * 2.2);
-        updateMissionProgress('buy_upgrade', 1);
-        updateUI(); executeSave();
+        honey -= luckCost; luckLvl++; luckCost = Math.floor(luckCost * 2.2);
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave();
     }
 };
 
 document.getElementById("beeContainer").addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
 document.getElementById("beeContainer").addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false});
-
 document.getElementById("leftTarget").addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
 document.getElementById("leftTarget").addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
-
 document.getElementById("rightTarget").addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
 document.getElementById("rightTarget").addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
-
-document.getElementById("clickZone").addEventListener("mousedown", (e) => { 
-    if(e.target.id === "clickZone") doClick(e, false);
-});
 
 function spawnFlake(containerId) {
     const container = document.getElementById(containerId);
@@ -1456,7 +1357,6 @@ function spawnFlake(containerId) {
     flake.style.opacity = Math.random(); flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
     container.appendChild(flake); setTimeout(() => flake.remove(), 6000);
 }
-
 setInterval(() => spawnFlake('snowContainer'), 300);
 setInterval(() => { if(gameLoaded && document.getElementById('gameUI').style.opacity == '1') spawnFlake('gameSnowContainer'); }, 400);
 
@@ -1464,12 +1364,10 @@ function initAchievements() {
     achievements.length = 0;
     for(let i=1; i<=200; i++) {
         let val = Math.pow(1.58, i) * 120;
-        let rar = i < 80 ? "common" : (i < 160 ? "rare" : "epic");
         let theme = achThemes[i % achThemes.length];
-        achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:rar,i:theme.i});
+        achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:i < 80 ? "common" : (i < 160 ? "rare" : "epic"),i:theme.i});
     }
 }
-
 load();
 </script>
 </body>
