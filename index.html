@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Bee Clicker: Royal Edition 🐝</title>
+<title>BeeKind 🐝</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -81,9 +81,36 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .start-logo { animation: floatBee 3s infinite ease-in-out; }
 
 .start-title { 
-    font-size: clamp(30px, 10vw, 42px); font-weight: 900; color: white; margin: 20px 0; 
+    font-size: clamp(30px, 12vw, 48px); font-weight: 900; color: white; margin-top: 20px; 
     text-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 2;
     display: flex; align-items: center; justify-content: center;
+}
+
+.start-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 30px;
+    opacity: 0.9;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    z-index: 2;
+}
+
+/* BOTÃO CROMÁTICO PULSANTE */
+.btn-chromatic-pulse {
+    position: relative;
+    border: none !important;
+    animation: chromaticGlow 2s linear infinite;
+    z-index: 10;
+}
+
+@keyframes chromaticGlow {
+    0% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 2px solid #ff0000; }
+    20% { box-shadow: 0 0 15px #ffcc00, inset 0 0 10px #ffcc00; outline: 3px solid #ffcc00; }
+    40% { box-shadow: 0 0 5px #00ff00, inset 0 0 5px #00ff00; outline: 2px solid #00ff00; }
+    60% { box-shadow: 0 0 15px #00ffff, inset 0 0 10px #00ffff; outline: 3px solid #00ffff; }
+    80% { box-shadow: 0 0 5px #0000ff, inset 0 0 5px #0000ff; outline: 2px solid #0000ff; }
+    100% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 2px solid #ff0000; }
 }
 
 .letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: white; }
@@ -368,7 +395,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 .version-tag { color: rgba(255,255,255,0.6); margin-top: 15px; font-weight: bold; font-size: 13px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
-/* MISSÕES REESTRUTURADAS COM REROLL */
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: rgba(76, 175, 80, 0.1); }
 .mission-card.completed::after { content: 'COMPLETO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
@@ -460,8 +486,9 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
         </div>
     </div>
     <div class="start-title">
-        BEE CL<span class="letter-i-wrapper">I<span class="tree-overlay">🎄</span></span>CKER
+        BEEK<span class="letter-i-wrapper">I<span class="tree-overlay">🎄</span></span>ND
     </div>
+    <div class="start-subtitle">Be kind to bees and earn honey.</div>
     
     <div style="display: flex; flex-direction: column; gap: 10px; width: 280px; z-index: 10;">
         <button style="font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
@@ -489,7 +516,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
 
     <div id="gameHeaderTitle" style="font-size: 18px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        Bee Clicker <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 20px; height: 20px;">
+        BeeKind <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 20px; height: 20px;">
     </div>
     <div class="stats">🍯 <span id="honey">0</span> | ⚡ <span id="mps">0</span>/s</div>
     <div class="level-container">
@@ -718,6 +745,21 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     </div>
 </div>
 
+<div class="modal" id="rerollModal">
+    <div class="modal-box" style="text-align: center; padding: 20px;">
+        <div style="font-size: 50px; margin-bottom: 15px;">🔄</div>
+        <h2 style="margin: 0 0 10px; color: var(--accent); font-weight: 900;">Nova Tarefa?</h2>
+        <p style="font-size: 14px; line-height: 1.4; color: rgba(255,255,255,0.9); margin-bottom: 25px;">
+            Você deseja trocar esta missão por uma nova tarefa aleatória? 
+            <br><small style="opacity: 0.7;">(O progresso atual será perdido)</small>
+        </p>
+        <div style="display: flex; gap: 10px;">
+            <button id="btnConfirmReroll" style="background: var(--xp-bar); color: white; margin-top: 0;">SIM, TROCAR</button>
+            <button onclick="closeModal('rerollModal')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); margin-top: 0; box-shadow: none;">CANCELAR</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="settingsModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -886,62 +928,56 @@ async function handlePwaClick() {
 }
 
 // ==========================================
-// SISTEMA DINÂMICO DE CHANGELOG (MAX 5)
+// SISTEMA DINÂMICO DE CHANGELOG (MÁX 5)
 // ==========================================
 let updateHistory = [
     {
-        version: "4.1.5",
-        title: "🛡️ CORREÇÃO DE MISSÕES & REROLL",
+        version: "4.2.4",
+        title: "🔔 NOTIFICAÇÕES INTELIGENTES",
         changes: [
-            { type: "fix", text: "Corrigido erro que impedia a contagem de progresso das missões após carregar o jogo." },
-            { type: "add", text: "Adicionado botão de Reroll (🔄) individual nas missões para trocar tarefas indesejadas." },
-            { type: "add", text: "Sistema de confirmação adicionado ao trocar missões para evitar erros." },
-            { type: "mod", text: "Melhoria na persistência dos dados de progresso diário." }
+            { type: "mod", text: "O brilho cromático do botão agora reativa automaticamente em cada nova atualização." },
+            { type: "mod", text: "O contorno pulsante só desaparece após o player ler as novidades da versão atual." },
+            { type: "add", text: "Sistema de comparação de versão persistente via LocalStorage." }
         ]
     },
     {
-        version: "4.1.4",
-        title: "📥 TUTORIAL DE DOWNLOAD INTERNO",
+        version: "4.2.3",
+        title: "🛡️ EXPERIÊNCIA IMERSIVA",
         changes: [
-            { type: "add", text: "Novo Overlay de Tutorial ensinando a baixar o jogo em iPhones." },
-            { type: "mod", text: "Otimização de rotas para funcionamento perfeito no GitHub Pages." }
+            { type: "add", text: "Removido o alerta padrão do navegador ao trocar missões." },
+            { type: "add", text: "Novo Modal de Confirmação customizado para a troca de tarefas." }
         ]
     },
     {
-        version: "4.1.3",
-        title: "🛡️ FIX: VISIBILIDADE DO DOWNLOAD",
+        version: "4.2.2",
+        title: "🌈 INTERFACE & NOVIDADES",
         changes: [
-            { type: "fix", text: "Botão circular agora é forçado a aparecer em navegadores móveis." }
+            { type: "add", text: "Botão 'O que mudou?' agora possui contorno cromático pulsante para novidades." },
+            { type: "mod", text: "Lógica de visibilidade: O brilho cromático desaparece após o primeiro acesso." }
         ]
     },
     {
-        version: "4.1.2",
-        title: "✨ ICONE DE DOWNLOAD CIRCULAR",
+        version: "4.2.1",
+        title: "🐝 AJUSTES DE MARCA: BEEKIND",
         changes: [
-            { type: "add", text: "Botão circular de instalação adicionado à Tela Inicial." }
+            { type: "mod", text: "Nome do jogo corrigido para BeeKind (sem espaços)." },
+            { type: "add", text: "Nova frase inspiracional adicionada à tela inicial." }
         ]
     },
     {
-        version: "4.1.1",
-        title: "📲 BOTÃO DE DOWNLOAD & UPDATE",
+        version: "4.2.0",
+        title: "✨ REBRANDING & SLOGAN",
         changes: [
-            { type: "add", text: "Botão 'Baixar' adicionado nas configurações (PWA)." }
+            { type: "mod", text: "Alteração da identidade visual para o novo conceito BeeKind." },
+            { type: "add", text: "Inserção do slogan no painel de status do jogo." }
         ]
     }
 ];
 
-// Função que o desenvolvedor usa para adicionar nova atualização
-function pushNewUpdate(version, title, changes) {
-    updateHistory.unshift({ version, title, changes });
-    if(updateHistory.length > 5) updateHistory.pop();
-    renderChangelog();
-    updateVersionDisplay();
-}
-
 function updateVersionDisplay() {
     const display = document.getElementById("mainVersionDisplay");
     if(display && updateHistory.length > 0) {
-        display.textContent = `🎄 CHRISTMAS UPDATE v${updateHistory[0].version}`;
+        display.textContent = `🐝 BEEKIND v${updateHistory[0].version}`;
     }
 }
 
@@ -968,6 +1004,7 @@ const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const MISSION_KEY = "BeeRoyal_Missions_V2";
 const THEME_KEY = "BeeRoyal_Theme_V1";
 const RECORDS_KEY = "BeeRoyal_Records_V1";
+const CHANGELOG_VERSION_KEY = "BeeKind_LastVersionSeen_V1";
 
 function validateNum(n) {
     if (isNaN(n) || n === undefined || n === null || n < 0) return 0;
@@ -987,6 +1024,7 @@ let lastMissionReset = 0;
 let audioSettings = { music: 50, click: 80 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
 let records = { snake: 0, flight: 0 };
+let pendingRerollId = null;
 
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
@@ -1287,18 +1325,25 @@ function updateMissionProgress(type, amt = 1) {
     if (changed && document.getElementById('missionsModal').style.display === 'flex') renderMissions();
 }
 
-function rerollMission(id) {
-    if(confirm("Deseja trocar esta missão por uma nova tarefa real?")) {
-        const index = dailyMissions.findIndex(m => m.id === id);
-        if(index !== -1) {
+function openRerollConfirmation(id) {
+    pendingRerollId = id;
+    openModal('rerollModal');
+}
+
+document.getElementById('btnConfirmReroll').onclick = () => {
+    if (pendingRerollId) {
+        const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
+        if (index !== -1) {
             const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
             const scaleFactor = Math.pow(level, 1.1), clickPowerFactor = hPerClick;
             dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, clickPowerFactor);
             renderMissions();
             executeSave();
+            closeModal('rerollModal');
+            pendingRerollId = null;
         }
     }
-}
+};
 
 function grantMissionReward(m) { honey = validateNum(honey + m.rewardHoney); addXP(m.rewardXP); notify({n: "Missão Concluída!", d: m.rewardLabel}); updateUI(); executeSave(); }
 
@@ -1318,7 +1363,7 @@ function renderMissions() {
                 <div style="font-size: 10px; font-weight: 800; min-width: 50px; text-align: right; padding-right: 5px;">
                     ${formatNum(m.progress)}/${formatNum(m.target)}
                 </div>
-                ${!m.completed ? `<div class="mission-reroll-btn" onclick="rerollMission('${m.id}')" title="Trocar Missão">🔄</div>` : ''}
+                ${!m.completed ? `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>` : ''}
             </div>`;
     });
 }
@@ -1360,6 +1405,17 @@ function updateUI() {
         if(equippedBackground === id) { btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; clickZone.style.backgroundImage = `url('${id}.gif')`; }
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "white"; }
     });
+
+    // LÓGICA DO BOTÃO CROMÁTICO INTELIGENTE
+    const lastSeenVersion = localStorage.getItem(CHANGELOG_VERSION_KEY);
+    const currentVersion = updateHistory[0].version;
+    const changelogBtn = document.getElementById("btnChangelog");
+    
+    if(lastSeenVersion !== currentVersion) {
+        changelogBtn.classList.add("btn-chromatic-pulse");
+    } else {
+        changelogBtn.classList.remove("btn-chromatic-pulse");
+    }
 }
 
 function renderActiveBoosts() {
@@ -1477,12 +1533,13 @@ function load(){
     if(raw){
         try {
             const d = JSON.parse(raw);
-            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 10; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
+            honey = validateNum(d.honey); totalHoneyEver = validateNum(totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 10; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
     checkMissionReset();
+    updateUI(); 
 }
 
 function enterGame() {
@@ -1498,15 +1555,19 @@ function enterGame() {
 
 function openModal(id) { 
     const modal = document.getElementById(id); modal.style.display = 'flex'; if(id === 'missionsModal') renderMissions();
-    if(id === 'settingsModal') { modal.style.background = 'rgba(0,0,0,0.5)'; document.querySelector(`#${id} .modal-box`).style.background = 'rgba(7, 27, 135, 0.4)'; }
 }
 
 function closeModal(id) { 
     const modal = document.getElementById(id); modal.style.display = 'none'; 
-    if(id === 'settingsModal') { modal.style.background = 'rgba(0,0,0,0.85)'; document.querySelector(`#${id} .modal-box`).style.background = 'var(--card)'; }
 }
 
-function openChangelog() { renderChangelog(); openModal('changelogModal'); }
+function openChangelog() { 
+    // MARCA A VERSÃO ATUAL COMO VISTA
+    localStorage.setItem(CHANGELOG_VERSION_KEY, updateHistory[0].version);
+    updateUI();
+    renderChangelog(); 
+    openModal('changelogModal'); 
+}
 
 function openTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
