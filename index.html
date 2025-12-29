@@ -83,7 +83,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     transition: left 0.1s linear;
     filter: drop-shadow(0 4px 5px rgba(0,0,0,0.3));
 }
-.loading-text { margin-top: 15px; font-weight: 900; font-size: 14px; letter-spacing: 2px; color: var(--accent); }
+.loading-text { margin-top: 15px; font-weight: 900; font-size: 14px; letter-spacing: 2px; color: var(--accent); text-align: center; width: 100%; }
 .rotating-cookie { 
     position: absolute; bottom: 30px; right: 30px; 
     font-size: 40px; animation: spinCookie 3s linear infinite; 
@@ -1079,6 +1079,22 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.7.0",
+        title: "🛡️ NAVEGAÇÃO INTELIGENTE",
+        changes: [
+            { type: "mod", text: "Botão 'Sair para o Início' agora aparece apenas quando as configurações são abertas dentro do jogo." },
+            { type: "mod", text: "Interface do menu inicial otimizada para evitar navegação redundante." }
+        ]
+    },
+    {
+        version: "4.6.9",
+        title: "🔄 TRANSIÇÕES BIDIRECIONAIS",
+        changes: [
+            { type: "add", text: "Tela de loading agora aparece também ao retornar para o menu inicial." },
+            { type: "mod", text: "Otimização das mensagens de carregamento para refletir o fechamento da colmeia." }
+        ]
+    },
+    {
         version: "4.6.8",
         title: "⌛ TELA DE CARREGAMENTO REAL",
         changes: [
@@ -1102,23 +1118,6 @@ let updateHistory = [
             { type: "add", text: "Textos agora ajustam automaticamente entre Claro/Escuro baseado na cor do tema escolhida." },
             { type: "mod", text: "Cores de acento (Amarelo) otimizadas para fundos de alta claridade." },
             { type: "mod", text: "Barras de progresso e XP agora possuem bordas para melhor visibilidade em qualquer tema." }
-        ]
-    },
-    {
-        version: "4.6.5",
-        title: "⚙️ REFINAMENTO DE AJUSTES",
-        changes: [
-            { type: "mod", text: "Painel de configurações redesenhado com cards e Sliders personalizados." },
-            { type: "add", text: "Organização visual aprimorada para controle de áudio e interface." },
-            { type: "mod", text: "Botão de saída para o menu inicial estilizado para maior clareza." }
-        ]
-    },
-    {
-        version: "4.6.4",
-        title: "🔊 CONTROLE DE ÁUDIO AVANÇADO",
-        changes: [
-            { type: "add", text: "Separadas as barras de volume para o som de Clique e o som de Level Up." },
-            { type: "mod", text: "Ajuste fino de áudio disponível no menu de configurações real." }
         ]
     }
 ];
@@ -1440,9 +1439,42 @@ function requestFullscreen() {
 }
 
 function returnToMain() {
-    closeModal('settingsModal'); if(autoProduceInterval) clearInterval(autoProduceInterval); if(gameTickInterval) clearInterval(gameTickInterval);
-    executeSave(); document.getElementById('gameUI').style.opacity = '0';
-    setTimeout(() => { document.getElementById('gameUI').style.display = 'none'; document.getElementById('startScreen').style.display = 'flex'; document.getElementById('startScreen').style.opacity = '1'; gameLoaded = false; }, 500);
+    closeModal('settingsModal'); 
+    if(autoProduceInterval) clearInterval(autoProduceInterval); 
+    if(gameTickInterval) clearInterval(gameTickInterval);
+    executeSave(); 
+    
+    // LOADING REVERSO
+    const loadingScreen = document.getElementById("loadingScreen");
+    const bar = document.getElementById("loadingBarFill");
+    const bee = document.getElementById("loadingBeeImg");
+    const text = document.getElementById("loadingTextMsg");
+    
+    loadingScreen.style.display = "flex";
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 8;
+        if(progress > 100) progress = 100;
+        bar.style.width = progress + "%";
+        bee.style.left = progress + "%";
+        
+        if(progress < 50) text.textContent = "FECHANDO COLMEIA...";
+        else text.textContent = "SALVANDO MEL...";
+        
+        if(progress === 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                loadingScreen.style.display = "none";
+                document.getElementById('gameUI').style.opacity = '0';
+                setTimeout(() => { 
+                    document.getElementById('gameUI').style.display = 'none'; 
+                    document.getElementById('startScreen').style.display = 'flex'; 
+                    document.getElementById('startScreen').style.opacity = '1'; 
+                    gameLoaded = false; 
+                }, 500);
+            }, 300);
+        }
+    }, 50);
 }
 
 const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Uma colmeia pode ter até 60.000 abelhas no verão."];
@@ -1902,6 +1934,17 @@ function enterGame() {
 
 function openModal(id) { 
     const modal = document.getElementById(id); modal.style.display = 'flex'; 
+    
+    // LOGICA CONDICIONAL DO BOTAO SAIR
+    if(id === 'settingsModal') {
+        const btnExit = document.getElementById("btnExitToMain");
+        if(gameLoaded && document.getElementById('gameUI').style.display === 'flex') {
+            btnExit.style.display = "block";
+        } else {
+            btnExit.style.display = "none";
+        }
+    }
+
     if(id === 'missionsModal') {
         renderMissions();
         document.getElementById("btnMissionAlert").classList.remove("mission-alert");
