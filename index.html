@@ -124,6 +124,11 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     z-index: 10;
 }
 
+.mission-alert {
+    border-radius: 50%;
+    animation: chromaticGlow 1.5s linear infinite;
+}
+
 @keyframes chromaticGlow {
     0% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 3px solid #ff0000; }
     20% { box-shadow: 0 0 15px #ffcc00, inset 0 0 10px #ffcc00; outline: 3px solid #ffcc00; }
@@ -217,7 +222,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 
 .settings-gear, .daily-mission-btn { position: absolute; top: 18px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .settings-gear { right: 18px; font-size: 24px; }
-.daily-mission-btn { right: 55px; font-size: 24px; }
+.daily-mission-btn { right: 55px; font-size: 24px; border-radius: 50%; padding: 2px; }
 
 .level-container { margin-top: 12px; text-align: left; }
 .level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: white; }
@@ -430,7 +435,9 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: rgba(76, 175, 80, 0.1); }
-.mission-card.completed::after { content: 'COMPLETO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
+.mission-card.collected { border-color: rgba(255,255,255,0.2); opacity: 0.6; }
+.mission-card.completed:not(.collected)::after { content: 'CONCLUÍDO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
+.mission-card.collected::after { content: 'COLETADO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
 
 .mission-reroll-btn { 
     position: absolute; bottom: 8px; right: 8px; 
@@ -545,7 +552,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
   
   <div class="card" id="statsCard">
     <div id="saveIndicator" class="save-icon">💾</div>
-    <div class="daily-mission-btn" onclick="openModal('missionsModal')">📝</div>
+    <div id="btnMissionAlert" class="daily-mission-btn" onclick="openModal('missionsModal')">📝</div>
     <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
 
     <div id="gameHeaderTitle" style="font-size: 18px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -986,11 +993,28 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.5.9",
+        title: "🎁 COLETA DE MISSÕES",
+        changes: [
+            { type: "add", text: "As recompensas das missões agora devem ser coletadas manualmente." },
+            { type: "mod", text: "Segurança Real: recompensas não coletadas são salvas automaticamente pelo sistema às 22h." },
+            { type: "mod", text: "Interface de missões atualizada com botão de resgate." }
+        ]
+    },
+    {
+        version: "4.5.8",
+        title: "🎯 FEEDBACK DE MISSÕES",
+        changes: [
+            { type: "add", text: "Ícone de missões agora pulsa em cores quando há tarefas concluídas." },
+            { type: "mod", text: "Histórico de versões ajustado para ocultar dados técnicos de produção." },
+            { type: "fix", text: "Remoção do alerta de missão assim que o painel é acessado." }
+        ]
+    },
+    {
         version: "4.5.7",
         title: "✨ REFINAMENTO VISUAL",
         changes: [
             { type: "mod", text: "Ajustado o texto de produção acumulada para ser mais direto." },
-            { type: "mod", text: "Removida a porcentagem informativa do painel offline para melhor estética." },
             { type: "fix", text: "Polimento na lógica de verificação de tempo para a trava de 7 dias." }
         ]
     },
@@ -1008,26 +1032,7 @@ let updateHistory = [
         title: "👴 LEGADO DO VELHO DUDU",
         changes: [
             { type: "mod", text: "As abelhas agora são 100% produtivas no modo offline." },
-            { type: "add", text: "Nova frase inspiradora no painel de descanso do Velho Dudu." },
-            { type: "mod", text: "Remoção de notificações redundantes no painel offline." }
-        ]
-    },
-    {
-        version: "4.5.4",
-        title: "🛡️ POLIMENTO OFFLINE",
-        changes: [
-            { type: "mod", text: "Farm offline agora exige no mínimo 60 segundos de ausência para ser ativado." },
-            { type: "add", text: "Indicador cromático pulsante para novas atualizações no botão principal." },
-            { type: "mod", text: "Ajuste na verificação de persistência do cache local." }
-        ]
-    },
-    {
-        version: "4.5.3",
-        title: "🎨 LIMPEZA DE INTERFACE",
-        changes: [
-            { type: "mod", text: "Versão movida da tela principal para o painel de configurações." },
-            { type: "add", text: "Novo sistema de renderização automática para as últimas 5 atualizações." },
-            { type: "mod", text: "Refatoração do painel 'O que mudou?' para maior clareza visual." }
+            { type: "add", text: "Nova frase inspiradora no painel de descanso do Velho Dudu." }
         ]
     }
 ];
@@ -1356,9 +1361,27 @@ const missionTemplates = [
 ];
 
 function checkMissionReset() {
-    const now = new Date(), resetHour = 22; let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0);
-    if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) { generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); }
-    else if (!dailyMissions || dailyMissions.length < 10) { generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); }
+    const now = new Date(), resetHour = 22; 
+    let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0);
+    
+    // Se o horário de reset já passou e o último reset foi antes do horário limite
+    if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
+        // SEGURANÇA REAL: Coleta automática de missões completas não resgatadas
+        dailyMissions.forEach(m => {
+            if (m.completed && !m.collected) {
+                honey = validateNum(honey + m.rewardHoney);
+                addXP(m.rewardXP);
+            }
+        });
+        generateDailyMissions(); 
+        lastMissionReset = now.getTime(); 
+        executeSave(); 
+    }
+    else if (!dailyMissions || dailyMissions.length < 10) { 
+        generateDailyMissions(); 
+        lastMissionReset = now.getTime(); 
+        executeSave(); 
+    }
 }
 
 function generateDailyMissions() {
@@ -1380,8 +1403,8 @@ function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
     rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 10 : (tmp.type === 'mg_score' ? 100 : clickValue)), 50) * tmp.rewardMult; 
     rewardXP = (nextLevelXP * 0.05) * tmp.rewardMult;
     return { 
-        id: tmp.id, type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
-        target: target, progress: 0, completed: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
+        id: tmp.id + Date.now() + Math.random(), type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
+        target: target, progress: 0, completed: false, collected: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
         rewardLabel: `${formatNum(rewardHoney)} 🍯 | ${formatNum(rewardXP)} XP` 
     };
 }
@@ -1395,12 +1418,26 @@ function updateMissionProgress(type, amt = 1) {
             if (m.progress >= m.target) { 
                 m.progress = m.target; 
                 m.completed = true; 
-                grantMissionReward(m); 
+                notify({n: "Missão Finalizada!", d: m.title});
             }
             changed = true; 
         } 
     });
-    if (changed && document.getElementById('missionsModal').style.display === 'flex') renderMissions();
+    if (changed) {
+        if (document.getElementById('missionsModal').style.display === 'flex') renderMissions();
+        updateMissionAlertStatus();
+    }
+}
+
+function updateMissionAlertStatus() {
+    // Alerta se houver missão COMPLETA mas NÃO COLETADA
+    const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected);
+    const alertBtn = document.getElementById("btnMissionAlert");
+    if (hasRewardsToClaim) {
+        alertBtn.classList.add("mission-alert");
+    } else {
+        alertBtn.classList.remove("mission-alert");
+    }
 }
 
 function openRerollConfirmation(id) {
@@ -1416,6 +1453,7 @@ document.getElementById('btnConfirmReroll').onclick = () => {
             const scaleFactor = Math.pow(level, 1.1), clickPowerFactor = hPerClick;
             dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, clickPowerFactor);
             renderMissions();
+            updateMissionAlertStatus();
             executeSave();
             closeModal('rerollModal');
             pendingRerollId = null;
@@ -1423,7 +1461,19 @@ document.getElementById('btnConfirmReroll').onclick = () => {
     }
 };
 
-function grantMissionReward(m) { honey = validateNum(honey + m.rewardHoney); addXP(m.rewardXP); notify({n: "Missão Concluída!", d: m.rewardLabel}); updateUI(); executeSave(); }
+function collectMissionReward(id) {
+    const m = dailyMissions.find(x => x.id === id);
+    if (m && m.completed && !m.collected) {
+        m.collected = true;
+        honey = validateNum(honey + m.rewardHoney);
+        addXP(m.rewardXP);
+        notify({n: "Recompensa Coletada!", d: m.rewardLabel});
+        renderMissions();
+        updateMissionAlertStatus();
+        updateUI();
+        executeSave();
+    }
+}
 
 function getMissionIcon(type) {
     switch(type) {
@@ -1442,20 +1492,28 @@ function renderMissions() {
     const list = document.getElementById("missionsList"); list.innerHTML = "";
     dailyMissions.forEach(m => {
         const perc = Math.min(100, (m.progress / m.target) * 100);
-        const icon = m.completed ? '✅' : getMissionIcon(m.type);
+        const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
+        
+        let actionButton = '';
+        if (m.completed && !m.collected) {
+            actionButton = `<button onclick="collectMissionReward('${m.id}')" style="margin-top:8px; padding:8px; background:var(--xp-bar); font-size:12px; height:auto; box-shadow:0 3px 0 #2e7d32;">COLETAR RECOMPENSA</button>`;
+        } else if (!m.completed) {
+            actionButton = `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>`;
+        }
+
         list.innerHTML += `
-            <div class="mission-card ${m.completed ? 'completed' : ''}">
+            <div class="mission-card ${m.completed ? 'completed' : ''} ${m.collected ? 'collected' : ''}">
                 <div style="font-size: 24px">${icon}</div>
                 <div style="flex: 1">
                     <div style="font-weight: 900; font-size: 14px; color: white">${m.title}</div>
                     <div style="font-size: 11px; color: rgba(255,255,255,0.8);">${m.desc}</div>
                     <div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div>
                     <div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div>
+                    ${actionButton}
                 </div>
                 <div style="font-size: 10px; font-weight: 800; min-width: 50px; text-align: right; padding-right: 5px;">
                     ${formatNum(m.progress)}/${formatNum(m.target)}
                 </div>
-                ${!m.completed ? `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>` : ''}
             </div>`;
     });
 }
@@ -1587,7 +1645,6 @@ function executeSave(){
 function checkOfflineGains(lastTimestamp) {
     if (!autoUnlocked) return; const now = Date.now(); 
     const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
-    
     if (diffInSeconds < 60) return; 
 
     const offlineIconEl = document.getElementById("offlineIcon");
@@ -1595,24 +1652,17 @@ function checkOfflineGains(lastTimestamp) {
     const btnCollect = document.getElementById("btnCollectOffline");
 
     if (diffInSeconds > 604800) {
-        pendingOfflineHoney = 0;
-        pendingOfflineXP = 0;
-        offlineIconEl.textContent = "🥀";
-        offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)";
-        offlineTitleEl.textContent = "A Colmeia foi abandonada...";
-        offlineTitleEl.style.color = "#ff4757";
+        pendingOfflineHoney = 0; pendingOfflineXP = 0;
+        offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)";
+        offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757";
         document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu ficaram tristes com sua longa ausência, foram embora e não deixaram mel para você.`;
-        btnCollect.textContent = "VOLTAR AO TRABALHO";
-        btnCollect.style.background = "#57606f";
+        btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f";
         return;
     }
     
-    offlineIconEl.textContent = "🍯";
-    offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
-    offlineTitleEl.textContent = "Bem-vindo de volta!";
-    offlineTitleEl.style.color = "white";
-    btnCollect.textContent = "REIVINDICAR RECOMPENSAS";
-    btnCollect.style.background = "var(--xp-bar)";
+    offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
+    offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "white";
+    btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)";
 
     const mps = getMPSBase() * getGlobalBonus(); 
     pendingOfflineHoney = Math.floor(mps * diffInSeconds * 1.0); 
@@ -1630,17 +1680,11 @@ function collectOfflineRewards() {
 }
 
 function load(){
-    initAchievements(); 
-    updateVersionDisplay();
-    checkUpdateStatus();
+    initAchievements(); updateVersionDisplay(); checkUpdateStatus();
     const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings();
     const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); document.getElementById('uiMainColor').value = themeSettings.mainColor; document.getElementById('uiOpacity').value = themeSettings.opacity * 100; document.getElementById('uiOpacityLabel').textContent = (themeSettings.opacity * 100) + '%'; applyTheme(); }
     const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords);
-    const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { 
-        const md = JSON.parse(rawMissions); 
-        dailyMissions = md.dailyMissions || []; 
-        lastMissionReset = md.lastMissionReset || 0; 
-    }
+    const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; }
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
         try {
@@ -1650,8 +1694,7 @@ function load(){
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
-    checkMissionReset();
-    updateUI(); 
+    checkMissionReset(); updateMissionAlertStatus(); updateUI(); 
 }
 
 function enterGame() {
@@ -1666,12 +1709,14 @@ function enterGame() {
 }
 
 function openModal(id) { 
-    const modal = document.getElementById(id); modal.style.display = 'flex'; if(id === 'missionsModal') renderMissions();
+    const modal = document.getElementById(id); modal.style.display = 'flex'; 
+    if(id === 'missionsModal') {
+        renderMissions();
+        document.getElementById("btnMissionAlert").classList.remove("mission-alert");
+    }
 }
 
-function closeModal(id) { 
-    const modal = document.getElementById(id); modal.style.display = 'none'; 
-}
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
 function openTab(id, btn) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1709,30 +1754,15 @@ function notify(a) {
 
 document.getElementById("btnUpgradeClick").onclick = () => { 
     const cost = validateNum(clickCost);
-    if(honey >= cost){ 
-        honey = validateNum(honey - cost); 
-        clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.2))); 
-        clickCost = validateNum(Math.floor(clickCost * 1.38)); 
-        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
-    } 
+    if(honey >= cost){ honey = validateNum(honey - cost); clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.2))); clickCost = validateNum(Math.floor(clickCost * 1.38)); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } 
 };
 document.getElementById("btnAutoAction").onclick = () => { 
     const cost = validateNum(autoCost);
-    if(honey >= cost){ 
-        honey = validateNum(honey - cost); 
-        if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } 
-        else { autoLevel++; autoCost = validateNum(Math.floor(autoCost * 1.65)); } 
-        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
-    } 
+    if(honey >= cost){ honey = validateNum(honey - cost); if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } else { autoLevel++; autoCost = validateNum(Math.floor(autoCost * 1.65)); } updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } 
 };
 document.getElementById("btnUpgradeLuck").onclick = () => { 
     const cost = validateNum(luckCost);
-    if(honey >= cost) { 
-        honey = validateNum(honey - cost); 
-        luckLvl++; 
-        luckCost = validateNum(Math.floor(luckCost * 1.9)); 
-        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
-    } 
+    if(honey >= cost) { honey = validateNum(honey - cost); luckLvl++; luckCost = validateNum(Math.floor(luckCost * 1.9)); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } 
 };
 
 document.getElementById("beeContainer").addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
