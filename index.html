@@ -586,10 +586,10 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 
           <div id="shop" class="tab-pane">
               <div class="fixed-nav-header">
-                  <div class="shop-nav">
-                      <button class="sub-tab-btn active" onclick="openSubShop('boosts', this)">POTENCIALIZADORES</button>
-                      <button class="sub-tab-btn" onclick="openSubShop('cosmetics', this)">VISUAIS</button>
-                  </div>
+                <div class="shop-nav">
+                    <button class="sub-tab-btn active" onclick="openSubShop('boosts', this)">POTENCIALIZADORES</button>
+                    <button class="sub-tab-btn" onclick="openSubShop('cosmetics', this)">VISUAIS</button>
+                </div>
               </div>
               <div class="scroll-area">
                   <div id="shop_boosts" class="sub-shop-pane">
@@ -973,44 +973,45 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.5.0",
+        title: "🎨 ÍCONES CONTEXTUAIS",
+        changes: [
+            { type: "add", text: "Ícones de missões agora são dinâmicos: 🐝 para cliques, 🕹️ para jogos, 🎯 para alvos!" },
+            { type: "mod", text: "Sistema de identificação visual facilitado para reconhecimento rápido de objetivos." },
+            { type: "mod", text: "Melhoria estética nos cartões de tarefas diárias." }
+        ]
+    },
+    {
+        version: "4.4.0",
+        title: "🎯 MISSÕES MULTIMODAIS",
+        changes: [
+            { type: "add", text: "Novas missões baseadas em Minigames (Snake/Flight)." },
+            { type: "add", text: "Missões de 'Tempo de Voo' (premiando tempo de jogo ativo)." },
+            { type: "mod", text: "Sistema de Reroll ajustado para novos tipos de tarefa." }
+        ]
+    },
+    {
+        version: "4.3.0",
+        title: "📈 AJUSTE FINO DA ECONOMIA",
+        changes: [
+            { type: "mod", text: "Multiplicador de custo de Clique reduzido para 1.38x." },
+            { type: "mod", text: "Custo do Upgrade de Sorte suavizado para 1.9x." }
+        ]
+    },
+    {
         version: "4.2.5",
         title: "🛡️ BLINDAGEM MOBILE",
         changes: [
-            { type: "mod", text: "Otimização completa para Safari/Chrome Mobile: Zoom de duplo toque desativado." },
-            { type: "mod", text: "Implementado CSS 'manipulation' para cliques instantâneos em botões iOS." },
-            { type: "fix", text: "Corrigido erro onde toques rápidos fora da abelha quebravam a imersão visual." }
+            { type: "mod", text: "Otimização para Safari/Chrome Mobile: Zoom desativado." },
+            { type: "mod", text: "Implementado CSS 'manipulation' para cliques instantâneos." }
         ]
     },
     {
         version: "4.2.4",
         title: "🔔 NOTIFICAÇÕES INTELIGENTES",
         changes: [
-            { type: "mod", text: "O brilho cromático do botão agora reativa automaticamente em cada nova atualização." },
-            { type: "mod", text: "O contorno pulsante só desaparece após o player ler as novidades da versão atual." }
-        ]
-    },
-    {
-        version: "4.2.3",
-        title: "🛡️ EXPERIÊNCIA IMERSIVA",
-        changes: [
-            { type: "add", text: "Removido o alerta padrão do navegador ao trocar missões." },
-            { type: "add", text: "Novo Modal de Confirmação customizado para a troca de tarefas." }
-        ]
-    },
-    {
-        version: "4.2.2",
-        title: "🌈 INTERFACE & NOVIDADES",
-        changes: [
-            { type: "add", text: "Botão 'O que mudou?' agora possui contorno cromático pulsante para novidades." },
-            { type: "mod", text: "Lógica de visibilidade: O brilho cromático desaparece após o primeiro acesso." }
-        ]
-    },
-    {
-        version: "4.2.1",
-        title: "🐝 AJUSTES DE MARCA: BEEKIND",
-        changes: [
-            { type: "mod", text: "Nome do jogo corrigido para BeeKind (sem espaços)." },
-            { type: "add", text: "Nova frase inspiracional adicionada à tela inicial." }
+            { type: "mod", text: "Brilho cromático do botão reativa em novas versões." },
+            { type: "mod", text: "Contorno pulsante desaparece após ler as novidades." }
         ]
     }
 ];
@@ -1066,6 +1067,7 @@ let audioSettings = { music: 50, click: 80 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
 let records = { snake: 0, flight: 0 };
 let pendingRerollId = null;
+let sessionStartTime = Date.now();
 
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
@@ -1231,6 +1233,9 @@ function drawFlight() {
 function finishMG() {
     mgRunning = false; clearInterval(mgInterval);
     if(mgScore > records[activeMG]) { records[activeMG] = mgScore; localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); updateRecordsUI(); }
+    
+    updateMissionProgress('mg_score', mgScore);
+
     let multiplier = activeMG === 'snake' ? 50 : 150;
     let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
     honey = validateNum(honey + hGain); addXP(xGain);
@@ -1311,8 +1316,8 @@ const missionTemplates = [
     { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 10, rewardMult: 2.0 },
     { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", baseGoal: 1, rewardMult: 3.0 },
     { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", baseGoal: 200, rewardMult: 1.5 },
-    { id: 'm6', type: 'clicks', title: "Esforço Coletivo", desc: "Realize mais {target} cliques", baseGoal: 80, rewardMult: 1.3 },
-    { id: 'm7', type: 'honey_gain', title: "Tesouro Dourado", desc: "Acumule {target} de Mel extra", baseGoal: 500, rewardMult: 1.6 },
+    { id: 'm6', type: 'play_time', title: "Voo de Longa Distância", desc: "Jogue ativamente por {target} segundos", baseGoal: 60, rewardMult: 1.8 },
+    { id: 'm7', type: 'mg_score', title: "Abelha Atleta", desc: "Faça {target} pontos totais em minigames", baseGoal: 5, rewardMult: 2.5 },
     { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", baseGoal: 1, rewardMult: 3.5 },
     { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", baseGoal: 20, rewardMult: 2.2 },
     { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Realize {target} cliques hoje", baseGoal: 150, rewardMult: 5.0 }
@@ -1337,9 +1342,11 @@ function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
     else if (tmp.type === 'honey_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * clickPowerFactor * 5);
     else if (tmp.type === 'xp_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * 3);
     else if (tmp.type === 'buy_upgrade') target = Math.ceil(tmp.baseGoal + Math.floor(level/10));
+    else if (tmp.type === 'play_time') target = Math.ceil(tmp.baseGoal * (1 + level * 0.05));
+    else if (tmp.type === 'mg_score') target = Math.ceil(tmp.baseGoal * (1 + level * 0.1));
     
     const clickValue = hPerClick * getGlobalBonus();
-    rewardHoney = Math.max(target * clickValue * 2, 50) * tmp.rewardMult; 
+    rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 10 : (tmp.type === 'mg_score' ? 100 : clickValue)), 50) * tmp.rewardMult; 
     rewardXP = (nextLevelXP * 0.05) * tmp.rewardMult;
     
     return { 
@@ -1388,13 +1395,28 @@ document.getElementById('btnConfirmReroll').onclick = () => {
 
 function grantMissionReward(m) { honey = validateNum(honey + m.rewardHoney); addXP(m.rewardXP); notify({n: "Missão Concluída!", d: m.rewardLabel}); updateUI(); executeSave(); }
 
+// AJUSTE FINO: ÍCONES DINÂMICOS CONTEXTUAIS
+function getMissionIcon(type) {
+    switch(type) {
+        case 'clicks': return '🐝';
+        case 'honey_gain': return '🍯';
+        case 'target_clicks': return '🎯';
+        case 'buy_upgrade': return '🚀';
+        case 'xp_gain': return '✨';
+        case 'play_time': return '⏳';
+        case 'mg_score': return '🕹️';
+        default: return '📝';
+    }
+}
+
 function renderMissions() {
     const list = document.getElementById("missionsList"); list.innerHTML = "";
     dailyMissions.forEach(m => {
         const perc = Math.min(100, (m.progress / m.target) * 100);
+        const icon = m.completed ? '✅' : getMissionIcon(m.type);
         list.innerHTML += `
             <div class="mission-card ${m.completed ? 'completed' : ''}">
-                <div style="font-size: 24px">${m.completed ? '✅' : '🐝'}</div>
+                <div style="font-size: 24px">${icon}</div>
                 <div style="flex: 1">
                     <div style="font-weight: 900; font-size: 14px; color: white">${m.title}</div>
                     <div style="font-size: 11px; color: rgba(255,255,255,0.8);">${m.desc}</div>
@@ -1418,7 +1440,11 @@ function formatTime(t) {
     let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h";
 }
 
-function getMPSBase() { if(!autoUnlocked) return 0; return (autoLevel * (2 + (autoLevel * 0.1))) + (level * 1.5); }
+function getMPSBase() { 
+    if(!autoUnlocked) return 0; 
+    return (autoLevel * (2 + (autoLevel * 0.1))) + (level * 2.5); 
+}
+
 function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length, e = achievements.filter(a => a.u && a.r === 'epic').length;
@@ -1447,7 +1473,6 @@ function updateUI() {
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "white"; }
     });
 
-    // LÓGICA DO BOTÃO CROMÁTICO INTELIGENTE
     const lastSeenVersion = localStorage.getItem(CHANGELOG_VERSION_KEY);
     const currentVersion = updateHistory[0].version;
     const changelogBtn = document.getElementById("btnChangelog");
@@ -1531,7 +1556,12 @@ function startGameTicks() {
         achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
         for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
         for(let b in activeBoosts) { const el = document.getElementById(`status_${b}`); if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; }
-        if(now % 1000 < 150) { updateUI(); checkMissionReset(); }
+        
+        if(now % 1000 < 150) { 
+            updateUI(); 
+            checkMissionReset(); 
+            updateMissionProgress('play_time', 1);
+        }
     }, 100);
 }
 
@@ -1648,7 +1678,7 @@ document.getElementById("btnUpgradeClick").onclick = () => {
     if(honey >= cost){ 
         honey = validateNum(honey - cost); 
         clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.2))); 
-        clickCost = validateNum(Math.floor(clickCost * 1.45)); 
+        clickCost = validateNum(Math.floor(clickCost * 1.38)); 
         updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
@@ -1665,7 +1695,8 @@ document.getElementById("btnUpgradeLuck").onclick = () => {
     const cost = validateNum(luckCost);
     if(honey >= cost) { 
         honey = validateNum(honey - cost); 
-        luckLvl++; luckCost = validateNum(Math.floor(luckCost * 2.2)); 
+        luckLvl++; 
+        luckCost = validateNum(Math.floor(luckCost * 1.9)); 
         updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
