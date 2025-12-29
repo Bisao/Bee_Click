@@ -59,6 +59,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     width: 130px;
     height: 130px;
     object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(255,204,0,0.3));
 }
 
 .skin-preview {
@@ -1094,6 +1095,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.9.0",
+        title: "🐝 REFINO DE COLETA",
+        changes: [
+            { type: "mod", text: "Ganho base por clique reduzido de 1 para 0.2 para aumentar o valor dos upgrades." },
+            { type: "mod", text: "Curva de progresso inicial agora é mais focada em estratégia de upgrades e missões." },
+            { type: "mod", text: "Ajuste na visualização de bônus flutuantes para números pequenos." }
+        ]
+    },
+    {
         version: "5.8.0",
         title: "🛠️ CORREÇÃO DE SEGURANÇA REAL",
         changes: [
@@ -1128,15 +1138,6 @@ let updateHistory = [
             { type: "mod", text: "Recompensas de mel e XP ajustadas para acompanhar o novo nível de dificuldade." },
             { type: "fix", text: "Correção no multiplicador de 'Mira Real' para níveis baixos." }
         ]
-    },
-    {
-        version: "5.4.0",
-        title: "💎 ECONOMIA EQUILIBRADA",
-        changes: [
-            { type: "mod", text: "Suavização na curva de preços: Upgrades agora escalam de forma justa no mid/late game." },
-            { type: "mod", text: "Early game levemente mais desafiador para evitar inflação imediata." },
-            { type: "fix", text: "Correção na fórmula de XP para acompanhar o novo balanço econômico." }
-        ]
     }
 ];
 
@@ -1169,7 +1170,7 @@ function renderChangelog() {
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
     const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
-    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.8");
+    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.9");
     const btn = document.getElementById("btnChangelog");
 
     if(lastSeen !== currentVersion && hasSeenNewest !== "true") {
@@ -1182,7 +1183,7 @@ function checkUpdateStatus() {
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
     localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
-    localStorage.setItem("BeeKind_HasSeenChangelog_V5.8", "true"); 
+    localStorage.setItem("BeeKind_HasSeenChangelog_V5.9", "true"); 
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1199,7 +1200,8 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 1200, level = 1;
+// AJUSTE DE GANHO INICIAL (V5.9.0)
+let honey = 0, totalHoneyEver = 0, hPerClick = 0.2, clickCost = 1200, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 5600;
 let clickLvl = 1, autoLvlLvl = 1; 
 let luckLvl = 1, luckCost = 6400;
@@ -1685,7 +1687,6 @@ function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
         target = Math.ceil(tmp.baseGoal * (1 + level * 0.2));
     }
     const clickValue = hPerClick * getGlobalBonus();
-    // RECOMPENSAS ELEVADAS PARA BALANCEAR O INÍCIO (V5.8.0)
     rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 25 : (tmp.type === 'mg_score' ? 200 : clickValue * 1.5)), 350) * tmp.rewardMult; 
     rewardXP = (nextLevelXP * 0.12) * tmp.rewardMult;
     return { 
@@ -1700,9 +1701,7 @@ function updateMissionProgress(type, amt = 1) {
     let changed = false;
     dailyMissions.forEach(m => { 
         if (m.type === type && !m.completed) { 
-            // TRAVA DE SEGURANÇA (V5.8.0): Verifica se o Auto-Mel está desbloqueado para certas missões
             if(m.title === "Automatização" && !autoUnlocked) return;
-            
             m.progress = validateNum(m.progress + amt); 
             if (m.progress >= m.target) { 
                 m.progress = m.target; 
@@ -1815,7 +1814,7 @@ function renderMissions() {
 
 function formatNum(n) {
     n = validateNum(n);
-    if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return Math.floor(n).toString();
+    if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return parseFloat(n.toFixed(2)).toString();
 }
 
 function formatTime(t) {
@@ -2015,7 +2014,7 @@ function load(){
     if(raw){
         try {
             const d = JSON.parse(raw);
-            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400;
+            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 0.2; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
