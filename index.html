@@ -428,7 +428,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 11px; color: white; pointer-events: none; text-align: center; display: flex; align-items: center; justify-content: center; padding: 0 10px; opacity: 0; }
 @keyframes slideInNotif { 0% { transform: translateY(40px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
 
-.version-tag { color: rgba(255,255,255,0.6); margin-top: 15px; font-weight: bold; font-size: 13px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.version-tag { color: rgba(255,255,255,0.4); margin-top: 5px; font-weight: bold; font-size: 11px; text-align: center; width: 100%; }
 
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: rgba(76, 175, 80, 0.1); }
@@ -540,8 +540,6 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     </div>
 
     <div class="studio-brand">Fun🍪Cook Studio</div>
-
-    <div class="version-tag" id="mainVersionDisplay">AGUARDANDO ATUALIZAÇÃO...</div>
 </div>
 
 <div class="game" id="gameUI">
@@ -844,6 +842,8 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
             </div>
 
             <button id="btnExitToMain" onclick="returnToMain()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); margin-top: 20px; box-shadow: none;">SAIR PARA O INÍCIO</button>
+            
+            <div class="version-tag" id="configVersionDisplay">v.0.0.0</div>
         </div>
         <div class="modal-footer">
             <button onclick="closeModal('settingsModal')" style="margin-top: 0;">FECHAR</button>
@@ -989,6 +989,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.5.3",
+        title: "🎨 LIMPEZA DE INTERFACE",
+        changes: [
+            { type: "mod", text: "Versão movida da tela principal para o painel de configurações." },
+            { type: "add", text: "Novo sistema de renderização automática para as últimas 5 atualizações." },
+            { type: "mod", text: "Refatoração do painel 'O que mudou?' para maior clareza visual." }
+        ]
+    },
+    {
         version: "4.5.2",
         title: "🍪 IDENTIDADE VISUAL",
         changes: [
@@ -1023,21 +1032,13 @@ let updateHistory = [
             { type: "add", text: "Missões de 'Tempo de Voo' (premiando tempo de jogo ativo)." },
             { type: "mod", text: "Sistema de Reroll ajustado para novos tipos de tarefa." }
         ]
-    },
-    {
-        version: "4.3.0",
-        title: "📈 AJUSTE FINO DA ECONOMIA",
-        changes: [
-            { type: "mod", text: "Multiplicador de custo de Clique reduzido para 1.38x." },
-            { type: "mod", text: "Custo do Upgrade de Sorte suavizado para 1.9x." }
-        ]
     }
 ];
 
 function updateVersionDisplay() {
-    const display = document.getElementById("mainVersionDisplay");
-    if(display && updateHistory.length > 0) {
-        display.textContent = `🐝 BEEKIND v${updateHistory[0].version}`;
+    const configDisplay = document.getElementById("configVersionDisplay");
+    if(updateHistory.length > 0) {
+        if(configDisplay) configDisplay.textContent = `v.${updateHistory[0].version}`;
     }
 }
 
@@ -1045,7 +1046,11 @@ function renderChangelog() {
     const container = document.getElementById("changelogContent");
     if(!container) return;
     container.innerHTML = "";
-    updateHistory.forEach(update => {
+    
+    // Mostra apenas as últimas 5 atualizações
+    const recentUpdates = updateHistory.slice(0, 5);
+    
+    recentUpdates.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
         update.changes.forEach(change => {
             let icon = "🔹";
@@ -1502,6 +1507,7 @@ function updateUI() {
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "white"; }
     });
     checkUpdateStatus();
+    updateVersionDisplay();
 }
 
 function renderActiveBoosts() {
