@@ -20,6 +20,7 @@
   --card: linear-gradient(145deg, rgba(7, 27, 135, var(--card-opacity)), rgba(3, 13, 69, 0.9));
   --accent:#ffcc00; 
   --dark:#ffffff;
+  --text-color: #ffffff; 
   --shadow:0 10px 30px rgba(0,0,0,0.3);
   --xp-bar:#4caf50;
   --common: #b2bec3; 
@@ -42,8 +43,8 @@ body, html {
   background: var(--bg-gradient);
   background-attachment: fixed;
   overflow: hidden;
-  color: white;
-  transition: background 0.3s ease;
+  color: var(--text-color);
+  transition: background 0.3s ease, color 0.3s ease;
   touch-action: none;
 }
 
@@ -67,6 +68,29 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     margin-bottom: 5px;
 }
 
+/* TELA DE LOADING */
+#loadingScreen {
+    position: fixed; inset: 0; background: var(--bg-gradient);
+    z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+.loading-container { width: 80%; max-width: 300px; position: relative; }
+.loading-bar-bg { width: 100%; height: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); overflow: visible; position: relative; }
+.loading-bar-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 10px; transition: width 0.1s linear; }
+.loading-bee { 
+    position: absolute; top: -45px; left: 0%; 
+    width: 40px; height: 40px; 
+    transform: translateX(-50%); 
+    transition: left 0.1s linear;
+    filter: drop-shadow(0 4px 5px rgba(0,0,0,0.3));
+}
+.loading-text { margin-top: 15px; font-weight: 900; font-size: 14px; letter-spacing: 2px; color: var(--accent); }
+.rotating-cookie { 
+    position: absolute; bottom: 30px; right: 30px; 
+    font-size: 40px; animation: spinCookie 3s linear infinite; 
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+}
+@keyframes spinCookie { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
 #startScreen {
     position: fixed; inset: 0; background: var(--bg-gradient);
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -81,7 +105,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     letter-spacing: 1px;
     opacity: 0.7;
     z-index: 5;
-    color: white;
+    color: var(--text-color);
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
@@ -101,7 +125,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .start-logo { animation: floatBee 3s infinite ease-in-out; }
 
 .start-title { 
-    font-size: clamp(30px, 12vw, 48px); font-weight: 900; color: white; margin-top: 20px; 
+    font-size: clamp(30px, 12vw, 48px); font-weight: 900; color: var(--text-color); margin-top: 20px; 
     text-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 2;
     display: flex; align-items: center; justify-content: center;
 }
@@ -138,7 +162,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     100% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 3px solid #ff0000; }
 }
 
-.letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: white; }
+.letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: inherit; }
 .tree-overlay {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -58%);
@@ -222,7 +246,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     gap: 10px;
     margin-bottom: 10px;
 }
-#notifContainer { flex: 1; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; color: white; }
+#notifContainer { flex: 1; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; color: inherit; }
 .notif-static-icon { font-size: 20px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
 
 .save-icon { position: absolute; left: 18px; top: 22px; font-size: 18px; opacity: 0; transition: 0.3s; z-index: 10; }
@@ -234,8 +258,8 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .daily-mission-btn { right: 55px; font-size: 24px; border-radius: 50%; padding: 2px; }
 
 .level-container { margin-top: 12px; text-align: left; }
-.level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: white; }
-.xp-bg { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; }
+.level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: inherit; }
+.xp-bg { width: 100%; height: 12px; background: rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 .stats{ margin-top:8px; font-size:18px; font-weight: 800; color: var(--accent); }
 
@@ -320,7 +344,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 .tab-btn span { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
 .tab-btn.active { color: var(--accent); border-bottom: 4px solid var(--accent); }
-.tab-btn.active span { color: white; }
+.tab-btn.active span { color: var(--text-color); }
 
 .tabs-content { flex: 1; overflow: hidden; position: relative; }
 .tab-pane { display: none; height: 100%; flex-direction: column; }
@@ -333,7 +357,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 
 .fixed-nav-header { flex-shrink: 0; background: rgba(0,0,0,0.1); padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .shop-nav, .filter-bar { display: flex; gap: 8px; }
-.sub-tab-btn, .filter-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; color: white; }
+.sub-tab-btn, .filter-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; color: inherit; }
 .sub-tab-btn.active, .filter-btn.active { background: var(--accent); color: var(--main-blue); }
 
 .buy-btn-small { 
@@ -347,15 +371,14 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     background: rgba(255,255,255,0.05); 
     border-radius: 18px; 
     border: 1px solid rgba(255,255,255,0.1);
-    color: white;
+    color: inherit;
 }
 .buy-btn-small:not(:disabled):active { border-color: var(--accent); transform: scale(0.98); }
 
-button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:18px; font-size:14px; font-weight:800; background:var(--accent); color: var(--main-blue); box-shadow:0 4px 0 #b38f00; cursor: pointer; transition: 0.1s; touch-action: manipulation; }
-button:active{ transform:translateY(2px); box-shadow:0 2px 0 #b38f00; }
-button:disabled { background:rgba(255,255,255,0.1) !important; color:rgba(255,255,255,0.2) !important; box-shadow: none !important; opacity: 0.5; }
+button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:18px; font-size:14px; font-weight:800; background:var(--accent); color: var(--main-blue); box-shadow:0 4px 0 rgba(0,0,0,0.3); cursor: pointer; transition: 0.1s; touch-action: manipulation; }
+button:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,0.3); }
+button:disabled { background:rgba(0,0,0,0.2) !important; color:rgba(255,255,255,0.2) !important; box-shadow: none !important; opacity: 0.5; border: 1px solid rgba(255,255,255,0.05); }
 
-/* AJUSTES FINOS CONFIGURAÇÕES */
 .config-group-card {
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
@@ -365,7 +388,7 @@ button:disabled { background:rgba(255,255,255,0.1) !important; color:rgba(255,25
 }
 .config-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
 .config-row:last-child { margin-bottom: 0; }
-.config-label { font-weight: 800; font-size: 13px; color: rgba(255,255,255,0.9); display: flex; justify-content: space-between; align-items: center; }
+.config-label { font-weight: 800; font-size: 13px; color: inherit; display: flex; justify-content: space-between; align-items: center; }
 .config-label span:last-child { color: var(--accent); font-size: 12px; }
 
 input[type="color"] { 
@@ -379,10 +402,11 @@ input[type="color"] {
 input[type=range] { 
     -webkit-appearance: none;
     width: 100%;
-    background: rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.15);
     height: 6px;
     border-radius: 5px;
     outline: none;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -392,14 +416,14 @@ input[type=range]::-webkit-slider-thumb {
     background: var(--accent);
     cursor: pointer;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid var(--dark);
 }
 
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(12px); display:none; justify-content:center; align-items:center; z-index:10001; padding: 20px; transition: background 0.3s; }
 .modal-box{ background: var(--card); backdrop-filter: var(--panel-blur); width:100%; max-width:380px; max-height: 85svh; border-radius:35px; overflow:hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transition: background 0.3s; }
 .modal-header{ padding:20px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; color: var(--main-blue); font-size: 18px; flex-shrink: 0; }
 
-.modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; color: white; touch-action: pan-y; }
+.modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; color: inherit; touch-action: pan-y; }
 .modal-footer { padding: 0 20px 20px 20px; background: transparent; flex-shrink: 0; }
 
 .game-card {
@@ -428,7 +452,7 @@ input[type=range]::-webkit-slider-thumb {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 .game-meta { flex: 1; text-align: left; }
-.game-title { font-weight: 900; font-size: 16px; color: white; }
+.game-title { font-weight: 900; font-size: 16px; color: inherit; }
 .game-record { font-size: 11px; color: var(--accent); font-weight: 800; margin-top: 3px; }
 .game-play-area {
     padding: 0 15px 15px 15px;
@@ -478,19 +502,19 @@ input[type=range]::-webkit-slider-thumb {
 
 .changelog-block { margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
 .changelog-section-title { font-weight: 900; font-size: 15px; margin-bottom: 12px; color: var(--accent); border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 2px; }
-.changelog-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; color: rgba(255,255,255,0.8); align-items: flex-start; }
+.changelog-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; color: inherit; opacity: 0.8; align-items: flex-start; }
 .changelog-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
 
-.popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 11px; color: white; pointer-events: none; text-align: center; display: flex; align-items: center; justify-content: center; padding: 0 10px; opacity: 0; }
+.popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 11px; color: inherit; pointer-events: none; text-align: center; display: flex; align-items: center; justify-content: center; padding: 0 10px; opacity: 0; }
 @keyframes slideInNotif { 0% { transform: translateY(40px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
 
-.version-tag { color: rgba(255,255,255,0.4); margin-top: 10px; font-weight: bold; font-size: 10px; text-align: center; width: 100%; letter-spacing: 1px; }
+.version-tag { color: inherit; opacity: 0.4; margin-top: 10px; font-weight: bold; font-size: 10px; text-align: center; width: 100%; letter-spacing: 1px; }
 
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: rgba(76, 175, 80, 0.1); }
 .mission-card.collected { border-color: rgba(255,255,255,0.2); opacity: 0.6; }
 .mission-card.completed:not(.collected)::after { content: 'CONCLUÍDO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: var(--xp-bar); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
-.mission-card.collected::after { content: 'COLETADO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
+.mission-card.collected::after { content: 'COLETADO'; position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 900; color: inherit; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
 
 .mission-reroll-btn { 
     position: absolute; bottom: 8px; right: 8px; 
@@ -504,7 +528,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 .mission-reroll-btn:active { transform: scale(0.9) rotate(45deg); background: var(--accent); color: var(--main-blue); }
 
-.mission-progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.mission-progress-bar { width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .mission-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 .mission-card.completed .mission-progress-fill { background: var(--xp-bar); }
 .mission-reward-tag { display: inline-block; padding: 3px 8px; background: rgba(255, 204, 0, 0.2); color: var(--accent); font-size: 9px; font-weight: 900; border-radius: 6px; margin-top: 5px; }
@@ -571,6 +595,17 @@ input[type=range]::-webkit-slider-thumb {
 
 <body oncontextmenu="return false;">
 
+<div id="loadingScreen">
+    <div class="loading-container">
+        <img id="loadingBeeImg" src="NoelBee.png" alt="Bee" class="loading-bee">
+        <div class="loading-bar-bg">
+            <div id="loadingBarFill" class="loading-bar-fill"></div>
+        </div>
+        <div class="loading-text" id="loadingTextMsg">PREPARANDO COLMEIA...</div>
+    </div>
+    <div class="rotating-cookie">🍪</div>
+</div>
+
 <div id="startScreen">
     <div class="snow-container" id="snowContainer"></div>
     <div class="start-bee-wrapper">
@@ -585,10 +620,10 @@ input[type=range]::-webkit-slider-thumb {
     
     <div style="display: flex; flex-direction: column; gap: 10px; width: 280px; z-index: 10;">
         <button style="font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
-        <button id="btnChangelog" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openChangelog()">O QUE MUDOU?</button>
+        <button id="btnChangelog" style="background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openChangelog()">O QUE MUDOU?</button>
         
         <div class="pwa-btn-container">
-            <button style="flex: 1; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openModal('settingsModal')">
+            <button style="flex: 1; background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openModal('settingsModal')">
                 CONFIGURAÇÕES ⚙️
             </button>
             <button id="pwaMainActionBtn" class="circular-btn" onclick="handlePwaClick()">
@@ -667,19 +702,19 @@ input[type=range]::-webkit-slider-thumb {
               <div class="scroll-area">
                   <div id="shop_boosts" class="sub-shop-pane">
                       <div class="section-title">🌶️ PIMENTA (3x MEL)</div>
-                      <small id="status_pepper" style="display:block; margin-bottom:8px; font-size:10px; color:rgba(255,255,255,0.6);">Inativo</small>
+                      <small id="status_pepper" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                       <div class="shop-grid" id="grid_pepper"></div>
                       
                       <div class="section-title">🥤 ENERGÉTICO (2x VEL)</div>
-                      <small id="status_energy" style="display:block; margin-bottom:8px; font-size:10px; color:rgba(255,255,255,0.6);">Inativo</small>
+                      <small id="status_energy" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                       <div class="shop-grid" id="grid_energy"></div>
                       
                       <div class="section-title">🌼 FLOR (5x XP)</div>
-                      <small id="status_flower" style="display:block; margin-bottom:8px; font-size:10px; color:rgba(255,255,255,0.6);">Inativo</small>
+                      <small id="status_flower" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                       <div class="shop-grid" id="grid_flower"></div>
                       
                       <div class="section-title">🍀 TREVO (5x SORTE)</div>
-                      <small id="status_luck" style="display:block; margin-bottom:8px; font-size:10px; color:rgba(255,255,255,0.6);">Inativo</small>
+                      <small id="status_luck" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                       <div class="shop-grid" id="grid_luck"></div>
                   </div>
 
@@ -809,7 +844,7 @@ input[type=range]::-webkit-slider-thumb {
             <span class="mg-label" id="mgLabelText">Pontuação Atual</span>
             <span class="mg-val" id="mgCurrentScore">0</span>
         </div>
-        <button onclick="exitMinigame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: rgba(255,255,255,0.1); border: 1px solid white; color: white;">SAIR</button>
+        <button onclick="exitMinigame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: rgba(0,0,0,0.4); border: 1px solid white; color: white; border-radius: 12px;">SAIR</button>
     </div>
     
     <canvas id="snakeCanvas"></canvas>
@@ -833,7 +868,7 @@ input[type=range]::-webkit-slider-thumb {
             <span style="cursor:pointer" onclick="closeModal('missionsModal')">✖</span>
         </div>
         <div class="modal-content-scroll" id="missionsList"></div>
-        <div class="modal-footer" style="text-align: center; font-size: 11px; padding-top: 10px; color: rgba(255,255,255,0.6);">
+        <div class="modal-footer" style="text-align: center; font-size: 11px; padding-top: 10px; color: inherit; opacity: 0.5;">
             Próximo Ciclo: 22:00 Diariamente
         </div>
     </div>
@@ -843,13 +878,13 @@ input[type=range]::-webkit-slider-thumb {
     <div class="modal-box" style="text-align: center; padding: 20px;">
         <div style="font-size: 50px; margin-bottom: 15px;">🔄</div>
         <h2 style="margin: 0 0 10px; color: var(--accent); font-weight: 900;">Nova Tarefa?</h2>
-        <p style="font-size: 14px; line-height: 1.4; color: rgba(255,255,255,0.9); margin-bottom: 25px;">
+        <p style="font-size: 14px; line-height: 1.4; color: inherit; margin-bottom: 25px;">
             Você deseja trocar esta missão por uma nova tarefa aleatória? 
             <br><small style="opacity: 0.7;">(O progresso atual será perdido)</small>
         </p>
         <div style="display: flex; gap: 10px;">
             <button id="btnConfirmReroll" style="background: var(--xp-bar); color: white; margin-top: 0;">SIM, TROCAR</button>
-            <button onclick="closeModal('rerollModal')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); margin-top: 0; box-shadow: none;">CANCELAR</button>
+            <button onclick="closeModal('rerollModal')" style="background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); margin-top: 0; box-shadow: none;">CANCELAR</button>
         </div>
     </div>
 </div>
@@ -882,7 +917,7 @@ input[type=range]::-webkit-slider-thumb {
             <div class="config-group-card">
                 <div class="config-row">
                     <div class="config-label">
-                        <span>Cor do Tema</span>
+                        <span>Cor Principal do Tema</span>
                         <input type="color" id="uiMainColor" value="#071B87" oninput="updateTheme()">
                     </div>
                 </div>
@@ -892,8 +927,7 @@ input[type=range]::-webkit-slider-thumb {
                 </div>
             </div>
 
-            <div class="section-title">APLICATIVO 📲</div>
-            <div class="config-group-card">
+            <div class="config-group-card" style="margin-top: 20px;">
                 <div id="pwaStatusArea">
                     <button id="btnPwaAction" style="display: none; background: var(--xp-bar); color: white; margin-top:0; height: 45px; font-size: 12px;"></button>
                     <div id="pwaInstalledMsg" style="display: none; text-align: center; font-size: 11px; color: var(--xp-bar); font-weight: 800;">
@@ -904,9 +938,6 @@ input[type=range]::-webkit-slider-thumb {
             </div>
             
             <div class="version-tag" id="configVersionDisplay">BEEKIND v0.0.0</div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('settingsModal')" style="margin-top: 0; background: rgba(255,255,255,0.1); color: white; box-shadow: none;">FECHAR</button>
         </div>
     </div>
 </div>
@@ -929,8 +960,8 @@ input[type=range]::-webkit-slider-thumb {
         <div class="modal-header">🐝 Produção de Descanso</div>
         <div class="modal-content-scroll" style="text-align: center;">
             <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
-            <h2 id="offlineTitle" style="margin: 0 0 10px; font-weight: 900; color: white;">Bem-vindo de volta!</h2>
-            <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: rgba(255,255,255,0.9);"></p>
+            <h2 id="offlineTitle" style="margin: 0 0 10px; font-weight: 900; color: inherit;">Bem-vindo de volta!</h2>
+            <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: inherit; opacity: 0.9;"></p>
         </div>
         <div class="modal-footer">
             <button id="btnCollectOffline" onclick="collectOfflineRewards()" style="background:var(--xp-bar); color:white; box-shadow:0 6px 0 rgba(0,0,0,0.3); height: 60px; font-size: 18px;">REIVINDICAR RECOMPENSAS</button>
@@ -1010,7 +1041,7 @@ function syncPwaUI(state) {
         }
         if(configBtn) {
             configBtn.style.display = 'block';
-            configBtn.innerHTML = 'BAIXAR APP (OFFLINE) 📲';
+            configBtn.innerHTML = 'BAIXAR APP (OFFLINE)';
         }
     } else if (state === 'update') {
         if(mainBtn) {
@@ -1020,7 +1051,7 @@ function syncPwaUI(state) {
         }
         if(configBtn) {
             configBtn.style.display = 'block';
-            configBtn.innerHTML = 'ATUALIZAR JOGO AGORA 🚀';
+            configBtn.innerHTML = 'ATUALIZAR JOGO AGORA';
         }
     }
 }
@@ -1048,6 +1079,32 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.6.8",
+        title: "⌛ TELA DE CARREGAMENTO REAL",
+        changes: [
+            { type: "add", text: "Nova tela de loading com barra de progresso animada e abelha voadora." },
+            { type: "add", text: "Adicionado Cookie giratório dinâmico no carregamento do jogo." },
+            { type: "mod", text: "Transição suave entre o menu inicial e a colmeia principal." }
+        ]
+    },
+    {
+        version: "4.6.7",
+        title: "🧹 CONFIGURAÇÕES MINIMALISTAS",
+        changes: [
+            { type: "mod", text: "Removido botão redundante de fechar da parte inferior do painel de ajustes." },
+            { type: "mod", text: "Limpeza visual na seção de sistema para um design mais limpo e focado." }
+        ]
+    },
+    {
+        version: "4.6.6",
+        title: "🎨 SISTEMA DE CONTRASTE REAL",
+        changes: [
+            { type: "add", text: "Textos agora ajustam automaticamente entre Claro/Escuro baseado na cor do tema escolhida." },
+            { type: "mod", text: "Cores de acento (Amarelo) otimizadas para fundos de alta claridade." },
+            { type: "mod", text: "Barras de progresso e XP agora possuem bordas para melhor visibilidade em qualquer tema." }
+        ]
+    },
+    {
         version: "4.6.5",
         title: "⚙️ REFINAMENTO DE AJUSTES",
         changes: [
@@ -1062,33 +1119,6 @@ let updateHistory = [
         changes: [
             { type: "add", text: "Separadas as barras de volume para o som de Clique e o som de Level Up." },
             { type: "mod", text: "Ajuste fino de áudio disponível no menu de configurações real." }
-        ]
-    },
-    {
-        version: "4.6.3",
-        title: "✨ CELEBRAÇÃO DE LEVEL UP",
-        changes: [
-            { type: "add", text: "Novo efeito sonoro épico ao subir de nível (LvlUp.mp3)." },
-            { type: "add", text: "Efeitos visuais de explosão dourada e fogos de artifício no Level Up." },
-            { type: "mod", text: "O card de estatísticas agora pulsa intensamente durante a subida de nível." }
-        ]
-    },
-    {
-        version: "4.6.2",
-        title: "👑 BÔNUS MESTRE DA COLMEIA",
-        changes: [
-            { type: "add", text: "Completar as 10 missões diárias agora concede 100x de Mel por 1 hora!" },
-            { type: "add", text: "Nova Coroa Real sobre a abelha indica que o bônus de mestre está ativo." },
-            { type: "mod", text: "Ícone da coroa adicionado à lista de buffs ativos para monitoramento." }
-        ]
-    },
-    {
-        version: "4.6.1",
-        title: "🎯 SEPARAÇÃO DE CLIQUES",
-        changes: [
-            { type: "mod", text: "Cliques na abelha e cliques nos alvos agora são contabilizados de forma independente em todas as missões." },
-            { type: "fix", text: "Corrigido erro onde o alvo contava como um clique normal para missões de dedos ágeis." },
-            { type: "mod", text: "Refinamento na lógica de priorização para processamento de metas simultâneas." }
         ]
     }
 ];
@@ -1209,15 +1239,30 @@ function updateTheme() {
     localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
 }
 
+function getLuminance(hex) {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const a = [r, g, b].map(v => {
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
 function applyTheme() {
     const root = document.querySelector(':root');
     const color = themeSettings.mainColor;
     const opacity = themeSettings.opacity;
+    const luminance = getLuminance(color);
+    const textColor = luminance > 0.5 ? "#030d45" : "#ffffff";
+    const accentColor = luminance > 0.8 ? "#e67e22" : "#ffcc00"; 
     const r = parseInt(color.slice(1, 3), 16), g = parseInt(color.slice(3, 5), 16), b = parseInt(color.slice(5, 7), 16);
-    root.style.setProperty('--main-blue', color);
-    root.style.setProperty('--card-opacity', opacity);
     const darken = 0.6;
     const rD = Math.floor(r * darken), gD = Math.floor(g * darken), bD = Math.floor(b * darken);
+    root.style.setProperty('--main-blue', color);
+    root.style.setProperty('--card-opacity', opacity);
+    root.style.setProperty('--text-color', textColor);
+    root.style.setProperty('--accent', accentColor);
     root.style.setProperty('--card', `linear-gradient(145deg, rgba(${r}, ${g}, ${b}, ${opacity}), rgba(${rD}, ${gD}, ${bD}, 0.9))`);
     root.style.setProperty('--bg-gradient', `linear-gradient(180deg, ${color}, rgb(${rD}, ${gD}, ${bD}))`);
     if(document.getElementById('startScreen')) document.getElementById('startScreen').style.background = `linear-gradient(180deg, ${color}, rgb(${rD}, ${gD}, ${bD}))`;
@@ -1366,7 +1411,6 @@ function applyAudioSettings() {
     soundMusic.volume = audioSettings.music / 100; 
     soundClick.volume = audioSettings.click / 100; 
     soundLvlUp.volume = (audioSettings.lvlUp || 100) / 100;
-    
     if(document.getElementById('musicVol')) { 
         document.getElementById('musicVol').value = audioSettings.music; 
         document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; 
@@ -1588,8 +1632,8 @@ function renderMissions() {
             <div class="mission-card ${m.completed ? 'completed' : ''} ${m.collected ? 'collected' : ''}">
                 <div style="font-size: 24px">${icon}</div>
                 <div style="flex: 1">
-                    <div style="font-weight: 900; font-size: 14px; color: white">${m.title}</div>
-                    <div style="font-size: 11px; color: rgba(255,255,255,0.8);">${m.desc}</div>
+                    <div style="font-weight: 900; font-size: 14px; color: inherit">${m.title}</div>
+                    <div style="font-size: 11px; color: inherit; opacity: 0.6;">${m.desc}</div>
                     <div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div>
                     <div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div>
                     ${actionButton}
@@ -1641,13 +1685,13 @@ function updateUI() {
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
         if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; document.getElementById("mainBeeSprite").src = `${id}.png`; document.getElementById("miniBeeHeader").src = `${id}.png`; }
-        else { let label = (id === "NoelBee") ? "Noel (+15%)" : "Comum"; btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "white"; }
+        else { let label = (id === "NoelBee") ? "Noel (+15%)" : "Comum"; btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
     const bgs = ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'], clickZone = document.getElementById("clickZone");
     bgs.forEach(id => {
         const btn = document.getElementById(`btn_bg_${id}`); if(!btn) return;
         if(equippedBackground === id) { btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; clickZone.style.backgroundImage = `url('${id}.gif')`; }
-        else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "white"; }
+        else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
     checkUpdateStatus();
     updateVersionDisplay();
@@ -1782,7 +1826,7 @@ function checkOfflineGains(lastTimestamp) {
         return;
     }
     offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
-    offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "white";
+    offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit";
     btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)";
     const mps = getMPSBase() * getGlobalBonus(); 
     pendingOfflineHoney = Math.floor(mps * diffInSeconds * 1.0); 
@@ -1818,13 +1862,42 @@ function load(){
 
 function enterGame() {
     load(); tryPlayMusic(); requestFullscreen();
-    document.getElementById('startScreen').style.opacity = '0';
-    setTimeout(() => {
-        document.getElementById('startScreen').style.display = 'none';
-        const gameUI = document.getElementById('gameUI'); gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; gameLoaded = true;
-        if(pendingOfflineHoney > 0 || document.getElementById("offlineTitle").textContent.includes("abandonada")) openModal('offlineModal');
-        startGameTicks(); if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
-    }, 500);
+    
+    // TELA DE LOADING
+    const loadingScreen = document.getElementById("loadingScreen");
+    const bar = document.getElementById("loadingBarFill");
+    const bee = document.getElementById("loadingBeeImg");
+    const text = document.getElementById("loadingTextMsg");
+    
+    loadingScreen.style.display = "flex";
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 5;
+        if(progress > 100) progress = 100;
+        
+        bar.style.width = progress + "%";
+        bee.style.left = progress + "%";
+        
+        if(progress < 40) text.textContent = "COLETANDO PÓLEN...";
+        else if(progress < 70) text.textContent = "SINTETIZANDO MEL...";
+        else if(progress < 100) text.textContent = "PREPARANDO RAINHA...";
+        else {
+            clearInterval(interval);
+            setTimeout(() => {
+                loadingScreen.style.display = "none";
+                document.getElementById('startScreen').style.display = 'none';
+                const gameUI = document.getElementById('gameUI'); 
+                gameUI.style.display = 'flex'; 
+                gameUI.style.opacity = '1'; 
+                gameLoaded = true;
+                if(pendingOfflineHoney > 0 || document.getElementById("offlineTitle").textContent.includes("abandonada")) openModal('offlineModal');
+                startGameTicks(); 
+                if(autoUnlocked) startAutoProducing(); 
+                updateUI(); 
+                startDynamicNotifications();
+            }, 300);
+        }
+    }, 50);
 }
 
 function openModal(id) { 
@@ -1862,7 +1935,7 @@ function buildShop() {
 function renderAchs() {
     const l = document.getElementById("achList"); l.innerHTML = "";
     achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => {
-        l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:white; font-size:13px;">${a.n}</div><div style="font-size:11px; color:rgba(255,255,255,0.7);">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`;
+        l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`;
     });
 }
 
