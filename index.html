@@ -1094,6 +1094,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.2.0",
+        title: "⚖️ REBALANCEAMENTO REAL",
+        changes: [
+            { type: "mod", text: "Ajustado bônus por completar 10 missões diárias de 100x para 8x." },
+            { type: "add", text: "Implementado sistema dinâmico de Changelog no painel inicial." },
+            { type: "mod", text: "Otimização de rotina para entrega do projeto final." }
+        ]
+    },
+    {
         version: "5.1.0",
         title: "✨ REFINO VISUAL: HONEY RAIN",
         changes: [
@@ -1127,14 +1136,6 @@ let updateHistory = [
             { type: "add", text: "Lançamento do minijogo Honey Rain na Central de Jogos." },
             { type: "add", text: "Mecânica de coletar gotas de mel e desviar de obstáculos (chuva)." },
             { type: "mod", text: "Ajuste na interface da Central para acomodar novos jogos." }
-        ]
-    },
-    {
-        version: "4.7.0",
-        title: "🛡️ NAVEGAÇÃO INTELIGENTE",
-        changes: [
-            { type: "mod", text: "Botão 'Sair para o Início' agora aparece apenas quando as configurações são abertas dentro do jogo." },
-            { type: "mod", text: "Interface do menu inicial otimizada para evitar navegação redundante." }
         ]
     }
 ];
@@ -1776,7 +1777,7 @@ function collectMissionReward(id) {
 
 function triggerCrownBonus() {
     activeBoosts.crown = 36000;
-    notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 100x ATIVO por 1h!"});
+    notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 8x ATIVO por 1h!"});
 }
 
 function getMissionIcon(type) {
@@ -1845,7 +1846,7 @@ function getGlobalBonus() {
     let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); 
     if(activeBoosts.pepper > 0) b += 2; 
     if(activeBoosts.energy > 0) b += 1; 
-    if(activeBoosts.crown > 0) b *= 100;
+    if(activeBoosts.crown > 0) b *= 8; // Ajustado de 100x para 8x
     return b;
 }
 
