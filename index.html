@@ -989,6 +989,24 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.5.5",
+        title: "👴 LEGADO DO VELHO DUDU",
+        changes: [
+            { type: "mod", text: "As abelhas agora são 100% produtivas no modo offline." },
+            { type: "add", text: "Nova frase inspiradora no painel de descanso do Velho Dudu." },
+            { type: "mod", text: "Remoção de notificações redundantes no painel offline." }
+        ]
+    },
+    {
+        version: "4.5.4",
+        title: "🛡️ POLIMENTO OFFLINE",
+        changes: [
+            { type: "mod", text: "Farm offline agora exige no mínimo 60 segundos de ausência para ser ativado." },
+            { type: "add", text: "Indicador cromático pulsante para novas atualizações no botão principal." },
+            { type: "mod", text: "Ajuste na persistência do cache de visualização do histórico." }
+        ]
+    },
+    {
         version: "4.5.3",
         title: "🎨 LIMPEZA DE INTERFACE",
         changes: [
@@ -1013,24 +1031,6 @@ let updateHistory = [
             { type: "add", text: "Novo sistema de contorno cromático pulsante para avisar sobre novidades." },
             { type: "mod", text: "O contorno desaparece automaticamente após a primeira leitura." },
             { type: "fix", text: "Correção na persistência de leitura do histórico no cache local." }
-        ]
-    },
-    {
-        version: "4.5.0",
-        title: "🎨 ÍCONES CONTEXTUAIS",
-        changes: [
-            { type: "add", text: "Ícones de missões agora são dinâmicos: 🐝 para cliques, 🕹️ para jogos, 🎯 para alvos!" },
-            { type: "mod", text: "Sistema de identificação visual facilitado para reconhecimento rápido de objetivos." },
-            { type: "mod", text: "Melhoria estética nos cartões de tarefas diárias." }
-        ]
-    },
-    {
-        version: "4.4.0",
-        title: "🎯 MISSÕES MULTIMODAIS",
-        changes: [
-            { type: "add", text: "Novas missões baseadas em Minigames (Snake/Flight)." },
-            { type: "add", text: "Missões de 'Tempo de Voo' (premiando tempo de jogo ativo)." },
-            { type: "mod", text: "Sistema de Reroll ajustado para novos tipos de tarefa." }
         ]
     }
 ];
@@ -1069,6 +1069,7 @@ function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
     const btn = document.getElementById("btnChangelog");
 
+    // Lógica do contorno cromático pulsante (visível apenas se for versão nova)
     if(lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
@@ -1078,7 +1079,9 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
+    // Salva que o player viu a versão atual para desativar o contorno cromático
     localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
+    // Remove o efeito cromático imediatamente
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1590,12 +1593,22 @@ function executeSave(){
 }
 
 function checkOfflineGains(lastTimestamp) {
-    if (!autoUnlocked) return; const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
-    if (diffInSeconds < 60) return; const cappedSeconds = Math.min(diffInSeconds, 86400);
-    const mps = getMPSBase() * getGlobalBonus(); pendingOfflineHoney = Math.floor(mps * cappedSeconds * 0.5); pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.3);
+    if (!autoUnlocked) return; const now = Date.now(); 
+    const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
+    
+    // POLIMENTO: Só começa a contar após 60 segundos offline
+    if (diffInSeconds < 60) return; 
+    
+    const cappedSeconds = Math.min(diffInSeconds, 86400); // Teto de 24h
+    const mps = getMPSBase() * getGlobalBonus(); 
+    
+    // ATUALIZAÇÃO: Agora as abelhas produzem 100% (mult 1.0 em vez de 0.5)
+    pendingOfflineHoney = Math.floor(mps * cappedSeconds * 1.0); 
+    pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.3);
+    
     if (pendingOfflineHoney > 0) {
-        const hours = Math.floor(diffInSeconds / 3600), minutes = Math.floor((diffInSeconds % 3600) / 60);
-        document.getElementById("offlineText").innerHTML = `Suas abelhas trabalharam por <b>${hours > 0 ? hours+'h e '+minutes+'m' : minutes+'m'}</b>!<br><br>Produção (50%):<br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+        // ATUALIZAÇÃO: Frase customizada solicitada pelo Velho Dudu
+        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu não pararam um instante e produziram mel para você.<br><br><b>Produção acumulada (100%):</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
     }
 }
 
