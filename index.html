@@ -1094,6 +1094,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.8.0",
+        title: "🛠️ CORREÇÃO DE SEGURANÇA REAL",
+        changes: [
+            { type: "fix", text: "Corrigido erro onde missões de 'Automatização' podiam ser completadas sem o desbloqueio do Auto-Mel." },
+            { type: "mod", text: "Recompensas de missões balanceadas para acompanhar os novos custos de upgrades (1200+)." },
+            { type: "fix", text: "Adicionada trava lógica: Missões de upgrade agora exigem posse do item para progredir." }
+        ]
+    },
+    {
         version: "5.7.0",
         title: "🕹️ ECONOMIA DOS JOGOS",
         changes: [
@@ -1128,15 +1137,6 @@ let updateHistory = [
             { type: "mod", text: "Early game levemente mais desafiador para evitar inflação imediata." },
             { type: "fix", text: "Correção na fórmula de XP para acompanhar o novo balanço econômico." }
         ]
-    },
-    {
-        version: "5.3.0",
-        title: "✨ AJUSTE DE PROGRESSÃO REAL",
-        changes: [
-            { type: "mod", text: "Taxa de conversão de XP otimizada para 25% da produção de mel." },
-            { type: "mod", text: "Bônus de missão diária balanceado para 8x." },
-            { type: "mod", text: "Painel de atualizações agora destaca novas versões visualmente." }
-        ]
     }
 ];
 
@@ -1154,7 +1154,7 @@ function renderChangelog() {
     const recentUpdates = updateHistory.slice(0, 5);
     recentUpdates.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
-        updateHistory[updateHistory.indexOf(update)].changes.forEach(change => {
+        update.changes.forEach(change => {
             let icon = "🔹";
             if(change.type === "add") icon = "🟢";
             if(change.type === "fix") icon = "🔵";
@@ -1169,7 +1169,7 @@ function renderChangelog() {
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
     const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
-    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.7");
+    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.8");
     const btn = document.getElementById("btnChangelog");
 
     if(lastSeen !== currentVersion && hasSeenNewest !== "true") {
@@ -1182,7 +1182,7 @@ function checkUpdateStatus() {
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
     localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
-    localStorage.setItem("BeeKind_HasSeenChangelog_V5.7", "true"); 
+    localStorage.setItem("BeeKind_HasSeenChangelog_V5.8", "true"); 
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1494,16 +1494,11 @@ function finishMG() {
         updateRecordsUI(); 
     }
     updateMissionProgress('mg_score', mgScore);
-    
-    // BALANCEAMENTO DE RECOMPENSAS (V5.7.0)
-    let multiplier = 50; // Snake (Base)
-    if(activeMG === 'flight') multiplier = 120; // Ajustado (de 150)
-    if(activeMG === 'rain') multiplier = 180; // Ajustado (de 300)
-
+    let multiplier = 50; 
+    if(activeMG === 'flight') multiplier = 120; 
+    if(activeMG === 'rain') multiplier = 180; 
     let hGain = mgScore * multiplier * (1 + level * 0.1);
-    // Ganho de XP reduzido para 20% do ganho de mel para balancear progressão
     let xGain = hGain * 0.20; 
-
     honey = validateNum(honey + hGain); addXP(xGain);
     document.getElementById("mgResultScore").textContent = mgScore;
     document.getElementById("mgResultReward").innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
@@ -1632,16 +1627,16 @@ const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
 const missionTemplates = [
-    { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", baseGoal: 100, rewardMult: 1.5 },
-    { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", baseGoal: 500, rewardMult: 1.8 },
-    { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 2.2 },
-    { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", baseGoal: 3, rewardMult: 3.2 },
-    { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", baseGoal: 1000, rewardMult: 1.6 },
-    { id: 'm6', type: 'play_time', title: "Voo de Longa Distância", desc: "Jogue ativamente por {target} segundos", baseGoal: 300, rewardMult: 2.0 },
-    { id: 'm7', type: 'mg_score', title: "Abelha Atleta", desc: "Faça {target} pontos totais em minigames", baseGoal: 20, rewardMult: 2.8 },
-    { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", baseGoal: 2, rewardMult: 3.8 },
-    { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", baseGoal: 50, rewardMult: 2.5 },
-    { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Realize {target} cliques hoje", baseGoal: 500, rewardMult: 6.0 }
+    { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", baseGoal: 100, rewardMult: 2.5 },
+    { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", baseGoal: 500, rewardMult: 2.8 },
+    { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 3.2 },
+    { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", baseGoal: 3, rewardMult: 4.2 },
+    { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", baseGoal: 1000, rewardMult: 2.6 },
+    { id: 'm6', type: 'play_time', title: "Voo de Longa Distância", desc: "Jogue ativamente por {target} segundos", baseGoal: 300, rewardMult: 3.0 },
+    { id: 'm7', type: 'mg_score', title: "Abelha Atleta", desc: "Faça {target} pontos totais em minigames", baseGoal: 20, rewardMult: 3.8 },
+    { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", baseGoal: 2, rewardMult: 4.8 },
+    { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", baseGoal: 50, rewardMult: 3.5 },
+    { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Realize {target} cliques hoje", baseGoal: 500, rewardMult: 8.0 }
 ];
 
 function checkMissionReset() {
@@ -1690,8 +1685,9 @@ function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
         target = Math.ceil(tmp.baseGoal * (1 + level * 0.2));
     }
     const clickValue = hPerClick * getGlobalBonus();
-    rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 15 : (tmp.type === 'mg_score' ? 150 : clickValue)), 100) * tmp.rewardMult; 
-    rewardXP = (nextLevelXP * 0.08) * tmp.rewardMult;
+    // RECOMPENSAS ELEVADAS PARA BALANCEAR O INÍCIO (V5.8.0)
+    rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 25 : (tmp.type === 'mg_score' ? 200 : clickValue * 1.5)), 350) * tmp.rewardMult; 
+    rewardXP = (nextLevelXP * 0.12) * tmp.rewardMult;
     return { 
         id: tmp.id + Date.now() + Math.random(), type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
         target: target, progress: 0, completed: false, collected: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
@@ -1704,6 +1700,9 @@ function updateMissionProgress(type, amt = 1) {
     let changed = false;
     dailyMissions.forEach(m => { 
         if (m.type === type && !m.completed) { 
+            // TRAVA DE SEGURANÇA (V5.8.0): Verifica se o Auto-Mel está desbloqueado para certas missões
+            if(m.title === "Automatização" && !autoUnlocked) return;
+            
             m.progress = validateNum(m.progress + amt); 
             if (m.progress >= m.target) { 
                 m.progress = m.target; 
