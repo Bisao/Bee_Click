@@ -72,6 +72,20 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.5s ease;
 }
+
+/* ESTILO DO STUDIO */
+.studio-brand {
+    position: absolute;
+    bottom: 20px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    z-index: 5;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
 .snow-container { 
     position: fixed; 
     top: 0; 
@@ -107,17 +121,17 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .btn-chromatic-pulse {
     position: relative;
     border: none !important;
-    animation: chromaticGlow 2s linear infinite;
+    animation: chromaticGlow 1.5s linear infinite;
     z-index: 10;
 }
 
 @keyframes chromaticGlow {
-    0% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 2px solid #ff0000; }
+    0% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 3px solid #ff0000; }
     20% { box-shadow: 0 0 15px #ffcc00, inset 0 0 10px #ffcc00; outline: 3px solid #ffcc00; }
-    40% { box-shadow: 0 0 5px #00ff00, inset 0 0 5px #00ff00; outline: 2px solid #00ff00; }
+    40% { box-shadow: 0 0 5px #00ff00, inset 0 0 5px #00ff00; outline: 3px solid #00ff00; }
     60% { box-shadow: 0 0 15px #00ffff, inset 0 0 10px #00ffff; outline: 3px solid #00ffff; }
-    80% { box-shadow: 0 0 5px #0000ff, inset 0 0 5px #0000ff; outline: 2px solid #0000ff; }
-    100% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 2px solid #ff0000; }
+    80% { box-shadow: 0 0 5px #0000ff, inset 0 0 5px #0000ff; outline: 3px solid #0000ff; }
+    100% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 3px solid #ff0000; }
 }
 
 .letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: white; }
@@ -524,6 +538,8 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
             </button>
         </div>
     </div>
+
+    <div class="studio-brand">Fun🍪Cook Studio</div>
 
     <div class="version-tag" id="mainVersionDisplay">AGUARDANDO ATUALIZAÇÃO...</div>
 </div>
@@ -973,6 +989,24 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.5.2",
+        title: "🍪 IDENTIDADE VISUAL",
+        changes: [
+            { type: "add", text: "Adicionado nome do studio 'Fun🍪Cook Studio' na tela inicial." },
+            { type: "mod", text: "Ajuste na versão do jogo para rastreamento de marca." },
+            { type: "fix", text: "Garantia de espaçamento zero entre as letras n, biscoito e C." }
+        ]
+    },
+    {
+        version: "4.5.1",
+        title: "✨ FEEDBACK DE ATUALIZAÇÃO",
+        changes: [
+            { type: "add", text: "Novo sistema de contorno cromático pulsante para avisar sobre novidades." },
+            { type: "mod", text: "O contorno desaparece automaticamente após a primeira leitura." },
+            { type: "fix", text: "Correção na persistência de leitura do histórico no cache local." }
+        ]
+    },
+    {
         version: "4.5.0",
         title: "🎨 ÍCONES CONTEXTUAIS",
         changes: [
@@ -996,22 +1030,6 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Multiplicador de custo de Clique reduzido para 1.38x." },
             { type: "mod", text: "Custo do Upgrade de Sorte suavizado para 1.9x." }
-        ]
-    },
-    {
-        version: "4.2.5",
-        title: "🛡️ BLINDAGEM MOBILE",
-        changes: [
-            { type: "mod", text: "Otimização para Safari/Chrome Mobile: Zoom desativado." },
-            { type: "mod", text: "Implementado CSS 'manipulation' para cliques instantâneos." }
-        ]
-    },
-    {
-        version: "4.2.4",
-        title: "🔔 NOTIFICAÇÕES INTELIGENTES",
-        changes: [
-            { type: "mod", text: "Brilho cromático do botão reativa em novas versões." },
-            { type: "mod", text: "Contorno pulsante desaparece após ler as novidades." }
         ]
     }
 ];
@@ -1041,12 +1059,31 @@ function renderChangelog() {
     });
 }
 
+function checkUpdateStatus() {
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
+    const currentVersion = updateHistory[0].version;
+    const btn = document.getElementById("btnChangelog");
+
+    if(lastSeen !== currentVersion) {
+        btn.classList.add("btn-chromatic-pulse");
+    } else {
+        btn.classList.remove("btn-chromatic-pulse");
+    }
+}
+
+function openChangelog() { 
+    const currentVersion = updateHistory[0].version;
+    localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
+    checkUpdateStatus();
+    renderChangelog(); 
+    openModal('changelogModal'); 
+}
+
 const SAVE_KEY = "BeeRoyal_Balance_V2";
 const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const MISSION_KEY = "BeeRoyal_Missions_V2";
 const THEME_KEY = "BeeRoyal_Theme_V1";
 const RECORDS_KEY = "BeeRoyal_Records_V1";
-const CHANGELOG_VERSION_KEY = "BeeKind_LastVersionSeen_V1";
 
 function validateNum(n) {
     if (isNaN(n) || n === undefined || n === null || n < 0) return 0;
@@ -1073,21 +1110,18 @@ const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
 soundMusic.loop = true;
 
-// VARIÁVEIS MINIGAMES
 let activeMG = null;
 let mgInterval = null;
 let mgRunning = false;
 let mgScore = 0;
 let mgSpeed = 150;
 
-// SNAKE VARS
 let snake = [];
 let snakeFood = {x: 0, y: 0};
 let sdx = 20, sdy = 0, snextDx = 20, snextDy = 0;
 const snakeCanvas = document.getElementById("snakeCanvas");
 const snakeCtx = snakeCanvas.getContext("2d");
 
-// FLIGHT VARS
 let fBeeY = 150, fVelocity = 0, fGravity = 0.5, fJump = -7;
 let fPipes = [];
 const flightCanvas = document.getElementById("flightCanvas");
@@ -1233,9 +1267,7 @@ function drawFlight() {
 function finishMG() {
     mgRunning = false; clearInterval(mgInterval);
     if(mgScore > records[activeMG]) { records[activeMG] = mgScore; localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); updateRecordsUI(); }
-    
     updateMissionProgress('mg_score', mgScore);
-
     let multiplier = activeMG === 'snake' ? 50 : 150;
     let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
     honey = validateNum(honey + hGain); addXP(xGain);
@@ -1344,11 +1376,9 @@ function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
     else if (tmp.type === 'buy_upgrade') target = Math.ceil(tmp.baseGoal + Math.floor(level/10));
     else if (tmp.type === 'play_time') target = Math.ceil(tmp.baseGoal * (1 + level * 0.05));
     else if (tmp.type === 'mg_score') target = Math.ceil(tmp.baseGoal * (1 + level * 0.1));
-    
     const clickValue = hPerClick * getGlobalBonus();
     rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 10 : (tmp.type === 'mg_score' ? 100 : clickValue)), 50) * tmp.rewardMult; 
     rewardXP = (nextLevelXP * 0.05) * tmp.rewardMult;
-    
     return { 
         id: tmp.id, type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
         target: target, progress: 0, completed: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
@@ -1395,7 +1425,6 @@ document.getElementById('btnConfirmReroll').onclick = () => {
 
 function grantMissionReward(m) { honey = validateNum(honey + m.rewardHoney); addXP(m.rewardXP); notify({n: "Missão Concluída!", d: m.rewardLabel}); updateUI(); executeSave(); }
 
-// AJUSTE FINO: ÍCONES DINÂMICOS CONTEXTUAIS
 function getMissionIcon(type) {
     switch(type) {
         case 'clicks': return '🐝';
@@ -1472,16 +1501,7 @@ function updateUI() {
         if(equippedBackground === id) { btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; clickZone.style.backgroundImage = `url('${id}.gif')`; }
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "white"; }
     });
-
-    const lastSeenVersion = localStorage.getItem(CHANGELOG_VERSION_KEY);
-    const currentVersion = updateHistory[0].version;
-    const changelogBtn = document.getElementById("btnChangelog");
-    
-    if(lastSeenVersion !== currentVersion) {
-        changelogBtn.classList.add("btn-chromatic-pulse");
-    } else {
-        changelogBtn.classList.remove("btn-chromatic-pulse");
-    }
+    checkUpdateStatus();
 }
 
 function renderActiveBoosts() {
@@ -1524,11 +1544,7 @@ function doClick(event, isTarget = false) {
     playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); if(activeBoosts.luck > 0) baseChance *= 5;
     const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
-    
-    updateMissionProgress('clicks', 1); 
-    updateMissionProgress('honey_gain', g); 
-    if(isTarget) updateMissionProgress('target_clicks', 1);
-    
+    updateMissionProgress('clicks', 1); updateMissionProgress('honey_gain', g); if(isTarget) updateMissionProgress('target_clicks', 1);
     const bee = document.getElementById("beeContainer"); bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
     setTimeout(() => bee.style.transform = "scale(1)", 50);
     spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance);
@@ -1556,12 +1572,7 @@ function startGameTicks() {
         achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
         for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
         for(let b in activeBoosts) { const el = document.getElementById(`status_${b}`); if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; }
-        
-        if(now % 1000 < 150) { 
-            updateUI(); 
-            checkMissionReset(); 
-            updateMissionProgress('play_time', 1);
-        }
+        if(now % 1000 < 150) { updateUI(); checkMissionReset(); updateMissionProgress('play_time', 1); }
     }, 100);
 }
 
@@ -1590,8 +1601,8 @@ function collectOfflineRewards() {
 
 function load(){
     initAchievements(); 
-    renderChangelog();
     updateVersionDisplay();
+    checkUpdateStatus();
     const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings();
     const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); document.getElementById('uiMainColor').value = themeSettings.mainColor; document.getElementById('uiOpacity').value = themeSettings.opacity * 100; document.getElementById('uiOpacityLabel').textContent = (themeSettings.opacity * 100) + '%'; applyTheme(); }
     const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords);
@@ -1630,13 +1641,6 @@ function openModal(id) {
 
 function closeModal(id) { 
     const modal = document.getElementById(id); modal.style.display = 'none'; 
-}
-
-function openChangelog() { 
-    localStorage.setItem(CHANGELOG_VERSION_KEY, updateHistory[0].version);
-    updateUI();
-    renderChangelog(); 
-    openModal('changelogModal'); 
 }
 
 function openTab(id, btn) {
