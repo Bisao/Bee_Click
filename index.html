@@ -257,6 +257,17 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 
 .bee-container { position: relative; z-index: 2; animation: floatBee 3s infinite ease-in-out; cursor: pointer; transition: transform 0.05s; }
 
+/* COROA SOBRE A ABELHA */
+.crown-overlay {
+    position: absolute;
+    top: -20px;
+    font-size: 30px;
+    z-index: 5;
+    filter: drop-shadow(0 0 5px gold);
+    display: none;
+    pointer-events: none;
+}
+
 @keyframes floatBee { 0%, 100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-12px) rotate(3deg);} }
 .target { height: 60px; width: 60px; border-radius: 20px; border: 3px dashed var(--accent); display: flex; align-items: center; justify-content: center; font-size: 24px; opacity: 0.7; background: rgba(255,255,255,0.1); backdrop-filter: blur(2px); transition: transform 0.1s; }
 
@@ -576,6 +587,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
       <div class="target" id="leftTarget">🎯</div>
       <div class="aura-wrapper">
         <div class="bee-container" id="beeContainer">
+            <div class="crown-overlay" id="beeCrown">👑</div>
             <img id="mainBeeSprite" src="NoelBee.png" alt="Bee character" class="bee-img">
         </div>
       </div>
@@ -993,6 +1005,33 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.6.2",
+        title: "👑 BÔNUS MESTRE DA COLMEIA",
+        changes: [
+            { type: "add", text: "Completar as 10 missões diárias agora concede 100x de Mel por 1 hora!" },
+            { type: "add", text: "Nova Coroa Real sobre a abelha indica que o bônus de mestre está ativo." },
+            { type: "mod", text: "Ícone da coroa adicionado à lista de buffs ativos para monitoramento." }
+        ]
+    },
+    {
+        version: "4.6.1",
+        title: "🎯 SEPARAÇÃO DE CLIQUES",
+        changes: [
+            { type: "mod", text: "Cliques na abelha e cliques nos alvos agora são contabilizados de forma independente em todas as missões." },
+            { type: "fix", text: "Corrigido erro onde o alvo contava como um clique normal para missões de dedos ágeis." },
+            { type: "mod", text: "Refinamento na lógica de priorização para processamento de metas simultâneas." }
+        ]
+    },
+    {
+        version: "4.6.0",
+        title: "📋 ORGANIZAÇÃO DE MISSÕES",
+        changes: [
+            { type: "mod", text: "Missões prontas para coleta agora aparecem sempre no topo da lista." },
+            { type: "mod", text: "Missões já coletadas são movidas automaticamente para o final da lista." },
+            { type: "mod", text: "Melhoria na legibilidade das tarefas em andamento." }
+        ]
+    },
+    {
         version: "4.5.9",
         title: "🎁 COLETA DE MISSÕES",
         changes: [
@@ -1008,31 +1047,6 @@ let updateHistory = [
             { type: "add", text: "Ícone de missões agora pulsa em cores quando há tarefas concluídas." },
             { type: "mod", text: "Histórico de versões ajustado para ocultar dados técnicos de produção." },
             { type: "fix", text: "Remoção do alerta de missão assim que o painel é acessado." }
-        ]
-    },
-    {
-        version: "4.5.7",
-        title: "✨ REFINAMENTO VISUAL",
-        changes: [
-            { type: "mod", text: "Ajustado o texto de produção acumulada para ser mais direto." },
-            { type: "fix", text: "Polimento na lógica de verificação de tempo para a trava de 7 dias." }
-        ]
-    },
-    {
-        version: "4.5.6",
-        title: "⌛ LIMITE DE AUSÊNCIA",
-        changes: [
-            { type: "add", text: "Máximo de 7 dias de produção offline permitido." },
-            { type: "mod", text: "Se ultrapassar 7 dias, as abelhas abandonam a colmeia e o mel é perdido." },
-            { type: "add", text: "Nova tela de aviso triste para jogadores ausentes por muito tempo." }
-        ]
-    },
-    {
-        version: "4.5.5",
-        title: "👴 LEGADO DO VELHO DUDU",
-        changes: [
-            { type: "mod", text: "As abelhas agora são 100% produtivas no modo offline." },
-            { type: "add", text: "Nova frase inspiradora no painel de descanso do Velho Dudu." }
         ]
     }
 ];
@@ -1101,7 +1115,7 @@ let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, auto
 let clickLvl = 1, autoLvlLvl = 1; 
 let luckLvl = 1, luckCost = 500;
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
-let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0 }; 
+let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0, crown: 0 }; 
 let clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
 let dailyMissions = [];
@@ -1364,9 +1378,7 @@ function checkMissionReset() {
     const now = new Date(), resetHour = 22; 
     let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0);
     
-    // Se o horário de reset já passou e o último reset foi antes do horário limite
     if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
-        // SEGURANÇA REAL: Coleta automática de missões completas não resgatadas
         dailyMissions.forEach(m => {
             if (m.completed && !m.collected) {
                 honey = validateNum(honey + m.rewardHoney);
@@ -1430,14 +1442,10 @@ function updateMissionProgress(type, amt = 1) {
 }
 
 function updateMissionAlertStatus() {
-    // Alerta se houver missão COMPLETA mas NÃO COLETADA
     const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected);
     const alertBtn = document.getElementById("btnMissionAlert");
-    if (hasRewardsToClaim) {
-        alertBtn.classList.add("mission-alert");
-    } else {
-        alertBtn.classList.remove("mission-alert");
-    }
+    if (hasRewardsToClaim) alertBtn.classList.add("mission-alert");
+    else alertBtn.classList.remove("mission-alert");
 }
 
 function openRerollConfirmation(id) {
@@ -1468,11 +1476,23 @@ function collectMissionReward(id) {
         honey = validateNum(honey + m.rewardHoney);
         addXP(m.rewardXP);
         notify({n: "Recompensa Coletada!", d: m.rewardLabel});
+        
+        // VERIFICAR SE TODAS AS 10 FORAM COLETADAS
+        const allCollected = dailyMissions.every(x => x.collected);
+        if(allCollected && dailyMissions.length >= 10) {
+            triggerCrownBonus();
+        }
+
         renderMissions();
         updateMissionAlertStatus();
         updateUI();
         executeSave();
     }
+}
+
+function triggerCrownBonus() {
+    activeBoosts.crown = 36000; // 1 Hora (10 ticks por segundo no gameTickInterval)
+    notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 100x ATIVO por 1h!"});
 }
 
 function getMissionIcon(type) {
@@ -1490,7 +1510,13 @@ function getMissionIcon(type) {
 
 function renderMissions() {
     const list = document.getElementById("missionsList"); list.innerHTML = "";
-    dailyMissions.forEach(m => {
+    const sortedMissions = [...dailyMissions].sort((a, b) => {
+        const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2);
+        const scoreB = (b.completed && !b.collected) ? 0 : (!b.completed ? 1 : 2);
+        return scoreA - scoreB;
+    });
+
+    sortedMissions.forEach(m => {
         const perc = Math.min(100, (m.progress / m.target) * 100);
         const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
         
@@ -1535,7 +1561,11 @@ function getMPSBase() {
 function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length, e = achievements.filter(a => a.u && a.r === 'epic').length;
-    let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); if(activeBoosts.pepper > 0) b += 2; if(activeBoosts.energy > 0) b += 1; return b;
+    let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); 
+    if(activeBoosts.pepper > 0) b += 2; 
+    if(activeBoosts.energy > 0) b += 1; 
+    if(activeBoosts.crown > 0) b *= 100; // MULTIPLICADOR DE 100x DA COROA
+    return b;
 }
 
 function updateUI() {
@@ -1547,6 +1577,12 @@ function updateUI() {
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost); document.getElementById("btnUpgradeClick").innerHTML = `<b>Upgrade Clique (Lvl ${clickLvl})</b><br>${formatNum(clickCost)} 🍯`;
     document.getElementById("btnAutoAction").disabled = (honey < autoCost); document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `<b>Desbloquear Auto</b><br>${formatNum(autoCost)} 🍯` : `<b>Upgrade Auto (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
     document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost); document.getElementById("btnUpgradeLuck").innerHTML = `<b>Upgrade Sorte (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
+    
+    // VISUAL DA COROA
+    const crown = document.getElementById("beeCrown");
+    if(activeBoosts.crown > 0) crown.style.display = "block";
+    else crown.style.display = "none";
+
     buildShop(); renderActiveBoosts(); updateRecordsUI();
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
@@ -1565,7 +1601,7 @@ function updateUI() {
 
 function renderActiveBoosts() {
     const container = document.getElementById("active-boosts"); container.innerHTML = "";
-    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑' };
     for(let key in activeBoosts) if(activeBoosts[key] > 0) { const div = document.createElement("div"); div.className = "active-boost-timer"; div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`; container.appendChild(div); }
 }
 
@@ -1603,7 +1639,14 @@ function doClick(event, isTarget = false) {
     playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); if(activeBoosts.luck > 0) baseChance *= 5;
     const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
-    updateMissionProgress('clicks', 1); updateMissionProgress('honey_gain', g); if(isTarget) updateMissionProgress('target_clicks', 1);
+    
+    if(isTarget) {
+        updateMissionProgress('target_clicks', 1);
+    } else {
+        updateMissionProgress('clicks', 1);
+    }
+    
+    updateMissionProgress('honey_gain', g);
     const bee = document.getElementById("beeContainer"); bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
     setTimeout(() => bee.style.transform = "scale(1)", 50);
     spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance);
