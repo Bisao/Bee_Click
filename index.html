@@ -1094,6 +1094,25 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.4.0",
+        title: "💎 ECONOMIA EQUILIBRADA",
+        changes: [
+            { type: "mod", text: "Suavização na curva de preços: Upgrades agora escalam de forma justa no mid/late game." },
+            { type: "mod", text: "Early game levemente mais desafiador para evitar inflação imediata." },
+            { type: "fix", text: "Correção na fórmula de XP para acompanhar o novo balanço econômico." },
+            { type: "add", text: "Sistema de histórico de atualizações integrado ao menu principal." }
+        ]
+    },
+    {
+        version: "5.3.0",
+        title: "✨ AJUSTE DE PROGRESSÃO REAL",
+        changes: [
+            { type: "mod", text: "Taxa de conversão de XP otimizada para 25% da produção de mel." },
+            { type: "mod", text: "Bônus de missão diária balanceado para 8x." },
+            { type: "mod", text: "Painel de atualizações agora destaca novas versões visualmente." }
+        ]
+    },
+    {
         version: "5.2.0",
         title: "⚖️ REBALANCEAMENTO REAL",
         changes: [
@@ -1118,24 +1137,6 @@ let updateHistory = [
             { type: "mod", text: "Abelha agora possui movimento errático e imprevisível no topo da tela." },
             { type: "mod", text: "Gotas de mel agora utilizam o ícone oficial 🍯." },
             { type: "mod", text: "Visual da abelha no minijogo atualizado para Bee.png." }
-        ]
-    },
-    {
-        version: "4.9.0",
-        title: "🛡️ HONEY RAIN RECRIADO",
-        changes: [
-            { type: "mod", text: "Mecânica totalmente nova: clique no mel antes que caia!" },
-            { type: "add", text: "Sistema de 3 Vidas adicionado para maior desafio." },
-            { type: "mod", text: "Dificuldade progressiva com aumento de velocidade da abelha e queda." }
-        ]
-    },
-    {
-        version: "4.8.0",
-        title: "🍯 NOVO MINIJOGO: HONEY RAIN",
-        changes: [
-            { type: "add", text: "Lançamento do minijogo Honey Rain na Central de Jogos." },
-            { type: "add", text: "Mecânica de coletar gotas de mel e desviar de obstáculos (chuva)." },
-            { type: "mod", text: "Ajuste na interface da Central para acomodar novos jogos." }
         ]
     }
 ];
@@ -1846,7 +1847,7 @@ function getGlobalBonus() {
     let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); 
     if(activeBoosts.pepper > 0) b += 2; 
     if(activeBoosts.energy > 0) b += 1; 
-    if(activeBoosts.crown > 0) b *= 8; // Ajustado de 100x para 8x
+    if(activeBoosts.crown > 0) b *= 8;
     return b;
 }
 
@@ -1927,8 +1928,16 @@ function doClick(event, isTarget = false) {
 }
 
 function addXP(amt) {
-    let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); currentXP = validateNum(currentXP + (amt * m)); updateMissionProgress('xp_gain', amt * m);
-    while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); triggerLevelUpCelebration(); }
+    // Configurado para ganhar 25% de cada mel produzido (amt * 0.25)
+    let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); 
+    currentXP = validateNum(currentXP + (amt * 0.25 * m)); 
+    updateMissionProgress('xp_gain', amt * 0.25 * m);
+    while(currentXP >= nextLevelXP){ 
+        currentXP = validateNum(currentXP - nextLevelXP); 
+        level++; 
+        nextLevelXP = Math.floor(nextLevelXP * 1.25); 
+        triggerLevelUpCelebration(); 
+    }
 }
 
 function triggerLevelUpCelebration() {
@@ -2118,7 +2127,8 @@ function buildShop() {
     ['pepper', 'energy', 'flower', 'luck'].forEach(type => {
         const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
-            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.18)) * d.m));
+            // Rebalanceamento dos Boosts baseado no novo multiplicador de nível
+            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.12)) * d.m));
             const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn);
         });
     });
@@ -2136,17 +2146,52 @@ function notify(a) {
     container.innerHTML = ""; container.appendChild(div); div.style.animation = "slideInNotif 4s ease-in-out forwards"; setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
+// ==========================================
+// REBALANCEAMENTO DOS UPGRADES (MID/LATE GAME)
+// ==========================================
 document.getElementById("btnUpgradeClick").onclick = () => { 
     const cost = validateNum(clickCost);
-    if(honey >= cost){ honey = validateNum(honey - cost); clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.2))); clickCost = validateNum(Math.floor(clickCost * 1.38)); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } 
+    if(honey >= cost){ 
+        honey = validateNum(honey - cost); 
+        clickLvl++; 
+        // Melhora a progressão do clique (Polinomial ao invés de linear simples)
+        hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.15) + (Math.log10(clickLvl)))); 
+        // Reduzi o custo multiplicador de 1.38 para 1.25 para evitar o muro no mid-game
+        clickCost = validateNum(Math.floor(clickCost * 1.25)); 
+        updateMissionProgress('buy_upgrade', 1); 
+        updateUI(); 
+        executeSave(); 
+    } 
 };
 document.getElementById("btnAutoAction").onclick = () => { 
     const cost = validateNum(autoCost);
-    if(honey >= cost){ honey = validateNum(honey - cost); if(!autoUnlocked){ autoUnlocked = true; autoCost = 500; startAutoProducing(); } else { autoLevel++; autoCost = validateNum(Math.floor(autoCost * 1.65)); } updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } 
+    if(honey >= cost){ 
+        honey = validateNum(honey - cost); 
+        if(!autoUnlocked){ 
+            autoUnlocked = true; 
+            autoCost = 500; 
+            startAutoProducing(); 
+        } else { 
+            autoLevel++; 
+            // Reduzi o escalonamento de 1.65 para 1.35
+            autoCost = validateNum(Math.floor(autoCost * 1.35)); 
+        } 
+        updateMissionProgress('buy_upgrade', 1); 
+        updateUI(); 
+        executeSave(); 
+    } 
 };
 document.getElementById("btnUpgradeLuck").onclick = () => { 
     const cost = validateNum(luckCost);
-    if(honey >= cost) { honey = validateNum(honey - cost); luckLvl++; luckCost = validateNum(Math.floor(luckCost * 1.9)); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } 
+    if(honey >= cost) { 
+        honey = validateNum(honey - cost); 
+        luckLvl++; 
+        // Reduzi o escalonamento de 1.9 para 1.5
+        luckCost = validateNum(Math.floor(luckCost * 1.5)); 
+        updateMissionProgress('buy_upgrade', 1); 
+        updateUI(); 
+        executeSave(); 
+    } 
 };
 
 document.getElementById("beeContainer").addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
