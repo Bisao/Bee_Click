@@ -641,7 +641,7 @@ input[type=range]::-webkit-slider-thumb {
   <div class="card" id="statsCard">
     <div id="saveIndicator" class="save-icon">💾</div>
     <div id="btnMissionAlert" class="daily-mission-btn" onclick="openModal('missionsModal')">📝</div>
-    <div class="settings-gear" onclick="openModal('settingsGear')">⚙️</div>
+    <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
 
     <div id="gameHeaderTitle" style="font-size: 18px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
         BeeKind <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 20px; height: 20px;">
@@ -766,7 +766,7 @@ input[type=range]::-webkit-slider-thumb {
                       <div class="game-card-header">
                           <div class="game-icon">🍯</div>
                           <div class="game-meta">
-                              <div class="game-title">Honey Rain (v3)</div>
+                              <div class="game-title">Honey Rain (v3.1)</div>
                               <div class="game-record">RECORD: <span id="rainRecordDisplay">0</span></div>
                           </div>
                       </div>
@@ -1094,6 +1094,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.1.0",
+        title: "✨ REFINO VISUAL: HONEY RAIN",
+        changes: [
+            { type: "mod", text: "Abelha agora inverte a imagem automaticamente ao mudar de direção." },
+            { type: "add", text: "Adicionado movimento senoidal para simular o voo da abelha." },
+            { type: "fix", text: "Otimização de performance na renderização das gotas de mel." }
+        ]
+    },
+    {
         version: "5.0.0",
         title: "🧠 INTELIGÊNCIA ARTIFICIAL: HONEY RAIN",
         changes: [
@@ -1126,14 +1135,6 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Botão 'Sair para o Início' agora aparece apenas quando as configurações são abertas dentro do jogo." },
             { type: "mod", text: "Interface do menu inicial otimizada para evitar navegação redundante." }
-        ]
-    },
-    {
-        version: "4.6.9",
-        title: "🔄 TRANSIÇÕES BIDIRECIONAIS",
-        changes: [
-            { type: "add", text: "Tela de loading agora aparece também ao retornar para o menu inicial." },
-            { type: "mod", text: "Otimização das mensagens de carregamento para refletir o fechamento da colmeia." }
         ]
     }
 ];
@@ -1231,7 +1232,7 @@ let fPipes = [];
 const flightCanvas = document.getElementById("flightCanvas");
 const flightCtx = flightCanvas.getContext("2d");
 
-// MINIJOGO RAIN (V3 - Movimento Erático)
+// MINIJOGO RAIN (V3.1 - Refino Visual)
 const rainCanvas = document.getElementById("rainCanvas");
 const rainCtx = rainCanvas.getContext("2d");
 const rainBeeSprite = new Image();
@@ -1245,6 +1246,7 @@ let rHearts = 3;
 let rBeeSpeed = 2;
 let rDropSpeed = 1.5;
 let rSpawnTimer = 0;
+let rBeeYOffset = 0; // Oscilação Senoidal
 
 window.addEventListener('keydown', (e) => {
     if(!mgRunning) return;
@@ -1338,11 +1340,11 @@ function startMG() {
     }
 }
 
-// LÓGICA HONEY RAIN V3 (IA ERRÁTICA)
+// LÓGICA HONEY RAIN V3.1 (REFINO DE VOO)
 function initRain() {
     rainCanvas.width = 300; rainCanvas.height = 300;
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
-    rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0;
+    rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0; rBeeYOffset = 0;
     updateRainHearts();
     
     rainCanvas.onclick = (e) => {
@@ -1376,43 +1378,54 @@ function drawRain() {
     // 1. IA da Abelha (Movimento Errático)
     rBeeDirChangeTimer--;
     if(rBeeDirChangeTimer <= 0) {
-        // Decide um novo alvo aleatório em qualquer lugar do topo
         rBeeTargetX = Math.random() * 260;
-        rBeeDirChangeTimer = Math.random() * 60 + 20; // Tempo até mudar de ideia novamente
-        rBeeSpeed = (2 + (mgScore * 0.05)) * (Math.random() * 1.5 + 0.5); // Velocidade variável
+        rBeeDirChangeTimer = Math.random() * 60 + 20;
+        rBeeSpeed = (2 + (mgScore * 0.05)) * (Math.random() * 1.5 + 0.5);
     }
 
-    // Move a abelha em direção ao alvo
+    // Calcula direção para inverter imagem
+    let movingRight = rBeeTargetX > rBeeX;
+
+    // Move a abelha
     if(Math.abs(rBeeX - rBeeTargetX) > 2) {
-        rBeeX += (rBeeTargetX > rBeeX ? 1 : -1) * rBeeSpeed;
+        rBeeX += (movingRight ? 1 : -1) * rBeeSpeed;
     }
     
-    // Desenha Abelha (Bee.png)
+    // Simulação de voo (Oscilação senoidal)
+    rBeeYOffset = Math.sin(Date.now() / 150) * 8;
+
+    // Desenha Abelha (Bee.png) com inversão
     if(rainBeeSprite.complete) {
-        rainCtx.drawImage(rainBeeSprite, rBeeX, 5, 40, 40);
+        rainCtx.save();
+        if(!movingRight) {
+            // Inverte horizontalmente
+            rainCtx.translate(rBeeX + 40, 0); 
+            rainCtx.scale(-1, 1);
+            rainCtx.drawImage(rainBeeSprite, 0, 10 + rBeeYOffset, 40, 40);
+        } else {
+            rainCtx.drawImage(rainBeeSprite, rBeeX, 10 + rBeeYOffset, 40, 40);
+        }
+        rainCtx.restore();
     } else {
         rainCtx.fillStyle = varProp('--accent');
-        rainCtx.fillRect(rBeeX, 10, 30, 20);
+        rainCtx.fillRect(rBeeX, 15 + rBeeYOffset, 30, 20);
     }
 
     // 2. Spawn de Mel (Pote de Mel)
     rSpawnTimer++;
     const spawnThreshold = Math.max(12, 50 - Math.floor(mgScore/4));
     if(rSpawnTimer > spawnThreshold) {
-        rDrops.push({ x: rBeeX + 20, y: 40 });
+        rDrops.push({ x: rBeeX + 20, y: 45 + rBeeYOffset });
         rSpawnTimer = 0;
     }
 
     // 3. Atualiza Gotas (🍯)
     rDrops.forEach((d, i) => {
         d.y += rDropSpeed;
-        
-        // Desenha Emoji de Mel
         rainCtx.font = "24px Arial";
         rainCtx.textAlign = "center";
         rainCtx.fillText("🍯", d.x, d.y);
 
-        // Se atingir o chão
         if(d.y > 295) {
             rDrops.splice(i, 1);
             rHearts--;
@@ -1421,7 +1434,6 @@ function drawRain() {
         }
     });
 
-    // 4. Progressão Global
     rDropSpeed = 1.5 + (mgScore * 0.04);
 }
 
@@ -1502,7 +1514,7 @@ function finishMG() {
     
     let multiplier = 50;
     if(activeMG === 'flight') multiplier = 150;
-    if(activeMG === 'rain') multiplier = 300; // Aumentado pela dificuldade da IA
+    if(activeMG === 'rain') multiplier = 300; 
 
     let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
     honey = validateNum(honey + hGain); addXP(xGain);
