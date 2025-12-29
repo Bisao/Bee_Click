@@ -33,7 +33,7 @@
     box-sizing:border-box; 
     user-select:none; 
     -webkit-tap-highlight-color:transparent; 
-    touch-action: manipulation; /* Remove atraso de clique e zoom no iOS */
+    touch-action: manipulation; 
 }
 
 body, html {
@@ -44,7 +44,7 @@ body, html {
   overflow: hidden;
   color: white;
   transition: background 0.3s ease;
-  touch-action: none; /* Bloqueia scroll e zoom global no body */
+  touch-action: none;
 }
 
 body { display: flex; align-items: center; justify-content: center; min-height: 100svh; }
@@ -73,7 +73,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     transition: opacity 0.5s ease;
 }
 
-/* ESTILO DO STUDIO */
 .studio-brand {
     position: absolute;
     bottom: 20px;
@@ -226,7 +225,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 .stats{ margin-top:8px; font-size:18px; font-weight: 800; color: var(--accent); }
 
-/* CLICK ZONE OTIMIZADA */
 .click-zone { 
     display: flex; 
     justify-content: space-between; 
@@ -234,7 +232,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     width: 100%; 
     height: 160px; 
     position: relative; 
-    touch-action: none; /* Crucial para Safari Mobile */
+    touch-action: none; 
     border-radius: 20px; 
     overflow: hidden; 
     background-size: cover; 
@@ -304,7 +302,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .tab-pane { display: none; height: 100%; flex-direction: column; }
 .tab-pane.active { display: flex; }
 
-.scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; touch-action: pan-y; /* Permite scroll vertical interno */ }
+.scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 
 .section-title { font-weight: 900; font-size: 14px; color: var(--accent); margin-bottom: 12px; margin-top: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
 .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
@@ -631,7 +629,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
                               <img src="Bee.png" class="skin-preview">
                               <b>Comum</b>
                           </button>
-                          <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')">
+                          <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleBackground('NoelBee')">
                               <img src="NoelBee.png" class="skin-preview">
                               <b>Noel (+15%)</b>
                           </button>
@@ -868,8 +866,8 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
     <div class="modal-box">
         <div class="modal-header">🐝 Produção de Descanso</div>
         <div class="modal-content-scroll" style="text-align: center;">
-            <div style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
-            <h2 style="margin: 0 0 10px; font-weight: 900; color: white;">Bem-vindo de volta!</h2>
+            <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
+            <h2 id="offlineTitle" style="margin: 0 0 10px; font-weight: 900; color: white;">Bem-vindo de volta!</h2>
             <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: rgba(255,255,255,0.9);"></p>
         </div>
         <div class="modal-footer">
@@ -903,7 +901,6 @@ let deferredPrompt;
 let newWorker;
 let pwaState = 'install';
 
-// PWA LOGIC INTEGRATION
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(reg => {
     reg.addEventListener('updatefound', () => {
@@ -989,6 +986,24 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.5.7",
+        title: "✨ REFINAMENTO VISUAL",
+        changes: [
+            { type: "mod", text: "Ajustado o texto de produção acumulada para ser mais direto." },
+            { type: "mod", text: "Removida a porcentagem informativa do painel offline para melhor estética." },
+            { type: "fix", text: "Polimento na lógica de verificação de tempo para a trava de 7 dias." }
+        ]
+    },
+    {
+        version: "4.5.6",
+        title: "⌛ LIMITE DE AUSÊNCIA",
+        changes: [
+            { type: "add", text: "Máximo de 7 dias de produção offline permitido." },
+            { type: "mod", text: "Se ultrapassar 7 dias, as abelhas abandonam a colmeia e o mel é perdido." },
+            { type: "add", text: "Nova tela de aviso triste para jogadores ausentes por muito tempo." }
+        ]
+    },
+    {
         version: "4.5.5",
         title: "👴 LEGADO DO VELHO DUDU",
         changes: [
@@ -1003,7 +1018,7 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Farm offline agora exige no mínimo 60 segundos de ausência para ser ativado." },
             { type: "add", text: "Indicador cromático pulsante para novas atualizações no botão principal." },
-            { type: "mod", text: "Ajuste na persistência do cache de visualização do histórico." }
+            { type: "mod", text: "Ajuste na verificação de persistência do cache local." }
         ]
     },
     {
@@ -1013,24 +1028,6 @@ let updateHistory = [
             { type: "mod", text: "Versão movida da tela principal para o painel de configurações." },
             { type: "add", text: "Novo sistema de renderização automática para as últimas 5 atualizações." },
             { type: "mod", text: "Refatoração do painel 'O que mudou?' para maior clareza visual." }
-        ]
-    },
-    {
-        version: "4.5.2",
-        title: "🍪 IDENTIDADE VISUAL",
-        changes: [
-            { type: "add", text: "Adicionado nome do studio 'Fun🍪Cook Studio' na tela inicial." },
-            { type: "mod", text: "Ajuste na versão do jogo para rastreamento de marca." },
-            { type: "fix", text: "Garantia de espaçamento zero entre as letras n, biscoito e C." }
-        ]
-    },
-    {
-        version: "4.5.1",
-        title: "✨ FEEDBACK DE ATUALIZAÇÃO",
-        changes: [
-            { type: "add", text: "Novo sistema de contorno cromático pulsante para avisar sobre novidades." },
-            { type: "mod", text: "O contorno desaparece automaticamente após a primeira leitura." },
-            { type: "fix", text: "Correção na persistência de leitura do histórico no cache local." }
         ]
     }
 ];
@@ -1047,7 +1044,6 @@ function renderChangelog() {
     if(!container) return;
     container.innerHTML = "";
     
-    // Mostra apenas as últimas 5 atualizações
     const recentUpdates = updateHistory.slice(0, 5);
     
     recentUpdates.forEach(update => {
@@ -1069,7 +1065,6 @@ function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
     const btn = document.getElementById("btnChangelog");
 
-    // Lógica do contorno cromático pulsante (visível apenas se for versão nova)
     if(lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
@@ -1079,9 +1074,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    // Salva que o player viu a versão atual para desativar o contorno cromático
     localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
-    // Remove o efeito cromático imediatamente
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1112,7 +1105,6 @@ let audioSettings = { music: 50, click: 80 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
 let records = { snake: 0, flight: 0 };
 let pendingRerollId = null;
-let sessionStartTime = Date.now();
 
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
@@ -1596,19 +1588,38 @@ function checkOfflineGains(lastTimestamp) {
     if (!autoUnlocked) return; const now = Date.now(); 
     const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
     
-    // POLIMENTO: Só começa a contar após 60 segundos offline
     if (diffInSeconds < 60) return; 
+
+    const offlineIconEl = document.getElementById("offlineIcon");
+    const offlineTitleEl = document.getElementById("offlineTitle");
+    const btnCollect = document.getElementById("btnCollectOffline");
+
+    if (diffInSeconds > 604800) {
+        pendingOfflineHoney = 0;
+        pendingOfflineXP = 0;
+        offlineIconEl.textContent = "🥀";
+        offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)";
+        offlineTitleEl.textContent = "A Colmeia foi abandonada...";
+        offlineTitleEl.style.color = "#ff4757";
+        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu ficaram tristes com sua longa ausência, foram embora e não deixaram mel para você.`;
+        btnCollect.textContent = "VOLTAR AO TRABALHO";
+        btnCollect.style.background = "#57606f";
+        return;
+    }
     
-    const cappedSeconds = Math.min(diffInSeconds, 86400); // Teto de 24h
+    offlineIconEl.textContent = "🍯";
+    offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
+    offlineTitleEl.textContent = "Bem-vindo de volta!";
+    offlineTitleEl.style.color = "white";
+    btnCollect.textContent = "REIVINDICAR RECOMPENSAS";
+    btnCollect.style.background = "var(--xp-bar)";
+
     const mps = getMPSBase() * getGlobalBonus(); 
-    
-    // ATUALIZAÇÃO: Agora as abelhas produzem 100% (mult 1.0 em vez de 0.5)
-    pendingOfflineHoney = Math.floor(mps * cappedSeconds * 1.0); 
+    pendingOfflineHoney = Math.floor(mps * diffInSeconds * 1.0); 
     pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.3);
     
     if (pendingOfflineHoney > 0) {
-        // ATUALIZAÇÃO: Frase customizada solicitada pelo Velho Dudu
-        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu não pararam um instante e produziram mel para você.<br><br><b>Produção acumulada (100%):</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu não pararam um instante e produziram mel para você.<br><br><b>Produção acumulada:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
     }
 }
 
@@ -1649,7 +1660,7 @@ function enterGame() {
     setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
         const gameUI = document.getElementById('gameUI'); gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; gameLoaded = true;
-        if(pendingOfflineHoney > 0) openModal('offlineModal');
+        if(pendingOfflineHoney > 0 || document.getElementById("offlineTitle").textContent.includes("abandonada")) openModal('offlineModal');
         startGameTicks(); if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
     }, 500);
 }
