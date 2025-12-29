@@ -1094,6 +1094,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.7.0",
+        title: "🕹️ ECONOMIA DOS JOGOS",
+        changes: [
+            { type: "mod", text: "Multiplicadores de mel em minigames ajustados para garantir longevidade econômica." },
+            { type: "mod", text: "Ganho de XP em minigames reduzido de 50% para 20% da produção de mel." },
+            { type: "mod", text: "Honey Rain recalibrado para 180x e Flower Flight para 120x." }
+        ]
+    },
+    {
         version: "5.6.0",
         title: "📈 RECALIBRAGEM DE MERCADO",
         changes: [
@@ -1128,15 +1137,6 @@ let updateHistory = [
             { type: "mod", text: "Bônus de missão diária balanceado para 8x." },
             { type: "mod", text: "Painel de atualizações agora destaca novas versões visualmente." }
         ]
-    },
-    {
-        version: "5.2.0",
-        title: "⚖️ REBALANCEAMENTO REAL",
-        changes: [
-            { type: "mod", text: "Ajustado bônus por completar 10 missões diárias de 100x para 8x." },
-            { type: "add", text: "Implementado sistema dinâmico de Changelog no painel inicial." },
-            { type: "mod", text: "Otimização de rotina para entrega do projeto final." }
-        ]
     }
 ];
 
@@ -1154,7 +1154,7 @@ function renderChangelog() {
     const recentUpdates = updateHistory.slice(0, 5);
     recentUpdates.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
-        update.changes.forEach(change => {
+        updateHistory[updateHistory.indexOf(update)].changes.forEach(change => {
             let icon = "🔹";
             if(change.type === "add") icon = "🟢";
             if(change.type === "fix") icon = "🔵";
@@ -1169,8 +1169,7 @@ function renderChangelog() {
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
     const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
-    // Usamos um ID de versão específico para o pulso para garantir que ele volte em atualizações críticas
-    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.6");
+    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.7");
     const btn = document.getElementById("btnChangelog");
 
     if(lastSeen !== currentVersion && hasSeenNewest !== "true") {
@@ -1183,7 +1182,7 @@ function checkUpdateStatus() {
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
     localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
-    localStorage.setItem("BeeKind_HasSeenChangelog_V5.6", "true"); 
+    localStorage.setItem("BeeKind_HasSeenChangelog_V5.7", "true"); 
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1200,7 +1199,6 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-// INICIALIZANDO COM NOVOS VALORES DE MERCADO
 let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 1200, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 5600;
 let clickLvl = 1, autoLvlLvl = 1; 
@@ -1239,7 +1237,6 @@ let fPipes = [];
 const flightCanvas = document.getElementById("flightCanvas");
 const flightCtx = flightCanvas.getContext("2d");
 
-// MINIJOGO RAIN (V3.1 - Refino Visual)
 const rainCanvas = document.getElementById("rainCanvas");
 const rainCtx = rainCanvas.getContext("2d");
 const rainBeeSprite = new Image();
@@ -1253,7 +1250,7 @@ let rHearts = 3;
 let rBeeSpeed = 2;
 let rDropSpeed = 1.5;
 let rSpawnTimer = 0;
-let rBeeYOffset = 0; // Oscilação Senoidal
+let rBeeYOffset = 0; 
 
 window.addEventListener('keydown', (e) => {
     if(!mgRunning) return;
@@ -1352,13 +1349,11 @@ function initRain() {
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
     rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0; rBeeYOffset = 0;
     updateRainHearts();
-    
     rainCanvas.onclick = (e) => {
         if(!mgRunning) return;
         const rect = rainCanvas.getBoundingClientRect();
         const mouseX = (e.clientX - rect.left) * (300 / rect.width);
         const mouseY = (e.clientY - rect.top) * (300 / rect.height);
-        
         rDrops.forEach((d, i) => {
             const dist = Math.sqrt((mouseX - d.x)**2 + (mouseY - d.y)**2);
             if(dist < 22) { 
@@ -1369,7 +1364,6 @@ function initRain() {
             }
         });
     };
-
     if(mgInterval) clearInterval(mgInterval);
     mgInterval = setInterval(drawRain, 20);
 }
@@ -1500,10 +1494,16 @@ function finishMG() {
         updateRecordsUI(); 
     }
     updateMissionProgress('mg_score', mgScore);
-    let multiplier = 50;
-    if(activeMG === 'flight') multiplier = 150;
-    if(activeMG === 'rain') multiplier = 300; 
-    let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
+    
+    // BALANCEAMENTO DE RECOMPENSAS (V5.7.0)
+    let multiplier = 50; // Snake (Base)
+    if(activeMG === 'flight') multiplier = 120; // Ajustado (de 150)
+    if(activeMG === 'rain') multiplier = 180; // Ajustado (de 300)
+
+    let hGain = mgScore * multiplier * (1 + level * 0.1);
+    // Ganho de XP reduzido para 20% do ganho de mel para balancear progressão
+    let xGain = hGain * 0.20; 
+
     honey = validateNum(honey + hGain); addXP(xGain);
     document.getElementById("mgResultScore").textContent = mgScore;
     document.getElementById("mgResultReward").innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
