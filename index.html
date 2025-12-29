@@ -203,6 +203,15 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     transition: transform 0.1s, background 0.3s; 
 }
 
+.lvl-up-flash {
+    animation: lvlUpFlash 1s ease-out forwards;
+}
+@keyframes lvlUpFlash {
+    0% { transform: scale(1); box-shadow: var(--shadow); border-color: white; }
+    50% { transform: scale(1.05); box-shadow: 0 0 30px var(--accent); border-color: var(--accent); }
+    100% { transform: scale(1); box-shadow: var(--shadow); border-color: rgba(255,255,255,0.15); }
+}
+
 .notif-card { 
     height: 55px; 
     display: flex; 
@@ -257,7 +266,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 
 .bee-container { position: relative; z-index: 2; animation: floatBee 3s infinite ease-in-out; cursor: pointer; transition: transform 0.05s; }
 
-/* COROA SOBRE A ABELHA */
 .crown-overlay {
     position: absolute;
     top: -20px;
@@ -347,11 +355,45 @@ button{ width:100%; padding:15px; margin-top:8px; border:none; border-radius:18p
 button:active{ transform:translateY(2px); box-shadow:0 2px 0 #b38f00; }
 button:disabled { background:rgba(255,255,255,0.1) !important; color:rgba(255,255,255,0.2) !important; box-shadow: none !important; opacity: 0.5; }
 
-.config-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
-.config-label { font-weight: 800; font-size: 14px; color: white; display: flex; justify-content: space-between; align-items: center; }
-.config-label input[type="color"] { border: none; width: 40px; height: 40px; background: none; cursor: pointer; }
+/* AJUSTES FINOS CONFIGURAÇÕES */
+.config-group-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.config-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
+.config-row:last-child { margin-bottom: 0; }
+.config-label { font-weight: 800; font-size: 13px; color: rgba(255,255,255,0.9); display: flex; justify-content: space-between; align-items: center; }
+.config-label span:last-child { color: var(--accent); font-size: 12px; }
 
-input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
+input[type="color"] { 
+    border: 2px solid rgba(255,255,255,0.2); 
+    width: 50px; height: 30px; 
+    background: none; cursor: pointer; 
+    border-radius: 8px;
+    padding: 0;
+}
+
+input[type=range] { 
+    -webkit-appearance: none;
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    height: 6px;
+    border-radius: 5px;
+    outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+}
 
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(12px); display:none; justify-content:center; align-items:center; z-index:10001; padding: 20px; transition: background 0.3s; }
 .modal-box{ background: var(--card); backdrop-filter: var(--panel-blur); width:100%; max-width:380px; max-height: 85svh; border-radius:35px; overflow:hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transition: background 0.3s; }
@@ -442,7 +484,7 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 .popup { position: absolute; background: transparent; width: 100%; font-weight: 800; font-size: 11px; color: white; pointer-events: none; text-align: center; display: flex; align-items: center; justify-content: center; padding: 0 10px; opacity: 0; }
 @keyframes slideInNotif { 0% { transform: translateY(40px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
 
-.version-tag { color: rgba(255,255,255,0.4); margin-top: 5px; font-weight: bold; font-size: 11px; text-align: center; width: 100%; }
+.version-tag { color: rgba(255,255,255,0.4); margin-top: 10px; font-weight: bold; font-size: 10px; text-align: center; width: 100%; letter-spacing: 1px; }
 
 .mission-card { display: flex; align-items: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: left; gap: 14px; margin-bottom: 10px; transition: 0.3s; position: relative; overflow: hidden; }
 .mission-card.completed { border-color: var(--xp-bar); background: rgba(76, 175, 80, 0.1); }
@@ -815,55 +857,56 @@ input[type=range] { accent-color: var(--accent); cursor: pointer; width: 100%; }
 <div class="modal" id="settingsModal">
     <div class="modal-box">
         <div class="modal-header">
-            <span>Configurações Reais ⚙️</span>
+            <span>Ajustes Reais ⚙️</span>
             <span style="cursor:pointer" onclick="closeModal('settingsModal')">✖</span>
         </div>
         <div class="modal-content-scroll">
-            <div class="section-title">GERENCIAMENTO DO APP 📲</div>
-            <div id="pwaStatusArea" style="margin-bottom: 20px;">
-                <button id="btnPwaAction" style="display: none; background: var(--xp-bar); color: white; border-bottom: 4px solid #2e7d32;"></button>
-                <div id="pwaInstalledMsg" style="display: none; text-align: center; font-size: 12px; color: var(--xp-bar); font-weight: 800;">
-                    APP INSTALADO E ATUALIZADO ✅
-                </div>
-            </div>
-
-            <div class="section-title">ÁUDIO</div>
-            <div class="config-row">
-                <div class="config-label">
-                    <span>Música 🎵</span>
-                    <span id="musicVolLabel">50%</span>
-                </div>
-                <input type="range" id="musicVol" min="0" max="100" value="50" oninput="updateVolume('music')">
-            </div>
-            <div class="config-row">
-                <div class="config-label">
-                    <span>Efeitos 🔊</span>
-                    <span id="clickVolLabel">80%</span>
-                </div>
-                <input type="range" id="clickVol" min="0" max="100" value="80" oninput="updateVolume('click')">
-            </div>
-
-            <div class="section-title">TEMAS PERSONALIZADOS 🎨</div>
-            <div class="config-row">
-                <div class="config-label">
-                    <span>Cor Principal (UI)</span>
-                    <input type="color" id="uiMainColor" value="#071B87" oninput="updateTheme()">
-                </div>
-            </div>
-            <div class="config-row">
-                <div class="config-label">
-                    <span>Opacidade dos Painéis</span>
-                    <span id="uiOpacityLabel">85%</span>
-                </div>
-                <input type="range" id="uiOpacity" min="10" max="100" value="85" oninput="updateTheme()">
-            </div>
-
-            <button id="btnExitToMain" onclick="returnToMain()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); margin-top: 20px; box-shadow: none;">SAIR PARA O INÍCIO</button>
             
-            <div class="version-tag" id="configVersionDisplay">v.0.0.0</div>
+            <div class="section-title">AUDIO & SOM 🔊</div>
+            <div class="config-group-card">
+                <div class="config-row">
+                    <div class="config-label"><span>Música 🎵</span><span id="musicVolLabel">50%</span></div>
+                    <input type="range" id="musicVol" min="0" max="100" value="50" oninput="updateVolume('music')">
+                </div>
+                <div class="config-row">
+                    <div class="config-label"><span>Efeito Click 🔊</span><span id="clickVolLabel">80%</span></div>
+                    <input type="range" id="clickVol" min="0" max="100" value="80" oninput="updateVolume('click')">
+                </div>
+                <div class="config-row">
+                    <div class="config-label"><span>Efeito Level Up ✨</span><span id="lvlUpVolLabel">100%</span></div>
+                    <input type="range" id="lvlUpVol" min="0" max="100" value="100" oninput="updateVolume('lvlUp')">
+                </div>
+            </div>
+
+            <div class="section-title">INTERFACE 🎨</div>
+            <div class="config-group-card">
+                <div class="config-row">
+                    <div class="config-label">
+                        <span>Cor do Tema</span>
+                        <input type="color" id="uiMainColor" value="#071B87" oninput="updateTheme()">
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label"><span>Opacidade dos Painéis</span><span id="uiOpacityLabel">85%</span></div>
+                    <input type="range" id="uiOpacity" min="10" max="100" value="85" oninput="updateTheme()">
+                </div>
+            </div>
+
+            <div class="section-title">APLICATIVO 📲</div>
+            <div class="config-group-card">
+                <div id="pwaStatusArea">
+                    <button id="btnPwaAction" style="display: none; background: var(--xp-bar); color: white; margin-top:0; height: 45px; font-size: 12px;"></button>
+                    <div id="pwaInstalledMsg" style="display: none; text-align: center; font-size: 11px; color: var(--xp-bar); font-weight: 800;">
+                        SISTEMA SINCRONIZADO ✅
+                    </div>
+                </div>
+                <button id="btnExitToMain" onclick="returnToMain()" style="background: #e74c3c; color: white; border: none; box-shadow: 0 4px 0 #c0392b; margin-top: 15px; height: 45px; font-size: 12px;">SAIR PARA O INÍCIO 🚪</button>
+            </div>
+            
+            <div class="version-tag" id="configVersionDisplay">BEEKIND v0.0.0</div>
         </div>
         <div class="modal-footer">
-            <button onclick="closeModal('settingsModal')" style="margin-top: 0;">FECHAR</button>
+            <button onclick="closeModal('settingsModal')" style="margin-top: 0; background: rgba(255,255,255,0.1); color: white; box-shadow: none;">FECHAR</button>
         </div>
     </div>
 </div>
@@ -1005,6 +1048,32 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "4.6.5",
+        title: "⚙️ REFINAMENTO DE AJUSTES",
+        changes: [
+            { type: "mod", text: "Painel de configurações redesenhado com cards e Sliders personalizados." },
+            { type: "add", text: "Organização visual aprimorada para controle de áudio e interface." },
+            { type: "mod", text: "Botão de saída para o menu inicial estilizado para maior clareza." }
+        ]
+    },
+    {
+        version: "4.6.4",
+        title: "🔊 CONTROLE DE ÁUDIO AVANÇADO",
+        changes: [
+            { type: "add", text: "Separadas as barras de volume para o som de Clique e o som de Level Up." },
+            { type: "mod", text: "Ajuste fino de áudio disponível no menu de configurações real." }
+        ]
+    },
+    {
+        version: "4.6.3",
+        title: "✨ CELEBRAÇÃO DE LEVEL UP",
+        changes: [
+            { type: "add", text: "Novo efeito sonoro épico ao subir de nível (LvlUp.mp3)." },
+            { type: "add", text: "Efeitos visuais de explosão dourada e fogos de artifício no Level Up." },
+            { type: "mod", text: "O card de estatísticas agora pulsa intensamente durante a subida de nível." }
+        ]
+    },
+    {
         version: "4.6.2",
         title: "👑 BÔNUS MESTRE DA COLMEIA",
         changes: [
@@ -1021,40 +1090,13 @@ let updateHistory = [
             { type: "fix", text: "Corrigido erro onde o alvo contava como um clique normal para missões de dedos ágeis." },
             { type: "mod", text: "Refinamento na lógica de priorização para processamento de metas simultâneas." }
         ]
-    },
-    {
-        version: "4.6.0",
-        title: "📋 ORGANIZAÇÃO DE MISSÕES",
-        changes: [
-            { type: "mod", text: "Missões prontas para coleta agora aparecem sempre no topo da lista." },
-            { type: "mod", text: "Missões já coletadas são movidas automaticamente para o final da lista." },
-            { type: "mod", text: "Melhoria na legibilidade das tarefas em andamento." }
-        ]
-    },
-    {
-        version: "4.5.9",
-        title: "🎁 COLETA DE MISSÕES",
-        changes: [
-            { type: "add", text: "As recompensas das missões agora devem ser coletadas manualmente." },
-            { type: "mod", text: "Segurança Real: recompensas não coletadas são salvas automaticamente pelo sistema às 22h." },
-            { type: "mod", text: "Interface de missões atualizada com botão de resgate." }
-        ]
-    },
-    {
-        version: "4.5.8",
-        title: "🎯 FEEDBACK DE MISSÕES",
-        changes: [
-            { type: "add", text: "Ícone de missões agora pulsa em cores quando há tarefas concluídas." },
-            { type: "mod", text: "Histórico de versões ajustado para ocultar dados técnicos de produção." },
-            { type: "fix", text: "Remoção do alerta de missão assim que o painel é acessado." }
-        ]
     }
 ];
 
 function updateVersionDisplay() {
     const configDisplay = document.getElementById("configVersionDisplay");
     if(updateHistory.length > 0) {
-        if(configDisplay) configDisplay.textContent = `v.${updateHistory[0].version}`;
+        if(configDisplay) configDisplay.textContent = `BEEKIND v.${updateHistory[0].version}`;
     }
 }
 
@@ -1062,9 +1104,7 @@ function renderChangelog() {
     const container = document.getElementById("changelogContent");
     if(!container) return;
     container.innerHTML = "";
-    
     const recentUpdates = updateHistory.slice(0, 5);
-    
     recentUpdates.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
         update.changes.forEach(change => {
@@ -1083,7 +1123,6 @@ function checkUpdateStatus() {
     const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
     const currentVersion = updateHistory[0].version;
     const btn = document.getElementById("btnChangelog");
-
     if(lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
@@ -1120,13 +1159,14 @@ let clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
 let dailyMissions = [];
 let lastMissionReset = 0;
-let audioSettings = { music: 50, click: 80 };
+let audioSettings = { music: 50, click: 80, lvlUp: 100 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
 let records = { snake: 0, flight: 0 };
 let pendingRerollId = null;
 
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
+const soundLvlUp = new Audio('LvlUp.mp3');
 soundMusic.loop = true;
 
 let activeMG = null;
@@ -1306,15 +1346,39 @@ function closeMgResult() { document.getElementById("minigameOverlay").style.disp
 
 function updateVolume(type) {
     tryPlayMusic();
-    if(type === 'music') { audioSettings.music = document.getElementById('musicVol').value; document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; soundMusic.volume = audioSettings.music / 100; }
-    else { audioSettings.click = document.getElementById('clickVol').value; document.getElementById('clickVolLabel').textContent = audioSettings.click + '%'; soundClick.volume = audioSettings.click / 100; }
+    if(type === 'music') { 
+        audioSettings.music = document.getElementById('musicVol').value; 
+        document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; 
+        soundMusic.volume = audioSettings.music / 100; 
+    } else if(type === 'click') { 
+        audioSettings.click = document.getElementById('clickVol').value; 
+        document.getElementById('clickVolLabel').textContent = audioSettings.click + '%'; 
+        soundClick.volume = audioSettings.click / 100; 
+    } else if(type === 'lvlUp') {
+        audioSettings.lvlUp = document.getElementById('lvlUpVol').value;
+        document.getElementById('lvlUpVolLabel').textContent = audioSettings.lvlUp + '%';
+        soundLvlUp.volume = audioSettings.lvlUp / 100;
+    }
     localStorage.setItem(AUDIO_KEY, JSON.stringify(audioSettings));
 }
 
 function applyAudioSettings() {
-    soundMusic.volume = audioSettings.music / 100; soundClick.volume = audioSettings.click / 100;
-    if(document.getElementById('musicVol')) { document.getElementById('musicVol').value = audioSettings.music; document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; }
-    if(document.getElementById('clickVol')) { document.getElementById('clickVol').value = audioSettings.click; document.getElementById('clickVolLabel').textContent = audioSettings.click + '%'; }
+    soundMusic.volume = audioSettings.music / 100; 
+    soundClick.volume = audioSettings.click / 100; 
+    soundLvlUp.volume = (audioSettings.lvlUp || 100) / 100;
+    
+    if(document.getElementById('musicVol')) { 
+        document.getElementById('musicVol').value = audioSettings.music; 
+        document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; 
+    }
+    if(document.getElementById('clickVol')) { 
+        document.getElementById('clickVol').value = audioSettings.click; 
+        document.getElementById('clickVolLabel').textContent = audioSettings.click + '%'; 
+    }
+    if(document.getElementById('lvlUpVol')) {
+        document.getElementById('lvlUpVol').value = audioSettings.lvlUp || 100;
+        document.getElementById('lvlUpVolLabel').textContent = (audioSettings.lvlUp || 100) + '%';
+    }
 }
 
 function tryPlayMusic() {
@@ -1377,7 +1441,6 @@ const missionTemplates = [
 function checkMissionReset() {
     const now = new Date(), resetHour = 22; 
     let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0);
-    
     if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
         dailyMissions.forEach(m => {
             if (m.completed && !m.collected) {
@@ -1476,13 +1539,10 @@ function collectMissionReward(id) {
         honey = validateNum(honey + m.rewardHoney);
         addXP(m.rewardXP);
         notify({n: "Recompensa Coletada!", d: m.rewardLabel});
-        
-        // VERIFICAR SE TODAS AS 10 FORAM COLETADAS
         const allCollected = dailyMissions.every(x => x.collected);
         if(allCollected && dailyMissions.length >= 10) {
             triggerCrownBonus();
         }
-
         renderMissions();
         updateMissionAlertStatus();
         updateUI();
@@ -1491,7 +1551,7 @@ function collectMissionReward(id) {
 }
 
 function triggerCrownBonus() {
-    activeBoosts.crown = 36000; // 1 Hora (10 ticks por segundo no gameTickInterval)
+    activeBoosts.crown = 36000;
     notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 100x ATIVO por 1h!"});
 }
 
@@ -1515,18 +1575,15 @@ function renderMissions() {
         const scoreB = (b.completed && !b.collected) ? 0 : (!b.completed ? 1 : 2);
         return scoreA - scoreB;
     });
-
     sortedMissions.forEach(m => {
         const perc = Math.min(100, (m.progress / m.target) * 100);
         const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
-        
         let actionButton = '';
         if (m.completed && !m.collected) {
             actionButton = `<button onclick="collectMissionReward('${m.id}')" style="margin-top:8px; padding:8px; background:var(--xp-bar); font-size:12px; height:auto; box-shadow:0 3px 0 #2e7d32;">COLETAR RECOMPENSA</button>`;
         } else if (!m.completed) {
             actionButton = `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>`;
         }
-
         list.innerHTML += `
             <div class="mission-card ${m.completed ? 'completed' : ''} ${m.collected ? 'collected' : ''}">
                 <div style="font-size: 24px">${icon}</div>
@@ -1564,7 +1621,7 @@ function getGlobalBonus() {
     let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); 
     if(activeBoosts.pepper > 0) b += 2; 
     if(activeBoosts.energy > 0) b += 1; 
-    if(activeBoosts.crown > 0) b *= 100; // MULTIPLICADOR DE 100x DA COROA
+    if(activeBoosts.crown > 0) b *= 100;
     return b;
 }
 
@@ -1577,12 +1634,9 @@ function updateUI() {
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost); document.getElementById("btnUpgradeClick").innerHTML = `<b>Upgrade Clique (Lvl ${clickLvl})</b><br>${formatNum(clickCost)} 🍯`;
     document.getElementById("btnAutoAction").disabled = (honey < autoCost); document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `<b>Desbloquear Auto</b><br>${formatNum(autoCost)} 🍯` : `<b>Upgrade Auto (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
     document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost); document.getElementById("btnUpgradeLuck").innerHTML = `<b>Upgrade Sorte (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
-    
-    // VISUAL DA COROA
     const crown = document.getElementById("beeCrown");
     if(activeBoosts.crown > 0) crown.style.display = "block";
     else crown.style.display = "none";
-
     buildShop(); renderActiveBoosts(); updateRecordsUI();
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
@@ -1639,13 +1693,7 @@ function doClick(event, isTarget = false) {
     playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); if(activeBoosts.luck > 0) baseChance *= 5;
     const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
-    
-    if(isTarget) {
-        updateMissionProgress('target_clicks', 1);
-    } else {
-        updateMissionProgress('clicks', 1);
-    }
-    
+    if(isTarget) { updateMissionProgress('target_clicks', 1); } else { updateMissionProgress('clicks', 1); }
     updateMissionProgress('honey_gain', g);
     const bee = document.getElementById("beeContainer"); bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
     setTimeout(() => bee.style.transform = "scale(1)", 50);
@@ -1655,7 +1703,40 @@ function doClick(event, isTarget = false) {
 
 function addXP(amt) {
     let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); currentXP = validateNum(currentXP + (amt * m)); updateMissionProgress('xp_gain', amt * m);
-    while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); notify({n:`Nível Real ${level}!`}); }
+    while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); triggerLevelUpCelebration(); }
+}
+
+function triggerLevelUpCelebration() {
+    soundLvlUp.currentTime = 0;
+    soundLvlUp.play().catch(() => {});
+    notify({n:`Nível Real ${level}!`});
+    const card = document.getElementById("statsCard");
+    card.classList.add("lvl-up-flash");
+    setTimeout(() => card.classList.remove("lvl-up-flash"), 1000);
+    spawnLevelUpFireworks();
+}
+
+function spawnLevelUpFireworks() {
+    const count = 30;
+    const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200'];
+    for(let i=0; i<count; i++) {
+        const p = document.createElement("div");
+        p.className = "honey-particle";
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.width = (Math.random() * 10 + 5) + "px";
+        p.style.height = p.style.width;
+        p.style.left = "50vw";
+        p.style.top = "50vh";
+        p.style.boxShadow = "0 0 10px gold";
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 400 + 200;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+        p.style.setProperty('--tx', `${tx}px`);
+        p.style.setProperty('--ty', `${ty}px`);
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1000);
+    }
 }
 
 function buyBoostManual(type, ticks, cost, label) { 
@@ -1689,11 +1770,9 @@ function checkOfflineGains(lastTimestamp) {
     if (!autoUnlocked) return; const now = Date.now(); 
     const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
     if (diffInSeconds < 60) return; 
-
     const offlineIconEl = document.getElementById("offlineIcon");
     const offlineTitleEl = document.getElementById("offlineTitle");
     const btnCollect = document.getElementById("btnCollectOffline");
-
     if (diffInSeconds > 604800) {
         pendingOfflineHoney = 0; pendingOfflineXP = 0;
         offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)";
@@ -1702,15 +1781,12 @@ function checkOfflineGains(lastTimestamp) {
         btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f";
         return;
     }
-    
     offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
     offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "white";
     btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)";
-
     const mps = getMPSBase() * getGlobalBonus(); 
     pendingOfflineHoney = Math.floor(mps * diffInSeconds * 1.0); 
     pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.3);
-    
     if (pendingOfflineHoney > 0) {
         document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu não pararam um instante e produziram mel para você.<br><br><b>Produção acumulada:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
     }
