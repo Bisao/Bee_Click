@@ -465,7 +465,7 @@ input[type=range]::-webkit-slider-thumb {
     display: none; flex-direction: column; align-items: center; justify-content: center;
     backdrop-filter: blur(20px);
 }
-#snakeCanvas, #flightCanvas { 
+#snakeCanvas, #flightCanvas, #rainCanvas { 
     background: #000; 
     border: 3px solid rgba(255,255,255,0.2); 
     border-radius: 20px; 
@@ -641,7 +641,7 @@ input[type=range]::-webkit-slider-thumb {
   <div class="card" id="statsCard">
     <div id="saveIndicator" class="save-icon">💾</div>
     <div id="btnMissionAlert" class="daily-mission-btn" onclick="openModal('missionsModal')">📝</div>
-    <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
+    <div class="settings-gear" onclick="openModal('settingsGear')">⚙️</div>
 
     <div id="gameHeaderTitle" style="font-size: 18px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
         BeeKind <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 20px; height: 20px;">
@@ -764,6 +764,19 @@ input[type=range]::-webkit-slider-thumb {
                   
                   <div class="game-card">
                       <div class="game-card-header">
+                          <div class="game-icon">🍯</div>
+                          <div class="game-meta">
+                              <div class="game-title">Honey Rain (v3)</div>
+                              <div class="game-record">RECORD: <span id="rainRecordDisplay">0</span></div>
+                          </div>
+                      </div>
+                      <div class="game-play-area">
+                          <button onclick="prepareMinigame('rain')">INICIAR PARTIDA</button>
+                      </div>
+                  </div>
+
+                  <div class="game-card">
+                      <div class="game-card-header">
                           <div class="game-icon">🐍</div>
                           <div class="game-meta">
                               <div class="game-title">Bee-Line (Snake)</div>
@@ -843,12 +856,14 @@ input[type=range]::-webkit-slider-thumb {
         <div class="mg-stats-panel">
             <span class="mg-label" id="mgLabelText">Pontuação Atual</span>
             <span class="mg-val" id="mgCurrentScore">0</span>
+            <div id="rainHearts" style="display: none; font-size: 16px; margin-top: 5px;">❤️❤️❤️</div>
         </div>
         <button onclick="exitMinigame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: rgba(0,0,0,0.4); border: 1px solid white; color: white; border-radius: 12px;">SAIR</button>
     </div>
     
     <canvas id="snakeCanvas"></canvas>
     <canvas id="flightCanvas"></canvas>
+    <canvas id="rainCanvas"></canvas>
 
     <div id="snakeControls" class="mg-controls" style="display: none;">
         <div class="dpad-btn" style="grid-area: up;" ontouchstart="changeSnakeDir('UP')" onmousedown="changeSnakeDir('UP')">▲</div>
@@ -1079,6 +1094,33 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.0.0",
+        title: "🧠 INTELIGÊNCIA ARTIFICIAL: HONEY RAIN",
+        changes: [
+            { type: "mod", text: "Abelha agora possui movimento errático e imprevisível no topo da tela." },
+            { type: "mod", text: "Gotas de mel agora utilizam o ícone oficial 🍯." },
+            { type: "mod", text: "Visual da abelha no minijogo atualizado para Bee.png." }
+        ]
+    },
+    {
+        version: "4.9.0",
+        title: "🛡️ HONEY RAIN RECRIADO",
+        changes: [
+            { type: "mod", text: "Mecânica totalmente nova: clique no mel antes que caia!" },
+            { type: "add", text: "Sistema de 3 Vidas adicionado para maior desafio." },
+            { type: "mod", text: "Dificuldade progressiva com aumento de velocidade da abelha e queda." }
+        ]
+    },
+    {
+        version: "4.8.0",
+        title: "🍯 NOVO MINIJOGO: HONEY RAIN",
+        changes: [
+            { type: "add", text: "Lançamento do minijogo Honey Rain na Central de Jogos." },
+            { type: "add", text: "Mecânica de coletar gotas de mel e desviar de obstáculos (chuva)." },
+            { type: "mod", text: "Ajuste na interface da Central para acomodar novos jogos." }
+        ]
+    },
+    {
         version: "4.7.0",
         title: "🛡️ NAVEGAÇÃO INTELIGENTE",
         changes: [
@@ -1092,32 +1134,6 @@ let updateHistory = [
         changes: [
             { type: "add", text: "Tela de loading agora aparece também ao retornar para o menu inicial." },
             { type: "mod", text: "Otimização das mensagens de carregamento para refletir o fechamento da colmeia." }
-        ]
-    },
-    {
-        version: "4.6.8",
-        title: "⌛ TELA DE CARREGAMENTO REAL",
-        changes: [
-            { type: "add", text: "Nova tela de loading com barra de progresso animada e abelha voadora." },
-            { type: "add", text: "Adicionado Cookie giratório dinâmico no carregamento do jogo." },
-            { type: "mod", text: "Transição suave entre o menu inicial e a colmeia principal." }
-        ]
-    },
-    {
-        version: "4.6.7",
-        title: "🧹 CONFIGURAÇÕES MINIMALISTAS",
-        changes: [
-            { type: "mod", text: "Removido botão redundante de fechar da parte inferior do painel de ajustes." },
-            { type: "mod", text: "Limpeza visual na seção de sistema para um design mais limpo e focado." }
-        ]
-    },
-    {
-        version: "4.6.6",
-        title: "🎨 SISTEMA DE CONTRASTE REAL",
-        changes: [
-            { type: "add", text: "Textos agora ajustam automaticamente entre Claro/Escuro baseado na cor do tema escolhida." },
-            { type: "mod", text: "Cores de acento (Amarelo) otimizadas para fundos de alta claridade." },
-            { type: "mod", text: "Barras de progresso e XP agora possuem bordas para melhor visibilidade em qualquer tema." }
         ]
     }
 ];
@@ -1190,7 +1206,7 @@ let dailyMissions = [];
 let lastMissionReset = 0;
 let audioSettings = { music: 50, click: 80, lvlUp: 100 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
-let records = { snake: 0, flight: 0 };
+let records = { snake: 0, flight: 0, rain: 0 };
 let pendingRerollId = null;
 
 const soundMusic = new Audio('Music.mp3');
@@ -1214,6 +1230,21 @@ let fBeeY = 150, fVelocity = 0, fGravity = 0.5, fJump = -7;
 let fPipes = [];
 const flightCanvas = document.getElementById("flightCanvas");
 const flightCtx = flightCanvas.getContext("2d");
+
+// MINIJOGO RAIN (V3 - Movimento Erático)
+const rainCanvas = document.getElementById("rainCanvas");
+const rainCtx = rainCanvas.getContext("2d");
+const rainBeeSprite = new Image();
+rainBeeSprite.src = 'Bee.png';
+
+let rBeeX = 135;
+let rBeeTargetX = 135;
+let rBeeDirChangeTimer = 0;
+let rDrops = [];
+let rHearts = 3;
+let rBeeSpeed = 2;
+let rDropSpeed = 1.5;
+let rSpawnTimer = 0;
 
 window.addEventListener('keydown', (e) => {
     if(!mgRunning) return;
@@ -1273,8 +1304,10 @@ function prepareMinigame(type) {
     document.getElementById("mgResultScreen").style.display = "none";
     document.getElementById("snakeCanvas").style.display = "none";
     document.getElementById("flightCanvas").style.display = "none";
+    document.getElementById("rainCanvas").style.display = "none";
     document.getElementById("snakeControls").style.display = "none";
     document.getElementById("flightControls").style.display = "none";
+    document.getElementById("rainHearts").style.display = "none";
     document.getElementById("flightHint").style.display = "none";
     const countdownEl = document.getElementById("mgCountdown");
     countdownEl.style.display = "block";
@@ -1293,12 +1326,103 @@ function startMG() {
         document.getElementById("snakeCanvas").style.display = "block";
         document.getElementById("snakeControls").style.display = "grid";
         mgSpeed = 150; initSnake();
-    } else {
+    } else if(activeMG === 'flight') {
         document.getElementById("flightCanvas").style.display = "block";
         document.getElementById("flightControls").style.display = "block";
         document.getElementById("flightHint").style.display = "block";
         initFlight();
+    } else if(activeMG === 'rain') {
+        document.getElementById("rainCanvas").style.display = "block";
+        document.getElementById("rainHearts").style.display = "block";
+        initRain();
     }
+}
+
+// LÓGICA HONEY RAIN V3 (IA ERRÁTICA)
+function initRain() {
+    rainCanvas.width = 300; rainCanvas.height = 300;
+    rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
+    rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0;
+    updateRainHearts();
+    
+    rainCanvas.onclick = (e) => {
+        if(!mgRunning) return;
+        const rect = rainCanvas.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left) * (300 / rect.width);
+        const mouseY = (e.clientY - rect.top) * (300 / rect.height);
+        
+        rDrops.forEach((d, i) => {
+            const dist = Math.sqrt((mouseX - d.x)**2 + (mouseY - d.y)**2);
+            if(dist < 22) { 
+                rDrops.splice(i, 1);
+                mgScore++;
+                document.getElementById("mgCurrentScore").textContent = mgScore;
+                playClickSound();
+            }
+        });
+    };
+
+    if(mgInterval) clearInterval(mgInterval);
+    mgInterval = setInterval(drawRain, 20);
+}
+
+function updateRainHearts() {
+    document.getElementById("rainHearts").textContent = "❤️".repeat(rHearts);
+}
+
+function drawRain() {
+    rainCtx.fillStyle = "#000"; rainCtx.fillRect(0, 0, 300, 300);
+    
+    // 1. IA da Abelha (Movimento Errático)
+    rBeeDirChangeTimer--;
+    if(rBeeDirChangeTimer <= 0) {
+        // Decide um novo alvo aleatório em qualquer lugar do topo
+        rBeeTargetX = Math.random() * 260;
+        rBeeDirChangeTimer = Math.random() * 60 + 20; // Tempo até mudar de ideia novamente
+        rBeeSpeed = (2 + (mgScore * 0.05)) * (Math.random() * 1.5 + 0.5); // Velocidade variável
+    }
+
+    // Move a abelha em direção ao alvo
+    if(Math.abs(rBeeX - rBeeTargetX) > 2) {
+        rBeeX += (rBeeTargetX > rBeeX ? 1 : -1) * rBeeSpeed;
+    }
+    
+    // Desenha Abelha (Bee.png)
+    if(rainBeeSprite.complete) {
+        rainCtx.drawImage(rainBeeSprite, rBeeX, 5, 40, 40);
+    } else {
+        rainCtx.fillStyle = varProp('--accent');
+        rainCtx.fillRect(rBeeX, 10, 30, 20);
+    }
+
+    // 2. Spawn de Mel (Pote de Mel)
+    rSpawnTimer++;
+    const spawnThreshold = Math.max(12, 50 - Math.floor(mgScore/4));
+    if(rSpawnTimer > spawnThreshold) {
+        rDrops.push({ x: rBeeX + 20, y: 40 });
+        rSpawnTimer = 0;
+    }
+
+    // 3. Atualiza Gotas (🍯)
+    rDrops.forEach((d, i) => {
+        d.y += rDropSpeed;
+        
+        // Desenha Emoji de Mel
+        rainCtx.font = "24px Arial";
+        rainCtx.textAlign = "center";
+        rainCtx.fillText("🍯", d.x, d.y);
+
+        // Se atingir o chão
+        if(d.y > 295) {
+            rDrops.splice(i, 1);
+            rHearts--;
+            updateRainHearts();
+            if(rHearts <= 0) finishMG();
+        }
+    });
+
+    // 4. Progressão Global
+    rDropSpeed = 1.5 + (mgScore * 0.04);
 }
 
 function initSnake() {
@@ -1369,9 +1493,17 @@ function drawFlight() {
 
 function finishMG() {
     mgRunning = false; clearInterval(mgInterval);
-    if(mgScore > records[activeMG]) { records[activeMG] = mgScore; localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); updateRecordsUI(); }
+    if(mgScore > (records[activeMG] || 0)) { 
+        records[activeMG] = mgScore; 
+        localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); 
+        updateRecordsUI(); 
+    }
     updateMissionProgress('mg_score', mgScore);
-    let multiplier = activeMG === 'snake' ? 50 : 150;
+    
+    let multiplier = 50;
+    if(activeMG === 'flight') multiplier = 150;
+    if(activeMG === 'rain') multiplier = 300; // Aumentado pela dificuldade da IA
+
     let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
     honey = validateNum(honey + hGain); addXP(xGain);
     document.getElementById("mgResultScore").textContent = mgScore;
@@ -1383,9 +1515,13 @@ function finishMG() {
 function updateRecordsUI() {
     document.getElementById("snakeRecordDisplay").textContent = records.snake;
     document.getElementById("flightRecordDisplay").textContent = records.flight;
+    document.getElementById("rainRecordDisplay").textContent = records.rain || 0;
 }
 
-function exitMinigame() { clearInterval(mgInterval); mgRunning = false; document.getElementById("minigameOverlay").style.display = "none"; }
+function exitMinigame() { 
+    clearInterval(mgInterval); mgRunning = false; 
+    document.getElementById("minigameOverlay").style.display = "none"; 
+}
 function closeMgResult() { document.getElementById("minigameOverlay").style.display = "none"; }
 
 function updateVolume(type) {
