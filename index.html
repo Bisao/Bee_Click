@@ -685,9 +685,9 @@ input[type=range]::-webkit-slider-thumb {
               <div class="scroll-area">
                 <div class="section-title">MELHORIAS PERMANENTES</div>
                 <div class="upgrade-card-list">
-                    <button id="btnUpgradeClick">Upgrade Clique – 10 🍯</button>
-                    <button id="btnAutoAction">Desbloquear Auto – 100 🍯</button>
-                    <button id="btnUpgradeLuck" style="background: #e17055; color: white; box-shadow: 0 4px 0 #b33939;">Upgrade Sorte (Lvl 1)<br>500 🍯</button>
+                    <button id="btnUpgradeClick">Upgrade Clique – 1200 🍯</button>
+                    <button id="btnAutoAction">Desbloquear Auto – 5600 🍯</button>
+                    <button id="btnUpgradeLuck" style="background: #e17055; color: white; box-shadow: 0 4px 0 #b33939;">Upgrade Sorte (Lvl 1)<br>6400 🍯</button>
                 </div>
               </div>
           </div>
@@ -700,61 +700,61 @@ input[type=range]::-webkit-slider-thumb {
                 </div>
               </div>
               <div class="scroll-area">
-                  <div id="shop_boosts" class="sub-shop-pane">
-                      <div class="section-title">🌶️ PIMENTA (3x MEL)</div>
-                      <small id="status_pepper" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
-                      <div class="shop-grid" id="grid_pepper"></div>
-                      
-                      <div class="section-title">🥤 ENERGÉTICO (2x VEL)</div>
-                      <small id="status_energy" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
-                      <div class="shop-grid" id="grid_energy"></div>
-                      
-                      <div class="section-title">🌼 FLOR (5x XP)</div>
-                      <small id="status_flower" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
-                      <div class="shop-grid" id="grid_flower"></div>
-                      
-                      <div class="section-title">🍀 TREVO (5x SORTE)</div>
-                      <small id="status_luck" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
-                      <div class="shop-grid" id="grid_luck"></div>
+                <div id="shop_boosts" class="sub-shop-pane">
+                  <div class="section-title">🌶️ PIMENTA (3x MEL)</div>
+                  <small id="status_pepper" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
+                  <div class="shop-grid" id="grid_pepper"></div>
+                  
+                  <div class="section-title">🥤 ENERGÉTICO (2x VEL)</div>
+                  <small id="status_energy" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
+                  <div class="shop-grid" id="grid_energy"></div>
+                  
+                  <div class="section-title">🌼 FLOR (5x XP)</div>
+                  <small id="status_flower" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
+                  <div class="shop-grid" id="grid_flower"></div>
+                  
+                  <div class="section-title">🍀 TREVO (5x SORTE)</div>
+                  <small id="status_luck" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
+                  <div class="shop-grid" id="grid_luck"></div>
+                </div>
+
+                <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
+                  <div class="section-title">👔 GUARDA-ROUPA</div>
+                  <div class="shop-grid">
+                    <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')">
+                      <img src="Bee.png" class="skin-preview">
+                      <b>Comum</b>
+                    </button>
+                    <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleBackground('NoelBee')">
+                      <img src="NoelBee.png" class="skin-preview">
+                      <b>Noel (+15%)</b>
+                    </button>
                   </div>
 
-                  <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
-                      <div class="section-title">👔 GUARDA-ROUPA</div>
-                      <div class="shop-grid">
-                          <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')">
-                              <img src="Bee.png" class="skin-preview">
-                              <b>Comum</b>
-                          </button>
-                          <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleBackground('NoelBee')">
-                              <img src="NoelBee.png" class="skin-preview">
-                              <b>Noel (+15%)</b>
-                          </button>
-                      </div>
-
-                      <div class="section-title">🖼️ CENÁRIOS</div>
-                      <div class="shop-grid">
-                          <button class="buy-btn-small" id="btn_bg_BgPadrao" onclick="handleBackground('BgPadrao')">
-                              <div style="width:40px;height:40px;background:url('BgPadrao.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
-                              <b>Padrão</b>
-                          </button>
-                          <button class="buy-btn-small" id="btn_bg_BgCristmas" onclick="handleBackground('BgCristmas')">
-                              <div style="width:40px;height:40px;background:url('BgCristmas.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
-                              <b>Natal 🎄</b>
-                          </button>
-                          <button class="buy-btn-small" id="btn_bg_BgRaining" onclick="handleBackground('BgRaining')">
-                              <div style="width:40px;height:40px;background:url('BgRaining.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
-                              <b>Chuva 🌧️</b>
-                          </button>
-                          <button class="buy-btn-small" id="btn_bg_BgNight" onclick="handleBackground('BgNight')">
-                              <div style="width:40px;height:40px;background:url('BgNight.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
-                              <b>Noite 🌙</b>
-                          </button>
-                          <button class="buy-btn-small" id="btn_bg_BgLake" onclick="handleBackground('BgLake')">
-                              <div style="width:40px;height:40px;background:url('BgLake.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
-                              <b>Lago 🌊</b>
-                          </button>
-                      </div>
+                  <div class="section-title">🖼️ CENÁRIOS</div>
+                  <div class="shop-grid">
+                    <button class="buy-btn-small" id="btn_bg_BgPadrao" onclick="handleBackground('BgPadrao')">
+                      <div style="width:40px;height:40px;background:url('BgPadrao.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
+                      <b>Padrão</b>
+                    </button>
+                    <button class="buy-btn-small" id="btn_bg_BgCristmas" onclick="handleBackground('BgCristmas')">
+                      <div style="width:40px;height:40px;background:url('BgCristmas.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
+                      <b>Natal 🎄</b>
+                    </button>
+                    <button class="buy-btn-small" id="btn_bg_BgRaining" onclick="handleBackground('BgRaining')">
+                      <div style="width:40px;height:40px;background:url('BgRaining.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
+                      <b>Chuva 🌧️</b>
+                    </button>
+                    <button class="buy-btn-small" id="btn_bg_BgNight" onclick="handleBackground('BgNight')">
+                      <div style="width:40px;height:40px;background:url('BgNight.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
+                      <b>Noite 🌙</b>
+                    </button>
+                    <button class="buy-btn-small" id="btn_bg_BgLake" onclick="handleBackground('BgLake')">
+                      <div style="width:40px;height:40px;background:url('BgLake.gif');background-size:cover;margin-bottom:5px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)"></div>
+                      <b>Lago 🌊</b>
+                    </button>
                   </div>
+                </div>
               </div>
           </div>
 
@@ -1094,13 +1094,30 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "5.6.0",
+        title: "📈 RECALIBRAGEM DE MERCADO",
+        changes: [
+            { type: "mod", text: "Valores iniciais de Upgrades aumentados para tornar a progressão inicial mais significativa." },
+            { type: "mod", text: "Novos preços base: Clique (1200), Auto (5600) e Sorte (6400)." },
+            { type: "mod", text: "Balanceamento aplicado para incentivar o uso de minijogos e missões no early game." }
+        ]
+    },
+    {
+        version: "5.5.0",
+        title: "🛡️ BALANCEAMENTO DE MISSÕES",
+        changes: [
+            { type: "mod", text: "Objetivos de missões agora escalam de forma não linear para evitar facilidade no início." },
+            { type: "mod", text: "Recompensas de mel e XP ajustadas para acompanhar o novo nível de dificuldade." },
+            { type: "fix", text: "Correção no multiplicador de 'Mira Real' para níveis baixos." }
+        ]
+    },
+    {
         version: "5.4.0",
         title: "💎 ECONOMIA EQUILIBRADA",
         changes: [
             { type: "mod", text: "Suavização na curva de preços: Upgrades agora escalam de forma justa no mid/late game." },
             { type: "mod", text: "Early game levemente mais desafiador para evitar inflação imediata." },
-            { type: "fix", text: "Correção na fórmula de XP para acompanhar o novo balanço econômico." },
-            { type: "add", text: "Sistema de histórico de atualizações integrado ao menu principal." }
+            { type: "fix", text: "Correção na fórmula de XP para acompanhar o novo balanço econômico." }
         ]
     },
     {
@@ -1119,24 +1136,6 @@ let updateHistory = [
             { type: "mod", text: "Ajustado bônus por completar 10 missões diárias de 100x para 8x." },
             { type: "add", text: "Implementado sistema dinâmico de Changelog no painel inicial." },
             { type: "mod", text: "Otimização de rotina para entrega do projeto final." }
-        ]
-    },
-    {
-        version: "5.1.0",
-        title: "✨ REFINO VISUAL: HONEY RAIN",
-        changes: [
-            { type: "mod", text: "Abelha agora inverte a imagem automaticamente ao mudar de direção." },
-            { type: "add", text: "Adicionado movimento senoidal para simular o voo da abelha." },
-            { type: "fix", text: "Otimização de performance na renderização das gotas de mel." }
-        ]
-    },
-    {
-        version: "5.0.0",
-        title: "🧠 INTELIGÊNCIA ARTIFICIAL: HONEY RAIN",
-        changes: [
-            { type: "mod", text: "Abelha agora possui movimento errático e imprevisível no topo da tela." },
-            { type: "mod", text: "Gotas de mel agora utilizam o ícone oficial 🍯." },
-            { type: "mod", text: "Visual da abelha no minijogo atualizado para Bee.png." }
         ]
     }
 ];
@@ -1168,10 +1167,13 @@ function renderChangelog() {
 }
 
 function checkUpdateStatus() {
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
     const currentVersion = updateHistory[0].version;
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
+    // Usamos um ID de versão específico para o pulso para garantir que ele volte em atualizações críticas
+    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.6");
     const btn = document.getElementById("btnChangelog");
-    if(lastSeen !== currentVersion) {
+
+    if(lastSeen !== currentVersion && hasSeenNewest !== "true") {
         btn.classList.add("btn-chromatic-pulse");
     } else {
         btn.classList.remove("btn-chromatic-pulse");
@@ -1181,6 +1183,7 @@ function checkUpdateStatus() {
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
     localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
+    localStorage.setItem("BeeKind_HasSeenChangelog_V5.6", "true"); 
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1197,10 +1200,12 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 10, level = 1;
-let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 100;
+// INICIALIZANDO COM NOVOS VALORES DE MERCADO
+let honey = 0, totalHoneyEver = 0, hPerClick = 1, clickCost = 1200, level = 1;
+let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 5600;
 let clickLvl = 1, autoLvlLvl = 1; 
-let luckLvl = 1, luckCost = 500;
+let luckLvl = 1, luckCost = 6400;
+
 let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0, crown: 0 }; 
 let clickBuffer = [], gameLoaded = false;
@@ -1342,7 +1347,6 @@ function startMG() {
     }
 }
 
-// LÓGICA HONEY RAIN V3.1 (REFINO DE VOO)
 function initRain() {
     rainCanvas.width = 300; rainCanvas.height = 300;
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
@@ -1376,31 +1380,20 @@ function updateRainHearts() {
 
 function drawRain() {
     rainCtx.fillStyle = "#000"; rainCtx.fillRect(0, 0, 300, 300);
-    
-    // 1. IA da Abelha (Movimento Errático)
     rBeeDirChangeTimer--;
     if(rBeeDirChangeTimer <= 0) {
         rBeeTargetX = Math.random() * 260;
         rBeeDirChangeTimer = Math.random() * 60 + 20;
         rBeeSpeed = (2 + (mgScore * 0.05)) * (Math.random() * 1.5 + 0.5);
     }
-
-    // Calcula direção para inverter imagem
     let movingRight = rBeeTargetX > rBeeX;
-
-    // Move a abelha
     if(Math.abs(rBeeX - rBeeTargetX) > 2) {
         rBeeX += (movingRight ? 1 : -1) * rBeeSpeed;
     }
-    
-    // Simulação de voo (Oscilação senoidal)
     rBeeYOffset = Math.sin(Date.now() / 150) * 8;
-
-    // Desenha Abelha (Bee.png) com inversão
     if(rainBeeSprite.complete) {
         rainCtx.save();
         if(!movingRight) {
-            // Inverte horizontalmente
             rainCtx.translate(rBeeX + 40, 0); 
             rainCtx.scale(-1, 1);
             rainCtx.drawImage(rainBeeSprite, 0, 10 + rBeeYOffset, 40, 40);
@@ -1412,22 +1405,17 @@ function drawRain() {
         rainCtx.fillStyle = varProp('--accent');
         rainCtx.fillRect(rBeeX, 15 + rBeeYOffset, 30, 20);
     }
-
-    // 2. Spawn de Mel (Pote de Mel)
     rSpawnTimer++;
     const spawnThreshold = Math.max(12, 50 - Math.floor(mgScore/4));
     if(rSpawnTimer > spawnThreshold) {
         rDrops.push({ x: rBeeX + 20, y: 45 + rBeeYOffset });
         rSpawnTimer = 0;
     }
-
-    // 3. Atualiza Gotas (🍯)
     rDrops.forEach((d, i) => {
         d.y += rDropSpeed;
         rainCtx.font = "24px Arial";
         rainCtx.textAlign = "center";
         rainCtx.fillText("🍯", d.x, d.y);
-
         if(d.y > 295) {
             rDrops.splice(i, 1);
             rHearts--;
@@ -1435,7 +1423,6 @@ function drawRain() {
             if(rHearts <= 0) finishMG();
         }
     });
-
     rDropSpeed = 1.5 + (mgScore * 0.04);
 }
 
@@ -1513,11 +1500,9 @@ function finishMG() {
         updateRecordsUI(); 
     }
     updateMissionProgress('mg_score', mgScore);
-    
     let multiplier = 50;
     if(activeMG === 'flight') multiplier = 150;
     if(activeMG === 'rain') multiplier = 300; 
-
     let hGain = mgScore * multiplier * (1 + level * 0.1), xGain = mgScore * (multiplier/2) * (1 + level * 0.1);
     honey = validateNum(honey + hGain); addXP(xGain);
     document.getElementById("mgResultScore").textContent = mgScore;
@@ -1593,13 +1578,10 @@ function returnToMain() {
     if(autoProduceInterval) clearInterval(autoProduceInterval); 
     if(gameTickInterval) clearInterval(gameTickInterval);
     executeSave(); 
-    
-    // LOADING REVERSO
     const loadingScreen = document.getElementById("loadingScreen");
     const bar = document.getElementById("loadingBarFill");
     const bee = document.getElementById("loadingBeeImg");
     const text = document.getElementById("loadingTextMsg");
-    
     loadingScreen.style.display = "flex";
     let progress = 0;
     const interval = setInterval(() => {
@@ -1607,10 +1589,8 @@ function returnToMain() {
         if(progress > 100) progress = 100;
         bar.style.width = progress + "%";
         bee.style.left = progress + "%";
-        
         if(progress < 50) text.textContent = "FECHANDO COLMEIA...";
         else text.textContent = "SALVANDO MEL...";
-        
         if(progress === 100) {
             clearInterval(interval);
             setTimeout(() => {
@@ -1652,16 +1632,16 @@ const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
 const missionTemplates = [
-    { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", baseGoal: 40, rewardMult: 1.2 },
-    { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", baseGoal: 150, rewardMult: 1.5 },
-    { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 10, rewardMult: 2.0 },
-    { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", baseGoal: 1, rewardMult: 3.0 },
-    { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", baseGoal: 200, rewardMult: 1.5 },
-    { id: 'm6', type: 'play_time', title: "Voo de Longa Distância", desc: "Jogue ativamente por {target} segundos", baseGoal: 60, rewardMult: 1.8 },
-    { id: 'm7', type: 'mg_score', title: "Abelha Atleta", desc: "Faça {target} pontos totais em minigames", baseGoal: 5, rewardMult: 2.5 },
-    { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", baseGoal: 1, rewardMult: 3.5 },
-    { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", baseGoal: 20, rewardMult: 2.2 },
-    { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Realize {target} cliques hoje", baseGoal: 150, rewardMult: 5.0 }
+    { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", baseGoal: 100, rewardMult: 1.5 },
+    { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", baseGoal: 500, rewardMult: 1.8 },
+    { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 2.2 },
+    { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", baseGoal: 3, rewardMult: 3.2 },
+    { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", baseGoal: 1000, rewardMult: 1.6 },
+    { id: 'm6', type: 'play_time', title: "Voo de Longa Distância", desc: "Jogue ativamente por {target} segundos", baseGoal: 300, rewardMult: 2.0 },
+    { id: 'm7', type: 'mg_score', title: "Abelha Atleta", desc: "Faça {target} pontos totais em minigames", baseGoal: 20, rewardMult: 2.8 },
+    { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", baseGoal: 2, rewardMult: 3.8 },
+    { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", baseGoal: 50, rewardMult: 2.5 },
+    { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Realize {target} cliques hoje", baseGoal: 500, rewardMult: 6.0 }
 ];
 
 function checkMissionReset() {
@@ -1686,7 +1666,9 @@ function checkMissionReset() {
 }
 
 function generateDailyMissions() {
-    dailyMissions = []; const scaleFactor = Math.pow(level, 1.1), clickPowerFactor = hPerClick;
+    dailyMissions = []; 
+    const scaleFactor = Math.pow(level, 1.3); 
+    const clickPowerFactor = Math.sqrt(hPerClick);
     missionTemplates.forEach((tmp, index) => {
         dailyMissions.push(createSingleMission(tmp, scaleFactor, clickPowerFactor));
     });
@@ -1694,15 +1676,22 @@ function generateDailyMissions() {
 
 function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
     let target = 0, rewardHoney = 0, rewardXP = 0;
-    if (tmp.type === 'clicks' || tmp.type === 'target_clicks') target = Math.ceil(tmp.baseGoal * scaleFactor);
-    else if (tmp.type === 'honey_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * clickPowerFactor * 5);
-    else if (tmp.type === 'xp_gain') target = Math.ceil(tmp.baseGoal * scaleFactor * 3);
-    else if (tmp.type === 'buy_upgrade') target = Math.ceil(tmp.baseGoal + Math.floor(level/10));
-    else if (tmp.type === 'play_time') target = Math.ceil(tmp.baseGoal * (1 + level * 0.05));
-    else if (tmp.type === 'mg_score') target = Math.ceil(tmp.baseGoal * (1 + level * 0.1));
+    if (tmp.type === 'clicks' || tmp.type === 'target_clicks') {
+        target = Math.ceil(tmp.baseGoal * scaleFactor);
+    } else if (tmp.type === 'honey_gain') {
+        target = Math.ceil(tmp.baseGoal * scaleFactor * clickPowerFactor * 10);
+    } else if (tmp.type === 'xp_gain') {
+        target = Math.ceil(tmp.baseGoal * scaleFactor * 5);
+    } else if (tmp.type === 'buy_upgrade') {
+        target = Math.ceil(tmp.baseGoal + Math.floor(level/5));
+    } else if (tmp.type === 'play_time') {
+        target = Math.ceil(tmp.baseGoal * (1 + level * 0.1));
+    } else if (tmp.type === 'mg_score') {
+        target = Math.ceil(tmp.baseGoal * (1 + level * 0.2));
+    }
     const clickValue = hPerClick * getGlobalBonus();
-    rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 10 : (tmp.type === 'mg_score' ? 100 : clickValue)), 50) * tmp.rewardMult; 
-    rewardXP = (nextLevelXP * 0.05) * tmp.rewardMult;
+    rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 15 : (tmp.type === 'mg_score' ? 150 : clickValue)), 100) * tmp.rewardMult; 
+    rewardXP = (nextLevelXP * 0.08) * tmp.rewardMult;
     return { 
         id: tmp.id + Date.now() + Math.random(), type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
         target: target, progress: 0, completed: false, collected: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
@@ -1747,7 +1736,7 @@ document.getElementById('btnConfirmReroll').onclick = () => {
         const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
         if (index !== -1) {
             const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-            const scaleFactor = Math.pow(level, 1.1), clickPowerFactor = hPerClick;
+            const scaleFactor = Math.pow(level, 1.3), clickPowerFactor = Math.sqrt(hPerClick);
             dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, clickPowerFactor);
             renderMissions();
             updateMissionAlertStatus();
@@ -1766,9 +1755,7 @@ function collectMissionReward(id) {
         addXP(m.rewardXP);
         notify({n: "Recompensa Coletada!", d: m.rewardLabel});
         const allCollected = dailyMissions.every(x => x.collected);
-        if(allCollected && dailyMissions.length >= 10) {
-            triggerCrownBonus();
-        }
+        if(allCollected && dailyMissions.length >= 10) triggerCrownBonus();
         renderMissions();
         updateMissionAlertStatus();
         updateUI();
@@ -1861,8 +1848,7 @@ function updateUI() {
     document.getElementById("btnAutoAction").disabled = (honey < autoCost); document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `<b>Desbloquear Auto</b><br>${formatNum(autoCost)} 🍯` : `<b>Upgrade Auto (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
     document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost); document.getElementById("btnUpgradeLuck").innerHTML = `<b>Upgrade Sorte (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
     const crown = document.getElementById("beeCrown");
-    if(activeBoosts.crown > 0) crown.style.display = "block";
-    else crown.style.display = "none";
+    if(activeBoosts.crown > 0) crown.style.display = "block"; else crown.style.display = "none";
     buildShop(); renderActiveBoosts(); updateRecordsUI();
     ['Bee', 'NoelBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
@@ -1919,7 +1905,7 @@ function doClick(event, isTarget = false) {
     playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); if(activeBoosts.luck > 0) baseChance *= 5;
     const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
-    if(isTarget) { updateMissionProgress('target_clicks', 1); } else { updateMissionProgress('clicks', 1); }
+    if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
     updateMissionProgress('honey_gain', g);
     const bee = document.getElementById("beeContainer"); bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
     setTimeout(() => bee.style.transform = "scale(1)", 50);
@@ -1928,21 +1914,18 @@ function doClick(event, isTarget = false) {
 }
 
 function addXP(amt) {
-    // Configurado para ganhar 25% de cada mel produzido (amt * 0.25)
     let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); 
     currentXP = validateNum(currentXP + (amt * 0.25 * m)); 
     updateMissionProgress('xp_gain', amt * 0.25 * m);
     while(currentXP >= nextLevelXP){ 
         currentXP = validateNum(currentXP - nextLevelXP); 
-        level++; 
-        nextLevelXP = Math.floor(nextLevelXP * 1.25); 
+        level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); 
         triggerLevelUpCelebration(); 
     }
 }
 
 function triggerLevelUpCelebration() {
-    soundLvlUp.currentTime = 0;
-    soundLvlUp.play().catch(() => {});
+    soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {});
     notify({n:`Nível Real ${level}!`});
     const card = document.getElementById("statsCard");
     card.classList.add("lvl-up-flash");
@@ -1951,25 +1934,16 @@ function triggerLevelUpCelebration() {
 }
 
 function spawnLevelUpFireworks() {
-    const count = 30;
-    const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200'];
+    const count = 30; const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200'];
     for(let i=0; i<count; i++) {
-        const p = document.createElement("div");
-        p.className = "honey-particle";
+        const p = document.createElement("div"); p.className = "honey-particle";
         p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        p.style.width = (Math.random() * 10 + 5) + "px";
-        p.style.height = p.style.width;
-        p.style.left = "50vw";
-        p.style.top = "50vh";
-        p.style.boxShadow = "0 0 10px gold";
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = Math.random() * 400 + 200;
-        const tx = Math.cos(angle) * velocity;
-        const ty = Math.sin(angle) * velocity;
-        p.style.setProperty('--tx', `${tx}px`);
-        p.style.setProperty('--ty', `${ty}px`);
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1000);
+        p.style.width = (Math.random() * 10 + 5) + "px"; p.style.height = p.style.width;
+        p.style.left = "50vw"; p.style.top = "50vh"; p.style.boxShadow = "0 0 10px gold";
+        const angle = Math.random() * Math.PI * 2; const velocity = Math.random() * 400 + 200;
+        const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity;
+        p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`);
+        document.body.appendChild(p); setTimeout(() => p.remove(), 1000);
     }
 }
 
@@ -2042,7 +2016,7 @@ function load(){
     if(raw){
         try {
             const d = JSON.parse(raw);
-            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 10; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 100; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 500;
+            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 1; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
@@ -2052,22 +2026,17 @@ function load(){
 
 function enterGame() {
     load(); tryPlayMusic(); requestFullscreen();
-    
-    // TELA DE LOADING
     const loadingScreen = document.getElementById("loadingScreen");
     const bar = document.getElementById("loadingBarFill");
     const bee = document.getElementById("loadingBeeImg");
     const text = document.getElementById("loadingTextMsg");
-    
     loadingScreen.style.display = "flex";
     let progress = 0;
     const interval = setInterval(() => {
         progress += Math.random() * 5;
         if(progress > 100) progress = 100;
-        
         bar.style.width = progress + "%";
         bee.style.left = progress + "%";
-        
         if(progress < 40) text.textContent = "COLETANDO PÓLEN...";
         else if(progress < 70) text.textContent = "SINTETIZANDO MEL...";
         else if(progress < 100) text.textContent = "PREPARANDO RAINHA...";
@@ -2077,14 +2046,11 @@ function enterGame() {
                 loadingScreen.style.display = "none";
                 document.getElementById('startScreen').style.display = 'none';
                 const gameUI = document.getElementById('gameUI'); 
-                gameUI.style.display = 'flex'; 
-                gameUI.style.opacity = '1'; 
+                gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; 
                 gameLoaded = true;
                 if(pendingOfflineHoney > 0 || document.getElementById("offlineTitle").textContent.includes("abandonada")) openModal('offlineModal');
                 startGameTicks(); 
-                if(autoUnlocked) startAutoProducing(); 
-                updateUI(); 
-                startDynamicNotifications();
+                if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
             }, 300);
         }
     }, 50);
@@ -2092,17 +2058,10 @@ function enterGame() {
 
 function openModal(id) { 
     const modal = document.getElementById(id); modal.style.display = 'flex'; 
-    
-    // LOGICA CONDICIONAL DO BOTAO SAIR
     if(id === 'settingsModal') {
         const btnExit = document.getElementById("btnExitToMain");
-        if(gameLoaded && document.getElementById('gameUI').style.display === 'flex') {
-            btnExit.style.display = "block";
-        } else {
-            btnExit.style.display = "none";
-        }
+        if(gameLoaded && document.getElementById('gameUI').style.display === 'flex') btnExit.style.display = "block"; else btnExit.style.display = "none";
     }
-
     if(id === 'missionsModal') {
         renderMissions();
         document.getElementById("btnMissionAlert").classList.remove("mission-alert");
@@ -2127,7 +2086,6 @@ function buildShop() {
     ['pepper', 'energy', 'flower', 'luck'].forEach(type => {
         const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
-            // Rebalanceamento dos Boosts baseado no novo multiplicador de nível
             const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.12)) * d.m));
             const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn);
         });
@@ -2146,51 +2104,31 @@ function notify(a) {
     container.innerHTML = ""; container.appendChild(div); div.style.animation = "slideInNotif 4s ease-in-out forwards"; setTimeout(() => { if(div) div.remove(); }, 4000);
 }
 
-// ==========================================
-// REBALANCEAMENTO DOS UPGRADES (MID/LATE GAME)
-// ==========================================
 document.getElementById("btnUpgradeClick").onclick = () => { 
     const cost = validateNum(clickCost);
     if(honey >= cost){ 
         honey = validateNum(honey - cost); 
         clickLvl++; 
-        // Melhora a progressão do clique (Polinomial ao invés de linear simples)
         hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.15) + (Math.log10(clickLvl)))); 
-        // Reduzi o custo multiplicador de 1.38 para 1.25 para evitar o muro no mid-game
         clickCost = validateNum(Math.floor(clickCost * 1.25)); 
-        updateMissionProgress('buy_upgrade', 1); 
-        updateUI(); 
-        executeSave(); 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
 document.getElementById("btnAutoAction").onclick = () => { 
     const cost = validateNum(autoCost);
     if(honey >= cost){ 
         honey = validateNum(honey - cost); 
-        if(!autoUnlocked){ 
-            autoUnlocked = true; 
-            autoCost = 500; 
-            startAutoProducing(); 
-        } else { 
-            autoLevel++; 
-            // Reduzi o escalonamento de 1.65 para 1.35
-            autoCost = validateNum(Math.floor(autoCost * 1.35)); 
-        } 
-        updateMissionProgress('buy_upgrade', 1); 
-        updateUI(); 
-        executeSave(); 
+        if(!autoUnlocked){ autoUnlocked = true; autoCost = Math.floor(5600 * 1.35); startAutoProducing(); } 
+        else { autoLevel++; autoCost = validateNum(Math.floor(autoCost * 1.35)); } 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
 document.getElementById("btnUpgradeLuck").onclick = () => { 
     const cost = validateNum(luckCost);
     if(honey >= cost) { 
         honey = validateNum(honey - cost); 
-        luckLvl++; 
-        // Reduzi o escalonamento de 1.9 para 1.5
-        luckCost = validateNum(Math.floor(luckCost * 1.5)); 
-        updateMissionProgress('buy_upgrade', 1); 
-        updateUI(); 
-        executeSave(); 
+        luckLvl++; luckCost = validateNum(Math.floor(luckCost * 1.5)); 
+        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
 
