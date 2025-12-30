@@ -745,7 +745,7 @@ input[type=range]::-webkit-slider-thumb {
                 </div>
 
                 <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
-                  <div class="section-title">👔 GUARDA-ROUPA</div>
+                  <div class="section-title">👔 GUARDA-ROUMA</div>
                   <div class="shop-grid">
                     <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')">
                       <img src="Bee.png" class="skin-preview">
@@ -796,8 +796,8 @@ input[type=range]::-webkit-slider-thumb {
                     <div class="game-card-header">
                         <div class="game-icon">🔫</div>
                         <div class="game-meta">
-                            <div class="game-title">Bee Defender (v1.6)</div>
-                            <div class="game-record">RECORD: <span id="defenderRecordDisplay">0</span></div>
+                            <div class="game-title">Bee Defender (v1.9)</div>
+                            <div class="game-record">NÍVEL ATUAL: <span id="defenderLevelDisplay">1</span></div>
                         </div>
                     </div>
                     <div class="game-play-area">
@@ -899,11 +899,12 @@ input[type=range]::-webkit-slider-thumb {
     <div class="mg-header">
         <div class="mg-stats-panel">
             <div class="mg-score-box">
-                <span class="mg-label" id="mgLabelText">Pontuação Atual</span>
-                <span class="mg-val" id="mgCurrentScore">0</span>
+                <span class="mg-label" id="mgLabelText">Tempo Restante</span>
+                <span class="mg-val" id="mgCurrentScore">40s</span>
             </div>
             <div id="mgLiveBoosts"></div>
             <div id="rainHearts" style="display: none; font-size: 16px;">❤️❤️❤️</div>
+            <div id="defenderHearts" style="display: none; font-size: 16px;">🐝🐝🐝</div>
         </div>
         <button onclick="exitMinigame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: rgba(0,0,0,0.4); border: 1px solid white; color: white; border-radius: 12px;">SAIR</button>
     </div>
@@ -938,15 +939,16 @@ input[type=range]::-webkit-slider-thumb {
         </div>
         <div class="modal-content-scroll" style="text-align: center;">
             <div style="font-size: 50px; margin-bottom: 15px;">🛸</div>
-            <h2 style="margin:0; color:var(--accent);">DEFENDA A COLMEIA</h2>
-            <p style="font-size:14px; opacity:0.8;">Use as setas para mover e o BOTÃO VERMELHO para disparar ferrões!</p>
+            <h2 style="margin:0; color:var(--accent);">SISTEMA DE NÍVEIS</h2>
+            <p style="font-size:14px; opacity:0.8;">Enfrente <b>7 níveis</b> de dificuldade. Vespas de Elite aparecem no Nível 4!</p>
             
             <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
+                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">⚠️ REGRAS:</h4>
                 <div style="font-size:12px; line-height:1.6;">
-                    • 150x Mel por vespa derrotada.<br>
-                    • Bônus de XP ao final da partida.<br>
-                    • <b>DROP DE ITENS:</b> Derrotar ondas completas pode gerar Boosts de 30s!
+                    • Nível 1-3: Dificuldade padrão.<br>
+                    • Nível 4-7: Primeira fila tem <b>2 HP</b>.<br>
+                    • <b>INATIVIDADE:</b> Se não jogar por 24h, volta ao Nível 1.<br>
+                    • <b>POWER-UP:</b> Pegue o item 🔫 (8% de chance) para tiro duplo!
                 </div>
             </div>
         </div>
@@ -1252,6 +1254,36 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "7.9.0",
+        title: "🛡️ PROGRESSÃO BEE DEFENDER",
+        changes: [
+            { type: "add", text: "Sistema de 7 Níveis: Progrida para enfrentar desafios maiores!" },
+            { type: "add", text: "Vespas de Elite (Nível 4-7): Inimigos da fileira superior precisam de 2 acertos." },
+            { type: "add", text: "Power-up Tiro Duplo: 8% de chance de drop para disparar 2 ferrões." },
+            { type: "mod", text: "Inatividade: O nível reseta para 1 se não jogar o minijogo em 24h." }
+        ]
+    },
+    {
+        version: "7.8.0",
+        title: "🛡️ AJUSTES BEE DEFENDER",
+        changes: [
+            { type: "add", text: "Player agora possui 3 vidas no Bee Defender. Ícone: 🐝." },
+            { type: "mod", text: "Vespas agora fazem mergulhos rasantes de ida e volta ao topo da tela." },
+            { type: "mod", text: "Fire Rate reduzido: o player agora tem um cooldown entre disparos." },
+            { type: "fix", text: "Otimização na lógica de colisão e spawn de balas inimigas." }
+        ]
+    },
+    {
+        version: "7.7.0",
+        title: "🛡️ REFORMA BEE DEFENDER",
+        changes: [
+            { type: "add", text: "Temporizador de 40 segundos adicionado: vença antes que o tempo acabe!" },
+            { type: "mod", text: "Inimigos agora permanecem no topo da tela em formação de defesa." },
+            { type: "add", text: "Ataque Mergulho: Vespas aleatórias agora tentam atingir sua base." },
+            { type: "add", text: "Fogo Inimigo: Inimigos agora disparam lasers em linha reta aleatoriamente." }
+        ]
+    },
+    {
         version: "7.6.0",
         title: "⚖️ AJUSTE DE EQUILÍBRIO",
         changes: [
@@ -1268,33 +1300,6 @@ let updateHistory = [
             { type: "mod", text: "Removido ícone '📍' do botão de disparo no Bee Defender para um visual mais limpo." },
             { type: "mod", text: "Ajuste na saturação da cor vermelha do botão de disparo." },
             { type: "fix", text: "Melhoria na sincronia do toque no botão de disparo em dispositivos lentos." }
-        ]
-    },
-    {
-        version: "7.4.0",
-        title: "🛡️ LAYOUT DEFENDER",
-        changes: [
-            { type: "mod", text: "Controles do Bee Defender reorganizados horizontalmente (Esquerda, Direita, Disparar) para melhor ergonomia." },
-            { type: "mod", text: "Espaçamento entre os botões de controle aumentado para evitar toques acidentais." },
-            { type: "fix", text: "Otimização da renderização do D-Pad em telas de proporção ultra-wide." }
-        ]
-    },
-    {
-        version: "7.3.0",
-        title: "🛡️ CONTROLES BEE DEFENDER",
-        changes: [
-            { type: "mod", text: "Disparo automático removido do Bee Defender. Adicionado botão '📍' para disparar ferrões manualmente." },
-            { type: "mod", text: "Layout do D-Pad ajustado no minijogo Defender para suportar o novo botão de ação." },
-            { type: "add", text: "Teclado: Agora você pode disparar ferrões usando a tecla 'Espaço' ou 'W' no Bee Defender." }
-        ]
-    },
-    {
-        version: "7.2.0",
-        title: "🛡️ AJUSTE VISUAL DEFENDER",
-        changes: [
-            { type: "mod", text: "Orientação da abelha no Bee Defender ajustada (90 graus + inversão) para melhor alinhamento." },
-            { type: "mod", text: "Refinamento na velocidade de disparo e física do minijogo Defender." },
-            { type: "fix", text: "Ajuste na proporção do asset BeeUp.png para evitar distorções no canvas." }
         ]
     }
 ];
@@ -1327,7 +1332,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V17"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V20"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1339,7 +1344,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V17", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V20", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1370,6 +1375,7 @@ let lastMissionReset = 0;
 let audioSettings = { music: 50, click: 80, lvlUp: 100 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
 let records = { snake: 0, flight: 0, rain: 0, defender: 0 };
+let defenderProgress = { level: 1, lastPlayed: 0 };
 let pendingRerollId = null;
 
 const soundMusic = new Audio('Music.mp3');
@@ -1426,9 +1432,15 @@ defenderBeeSprite.src = 'BeeUp.png';
 let dPlayerX = 135;
 let dBullets = [];
 let dEnemies = [];
+let dEnemyBullets = [];
+let dModDrops = [];
 let dEnemyDir = 1;
-let dEnemyTimer = 0;
-let dMoving = 0; // -1 Left, 0 Stop, 1 Right
+let dEnemyTimer = 40; 
+let dMoving = 0; 
+let dGameTimer = null;
+let dHearts = 3;
+let dFireCooldown = 0; 
+let dHasDoubleShot = false;
 
 window.addEventListener('keydown', (e) => {
     if(!mgRunning) return;
@@ -1500,6 +1512,13 @@ function prepareMinigame(type) {
     } else if(type === 'rain') {
         openModal('rainPreGameModal');
     } else if(type === 'defender') {
+        // Checar reset de 24h
+        const now = Date.now();
+        if(defenderProgress.lastPlayed > 0 && now - defenderProgress.lastPlayed > 86400000) {
+            defenderProgress.level = 1;
+            executeSave();
+            updateRecordsUI();
+        }
         openModal('defenderPreGameModal');
     } else {
         startMinigameActual(type);
@@ -1518,6 +1537,7 @@ function startMinigameActual(type) {
     document.getElementById("flightControls").style.display = "none";
     document.getElementById("defenderControls").style.display = "none";
     document.getElementById("rainHearts").style.display = "none";
+    document.getElementById("defenderHearts").style.display = "none";
     document.getElementById("flightHint").style.display = "none";
     document.getElementById("mgLiveBoosts").innerHTML = ""; 
     const countdownEl = document.getElementById("mgCountdown");
@@ -1550,6 +1570,7 @@ function startMG() {
     } else if(activeMG === 'defender') {
         document.getElementById("defenderCanvas").style.display = "block";
         document.getElementById("defenderControls").style.display = "flex";
+        document.getElementById("defenderHearts").style.display = "block";
         initDefender();
     }
 }
@@ -1563,32 +1584,81 @@ function updateMgLiveBoostsVisual() {
         span.textContent = b.icon;
         container.appendChild(span);
     });
+    // Visualizador de Power-up temporal de Defender
+    if(activeMG === 'defender' && dHasDoubleShot) {
+        const span = document.createElement("span");
+        span.className = "mg-live-boost-icon";
+        span.textContent = "🔫";
+        container.appendChild(span);
+    }
 }
 
-// BEE DEFENDER LOGIC
+// BEE DEFENDER LOGIC (v7.9.0)
 function initDefender() {
     defenderCanvas.width = 300; defenderCanvas.height = 300;
-    dPlayerX = 135; dBullets = []; dEnemies = []; dEnemyDir = 1; dEnemyTimer = 0; dMoving = 0; fCollectedBoosts = [];
+    dPlayerX = 135; dBullets = []; dEnemies = []; dEnemyBullets = []; dModDrops = []; dEnemyDir = 1; dEnemyTimer = 40; dMoving = 0; fCollectedBoosts = [];
+    dHearts = 3; dFireCooldown = 0; dHasDoubleShot = false;
+    updateDefenderHearts();
+    
+    // Configuração baseada no nível atual
+    const currentLevel = defenderProgress.level;
     for(let row=0; row<3; row++) {
         for(let col=0; col<6; col++) {
-            dEnemies.push({x: 30 + col*40, y: 30 + row*35, alive: true});
+            let hp = 1;
+            // Nível 4 ao 7: Primeira fileira tem 2 HP
+            if(currentLevel >= 4 && row === 0) hp = 2;
+            
+            dEnemies.push({
+                x: 30 + col*40, 
+                y: 30 + row*35, 
+                alive: true, 
+                hp: hp,
+                diving: false, 
+                diveDir: 1, 
+                diveSpeed: 2.5 + (currentLevel * 0.2), // Inimigos mais rápidos por nível
+                baseY: 30 + row*35
+            });
         }
     }
+    
     if(mgInterval) clearInterval(mgInterval);
     mgInterval = setInterval(drawDefender, 20);
+
+    if(dGameTimer) clearInterval(dGameTimer);
+    dGameTimer = setInterval(() => {
+        if(mgRunning && activeMG === 'defender') {
+            dEnemyTimer--;
+            document.getElementById("mgCurrentScore").textContent = dEnemyTimer + "s";
+            if(dEnemyTimer <= 0) finishMG();
+        }
+    }, 1000);
+}
+
+function updateDefenderHearts() {
+    document.getElementById("defenderHearts").textContent = "🐝".repeat(Math.max(0, dHearts));
 }
 
 function moveDefender(dir) { dMoving = (dir === 'LEFT' ? -1 : 1); }
 function stopDefender() { dMoving = 0; }
 function defenderFire() {
-    if(!mgRunning || activeMG !== 'defender') return;
-    dBullets.push({x: dPlayerX + 15, y: 260});
+    if(!mgRunning || activeMG !== 'defender' || dFireCooldown > 0) return;
+    
+    if(dHasDoubleShot) {
+        dBullets.push({x: dPlayerX + 5, y: 260});
+        dBullets.push({x: dPlayerX + 25, y: 260});
+    } else {
+        dBullets.push({x: dPlayerX + 15, y: 260});
+    }
+    
+    dFireCooldown = 25; 
     playClickSound();
 }
 
 function drawDefender() {
     defenderCtx.fillStyle = "#000"; defenderCtx.fillRect(0, 0, 300, 300);
     
+    if(dFireCooldown > 0) dFireCooldown--;
+
     // Player Move
     dPlayerX += dMoving * 4;
     if(dPlayerX < 0) dPlayerX = 0;
@@ -1604,56 +1674,131 @@ function drawDefender() {
         defenderCtx.restore();
     }
 
-    // Bullets
+    // Bullets (Player)
     dBullets.forEach((b, i) => {
         b.y -= 5;
-        defenderCtx.fillStyle = varProp('--accent');
+        defenderCtx.fillStyle = dHasDoubleShot ? "#00ffff" : varProp('--accent');
         defenderCtx.fillRect(b.x - 1, b.y, 2, 8); 
         if(b.y < 0) dBullets.splice(i, 1);
     });
 
-    // Enemies
+    // Bullets (Enemies)
+    dEnemyBullets.forEach((eb, i) => {
+        eb.y += 3;
+        defenderCtx.fillStyle = "#ff4757";
+        defenderCtx.fillRect(eb.x - 1, eb.y, 2, 8);
+        
+        if(eb.x > dPlayerX && eb.x < dPlayerX + 30 && eb.y > 260 && eb.y < 290) {
+            dHearts--;
+            updateDefenderHearts();
+            dEnemyBullets.splice(i, 1);
+            if(dHearts <= 0) finishMG();
+        }
+        if(eb.y > 300) dEnemyBullets.splice(i, 1);
+    });
+
+    // Mod Drops (Power-ups)
+    dModDrops.forEach((m, i) => {
+        m.y += 2;
+        defenderCtx.font = "20px Arial";
+        defenderCtx.fillText("🔫", m.x, m.y);
+        
+        // Coleta de Modificador
+        if(m.x > dPlayerX && m.x < dPlayerX + 30 && m.y > 250 && m.y < 290) {
+            dHasDoubleShot = true;
+            updateMgLiveBoostsVisual();
+            dModDrops.splice(i, 1);
+            notify({n: "TIRO DUPLO ATIVADO!"});
+        } else if(m.y > 300) {
+            dModDrops.splice(i, 1);
+        }
+    });
+
     let hitSide = false;
+    let aliveEnemies = dEnemies.filter(e => e.alive);
+
+    // I.A. Inimiga proporcional ao nível
+    if(Math.random() < (0.015 + (defenderProgress.level * 0.005)) && aliveEnemies.length > 0) {
+        let shooter = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+        if(!shooter.diving) {
+            if(Math.random() > 0.4) {
+                dEnemyBullets.push({x: shooter.x + 12, y: shooter.y + 20});
+            } else {
+                shooter.diving = true;
+                shooter.diveDir = 1; 
+            }
+        }
+    }
+
     dEnemies.forEach(e => {
         if(!e.alive) return;
-        e.x += dEnemyDir * 1;
-        if(e.x > 270 || e.x < 0) hitSide = true;
+
+        if(!e.diving) {
+            e.x += dEnemyDir * (0.4 + defenderProgress.level * 0.1);
+            if(e.x > 270 || e.x < 0) hitSide = true;
+        } else {
+            e.y += e.diveSpeed * e.diveDir;
+            if(e.y > 270) e.diveDir = -1;
+            if(e.y <= e.baseY && e.diveDir === -1) {
+                e.y = e.baseY;
+                e.diving = false;
+            }
+
+            if(e.x > dPlayerX - 20 && e.x < dPlayerX + 30 && e.y > 250 && e.y < 290) {
+                dHearts--;
+                updateDefenderHearts();
+                e.alive = false; 
+                if(dHearts <= 0) finishMG();
+            }
+        }
         
+        // Desenho do inimigo (Cor diferente se for Elite)
         defenderCtx.font = "20px Arial";
-        defenderCtx.fillText("🛸", e.x, e.y);
+        if(e.hp > 1) {
+            defenderCtx.fillStyle = "#fffa65"; // Amarelo brilhante para Elite
+            defenderCtx.fillText("🛸", e.x, e.y);
+            defenderCtx.fillStyle = "#fff"; // Reset cor texto
+        } else {
+            defenderCtx.fillText("🛸", e.x, e.y);
+        }
         
         dBullets.forEach((b, bi) => {
             if(b.x > e.x && b.x < e.x + 25 && b.y > e.y - 20 && b.y < e.y) {
-                e.alive = false;
+                e.hp--;
                 dBullets.splice(bi, 1);
-                mgScore++;
-                document.getElementById("mgCurrentScore").textContent = mgScore;
                 
-                // AJUSTE: Chance de 0.5%
-                if(Math.random() < 0.005) {
-                    const types = ['pepper', 'energy', 'flower', 'luck'];
-                    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
-                    const t = types[Math.floor(Math.random()*4)];
-                    fCollectedBoosts.push({type: t, icon: icons[t]});
-                    updateMgLiveBoostsVisual();
+                if(e.hp <= 0) {
+                    e.alive = false;
+                    mgScore++;
+                    
+                    // Drop de Modificador 8%
+                    if(Math.random() < 0.08) {
+                        dModDrops.push({x: e.x + 10, y: e.y});
+                    }
+
+                    // Drop de Boost 0.5%
+                    if(Math.random() < 0.005) {
+                        const types = ['pepper', 'energy', 'flower', 'luck'];
+                        const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+                        const t = types[Math.floor(Math.random()*4)];
+                        fCollectedBoosts.push({type: t, icon: icons[t]});
+                        updateMgLiveBoostsVisual();
+                    }
                 }
             }
         });
-
-        if(e.y > 250) finishMG();
     });
 
-    if(hitSide) {
-        dEnemyDir *= -1;
-        dEnemies.forEach(e => e.y += 10);
-    }
-
+    if(hitSide) dEnemyDir *= -1;
+    
+    // VITÓRIA: Destruiu todos
     if(dEnemies.every(e => !e.alive)) {
-        for(let row=0; row<3; row++) {
-            for(let col=0; col<6; col++) {
-                dEnemies.push({x: 30 + col*40, y: 30 + row*35, alive: true});
-            }
+        mgScore += 50; // Bônus por limpar onda
+        if(defenderProgress.level < 7) {
+            defenderProgress.level++;
         }
+        defenderProgress.lastPlayed = Date.now();
+        finishMG();
     }
 }
 
@@ -1746,7 +1891,6 @@ function drawRain() {
     if(rSpawnTimer > spawnThreshold) {
         const rng = Math.random();
         let isBomb = rng < 0.35;
-        // AJUSTE: Chance de 0.5% (ao invés de 8% de probabilidade pura, usamos o RNG do pool restante)
         let isBoost = !isBomb && rng < 0.005; 
         
         let drop = { x: rBeeX + 20, y: 45 + rBeeYOffset, isBomb: isBomb, isBoost: isBoost };
@@ -1798,13 +1942,10 @@ function createSnakeFood() {
 }
 
 function spawnSnakeBoost() {
-    // AJUSTE: Chance de 70%
     if(Math.random() > 0.7) return;
-
     const types = ['pepper', 'energy', 'flower', 'luck'];
     const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
     const type = types[Math.floor(Math.random() * types.length)];
-    
     let bx, by;
     let valid = false;
     while(!valid) {
@@ -1812,7 +1953,6 @@ function spawnSnakeBoost() {
         by = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20;
         valid = !snake.some(s => s.x === bx && s.y === by) && (bx !== snakeFood.x || by !== snakeFood.y);
     }
-    
     snakeBoost = { x: bx, y: by, type: type, icon: icons[type] };
     snakeBoostLife = 5000; 
 }
@@ -1823,18 +1963,14 @@ function drawSnake() {
         spawnSnakeBoost();
         snakeBoostTimer = 0;
     }
-    
     if(snakeBoost) {
         snakeBoostLife -= mgSpeed;
         if(snakeBoostLife <= 0) snakeBoost = null;
     }
-
     sdx = snextDx; sdy = snextDy;
     const head = {x: snake[0].x + sdx, y: snake[0].y + sdy};
     if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height || snake.some(s => s.x === head.x && s.y === head.y)) { finishMG(); return; }
-    
     snake.unshift(head);
-    
     if(head.x === snakeFood.x && head.y === snakeFood.y) {
         mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore;
         createSnakeFood(); 
@@ -1847,18 +1983,14 @@ function drawSnake() {
         snakeBoost = null;
     }
     else snake.pop();
-
     snakeCtx.fillStyle = "#000"; snakeCtx.fillRect(0, 0, 300, 300);
-    
     snakeCtx.fillStyle = "#ff4757"; snakeCtx.beginPath();
     snakeCtx.arc(snakeFood.x + 10, snakeFood.y + 10, 8, 0, Math.PI * 2); snakeCtx.fill();
-    
     if(snakeBoost) {
         snakeCtx.font = "16px Arial";
         snakeCtx.textAlign = "center";
         snakeCtx.fillText(snakeBoost.icon, snakeBoost.x + 10, snakeBoost.y + 15);
     }
-
     snake.forEach((p, i) => {
         snakeCtx.fillStyle = i === 0 ? varProp('--accent') : "rgba(255,255,255,0.4)";
         snakeCtx.fillRect(p.x, p.y, 18, 18);
@@ -1883,9 +2015,7 @@ function initFlight() {
 function flightJump() { if(mgRunning && activeMG === 'flight') fVelocity = fJump; }
 
 function spawnFlightBoost(x, gapY, gapH) {
-    // AJUSTE: Chance de 70%
     if(Math.random() > 0.7) return;
-
     const types = ['pepper', 'energy', 'flower', 'luck'];
     const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
     const type = types[Math.floor(Math.random() * types.length)];
@@ -1900,37 +2030,29 @@ function spawnFlightBoost(x, gapY, gapH) {
 function drawFlight() {
     fVelocity += fGravity; fBeeY += fVelocity;
     if(fBeeY < 0 || fBeeY > 285) { finishMG(); return; }
-    
     if(fPipes.length === 0 || fPipes[fPipes.length-1].x < 150) {
         let gap = 110; let topH = Math.random() * (180 - gap) + 20;
         let newX = 350;
         fPipes.push({x: newX, topH: topH, gap: gap, passed: false, boostSpawned: false});
-        
-        // AJUSTE: O gatilho continua a cada 50 pontos, mas spawnFlightBoost tem 70% de chance interna
         if(mgScore > 0 && mgScore % 50 === 0 && !fPipes[fPipes.length-1].boostSpawned) {
              spawnFlightBoost(newX, topH, gap);
              fPipes[fPipes.length-1].boostSpawned = true;
         }
     }
-    
     flightCtx.fillStyle = "#000"; flightCtx.fillRect(0, 0, 300, 300);
-    
     if(beeSprite.complete) {
         flightCtx.drawImage(beeSprite, 40, fBeeY, 25, 25);
     }
-    
     fPipes.forEach((p, i) => {
         p.x -= 3; flightCtx.fillStyle = "rgba(255,255,255,0.2)";
         flightCtx.fillRect(p.x, 0, 40, p.topH); flightCtx.fillRect(p.x, p.topH + p.gap, 40, 300);
         if(p.x < 65 && p.x + 40 > 40) if(fBeeY < p.topH || fBeeY + 20 > p.topH + p.gap) { finishMG(); return; }
         if(!p.passed && p.x < 40) { p.passed = true; mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore; }
     });
-
     fBoosts.forEach((b, i) => {
         b.x -= 3;
         flightCtx.font = "20px Arial";
         flightCtx.fillText(b.icon, b.x, b.y + 15);
-        
         if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) {
             fCollectedBoosts.push(b); 
             updateMgLiveBoostsVisual(); 
@@ -1938,18 +2060,26 @@ function drawFlight() {
             fBoosts.splice(i, 1);
         }
     });
-    
     fPipes = fPipes.filter(p => p.x > -50);
     fBoosts = fBoosts.filter(b => b.x > -50);
 }
 
 function finishMG() {
     mgRunning = false; clearInterval(mgInterval);
+    if(dGameTimer) clearInterval(dGameTimer);
+
     if(mgScore > (records[activeMG] || 0)) { 
         records[activeMG] = mgScore; 
         localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); 
         updateRecordsUI(); 
     }
+    
+    // Salvar progresso do Defender
+    if(activeMG === 'defender') {
+        defenderProgress.lastPlayed = Date.now();
+        executeSave();
+    }
+    
     updateMissionProgress('mg_score', mgScore);
     
     let multiplier = 50; 
@@ -1995,11 +2125,12 @@ function updateRecordsUI() {
     document.getElementById("rainRecordDisplay").textContent = records.rain || 0;
     document.getElementById("snakeRecordDisplay").textContent = records.snake || 0;
     document.getElementById("flightRecordDisplay").textContent = records.flight || 0;
-    document.getElementById("defenderRecordDisplay").textContent = records.defender || 0;
+    document.getElementById("defenderLevelDisplay").textContent = defenderProgress.level || 1;
 }
 
 function exitMinigame() { 
     clearInterval(mgInterval); mgRunning = false; 
+    if(dGameTimer) clearInterval(dGameTimer);
     document.getElementById("minigameOverlay").style.display = "none"; 
 }
 
@@ -2460,7 +2591,7 @@ function startGameTicks() {
 }
 
 function executeSave(){ 
-    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now()}; 
+    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
     const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
@@ -2510,6 +2641,7 @@ function load(){
             const d = JSON.parse(raw);
             honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 0.2; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
+            if(d.defenderProgress) defenderProgress = d.defenderProgress;
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
