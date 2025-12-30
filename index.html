@@ -515,7 +515,6 @@ input[type=range]::-webkit-slider-thumb {
     background: #ff4757;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 32px; color: white;
     border: 3px solid rgba(255,255,255,0.3);
     box-shadow: 0 6px 0 #c0392b;
 }
@@ -797,7 +796,7 @@ input[type=range]::-webkit-slider-thumb {
                     <div class="game-card-header">
                         <div class="game-icon">🔫</div>
                         <div class="game-meta">
-                            <div class="game-title">Bee Defender (v1.4)</div>
+                            <div class="game-title">Bee Defender (v1.5)</div>
                             <div class="game-record">RECORD: <span id="defenderRecordDisplay">0</span></div>
                         </div>
                     </div>
@@ -924,7 +923,7 @@ input[type=range]::-webkit-slider-thumb {
     <div id="defenderControls" style="display: none; margin-top: 20px; width: 100%; max-width: 400px; display: flex; align-items: center; justify-content: center; gap: 15px;">
         <div class="dpad-btn" ontouchstart="moveDefender('LEFT')" onmousedown="moveDefender('LEFT')" ontouchend="stopDefender()" onmouseup="stopDefender()">◀</div>
         <div class="dpad-btn" ontouchstart="moveDefender('RIGHT')" onmousedown="moveDefender('RIGHT')" ontouchend="stopDefender()" onmouseup="stopDefender()">▶</div>
-        <div class="fire-btn" ontouchstart="defenderFire()" onmousedown="defenderFire()">📍</div>
+        <div class="fire-btn" ontouchstart="defenderFire()" onmousedown="defenderFire()"></div>
     </div>
 
     <div id="flightControls" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;" ontouchstart="flightJump()" onmousedown="flightJump()"></div>
@@ -1253,6 +1252,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "7.5.0",
+        title: "🛡️ ESTÉTICA DEFENDER",
+        changes: [
+            { type: "mod", text: "Removido ícone '📍' do botão de disparo no Bee Defender para um visual mais limpo." },
+            { type: "mod", text: "Ajuste na saturação da cor vermelha do botão de disparo." },
+            { type: "fix", text: "Melhoria na sincronia do toque no botão de disparo em dispositivos lentos." }
+        ]
+    },
+    {
         version: "7.4.0",
         title: "🛡️ LAYOUT DEFENDER",
         changes: [
@@ -1287,15 +1295,6 @@ let updateHistory = [
             { type: "mod", text: "Ajuste na escala visual dos projéteis ferrões no combate." },
             { type: "fix", text: "Melhoria na detecção de colisão entre ferrões e vespas." }
         ]
-    },
-    {
-        version: "7.0.0",
-        title: "🛡️ NOVO JOGO: BEE DEFENDER",
-        changes: [
-            { type: "add", text: "Minijogo Bee Defender adicionado! Combata as vespas em um shooter clássico estilo Space Invaders." },
-            { type: "add", text: "Novas recompensas de Mel e XP específicas para o modo Defender." },
-            { type: "mod", text: "Interface da Central de Jogos reorganizada para suportar o novo título." }
-        ]
     }
 ];
 
@@ -1327,7 +1326,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V15"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V16"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1339,7 +1338,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V15", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V16", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
