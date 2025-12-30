@@ -518,7 +518,6 @@ input[type=range]::-webkit-slider-thumb {
     font-size: 32px; color: white;
     border: 3px solid rgba(255,255,255,0.3);
     box-shadow: 0 6px 0 #c0392b;
-    grid-area: fire;
 }
 .fire-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #c0392b; background: #ff6b81; }
 
@@ -747,7 +746,7 @@ input[type=range]::-webkit-slider-thumb {
                 </div>
 
                 <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
-                  <div class="section-title">👔 GUARDA-ROUMA</div>
+                  <div class="section-title">👔 GUARDA-ROUPA</div>
                   <div class="shop-grid">
                     <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')">
                       <img src="Bee.png" class="skin-preview">
@@ -798,7 +797,7 @@ input[type=range]::-webkit-slider-thumb {
                     <div class="game-card-header">
                         <div class="game-icon">🔫</div>
                         <div class="game-meta">
-                            <div class="game-title">Bee Defender (v1.3)</div>
+                            <div class="game-title">Bee Defender (v1.4)</div>
                             <div class="game-record">RECORD: <span id="defenderRecordDisplay">0</span></div>
                         </div>
                     </div>
@@ -922,10 +921,10 @@ input[type=range]::-webkit-slider-thumb {
         <div class="dpad-btn" style="grid-area: right;" ontouchstart="changeSnakeDir('RIGHT')" onmousedown="changeSnakeDir('RIGHT')">▶</div>
     </div>
 
-    <div id="defenderControls" class="mg-controls" style="display: none; grid-template-areas: 'left . fire' 'right . fire';">
-        <div class="dpad-btn" style="grid-area: left;" ontouchstart="moveDefender('LEFT')" onmousedown="moveDefender('LEFT')" ontouchend="stopDefender()" onmouseup="stopDefender()">◀</div>
-        <div class="dpad-btn" style="grid-area: right;" ontouchstart="moveDefender('RIGHT')" onmousedown="moveDefender('RIGHT')" ontouchend="stopDefender()" onmouseup="stopDefender()">▶</div>
-        <div class="fire-btn" style="grid-area: fire;" ontouchstart="defenderFire()" onmousedown="defenderFire()">📍</div>
+    <div id="defenderControls" style="display: none; margin-top: 20px; width: 100%; max-width: 400px; display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div class="dpad-btn" ontouchstart="moveDefender('LEFT')" onmousedown="moveDefender('LEFT')" ontouchend="stopDefender()" onmouseup="stopDefender()">◀</div>
+        <div class="dpad-btn" ontouchstart="moveDefender('RIGHT')" onmousedown="moveDefender('RIGHT')" ontouchend="stopDefender()" onmouseup="stopDefender()">▶</div>
+        <div class="fire-btn" ontouchstart="defenderFire()" onmousedown="defenderFire()">📍</div>
     </div>
 
     <div id="flightControls" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;" ontouchstart="flightJump()" onmousedown="flightJump()"></div>
@@ -1145,7 +1144,7 @@ input[type=range]::-webkit-slider-thumb {
 </div>
 
 <script>
-/* BLOQUEIO DE ZOOM PARA MOBILE (SAFARI/CHROME) */
+/* BLOQUEIO DE ZOOM PARA MOBILE */
 document.addEventListener('touchstart', function (event) {
   if (event.touches.length > 1) {
     event.preventDefault();
@@ -1250,9 +1249,18 @@ async function handlePwaClick() {
 }
 
 // ==========================================
-// SISTEMA DINÂMICO DE CHANGELOG (MÁX 5)
+// SISTEMA DINÂMICO DE CHANGELOG
 // ==========================================
 let updateHistory = [
+    {
+        version: "7.4.0",
+        title: "🛡️ LAYOUT DEFENDER",
+        changes: [
+            { type: "mod", text: "Controles do Bee Defender reorganizados horizontalmente (Esquerda, Direita, Disparar) para melhor ergonomia." },
+            { type: "mod", text: "Espaçamento entre os botões de controle aumentado para evitar toques acidentais." },
+            { type: "fix", text: "Otimização da renderização do D-Pad em telas de proporção ultra-wide." }
+        ]
+    },
     {
         version: "7.3.0",
         title: "🛡️ CONTROLES BEE DEFENDER",
@@ -1288,15 +1296,6 @@ let updateHistory = [
             { type: "add", text: "Novas recompensas de Mel e XP específicas para o modo Defender." },
             { type: "mod", text: "Interface da Central de Jogos reorganizada para suportar o novo título." }
         ]
-    },
-    {
-        version: "6.9.0",
-        title: "💀 SKIN SKULLBEE",
-        changes: [
-            { type: "add", text: "Nova Skin SkullBee adicionada à loja: Concede +8% de chance crítica permanente." },
-            { type: "mod", text: "Habilidade passiva de sorte agora é somada corretamente ao equipar diferentes visuais." },
-            { type: "fix", text: "Correção na renderização de skins raras no menu de visualização." }
-        ]
     }
 ];
 
@@ -1328,7 +1327,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V14"); // Incrementado para V14
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V15"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1340,7 +1339,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V14", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V15", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1550,7 +1549,7 @@ function startMG() {
         initRain();
     } else if(activeMG === 'defender') {
         document.getElementById("defenderCanvas").style.display = "block";
-        document.getElementById("defenderControls").style.display = "grid";
+        document.getElementById("defenderControls").style.display = "flex";
         initDefender();
     }
 }
@@ -1630,7 +1629,6 @@ function drawDefender() {
                 mgScore++;
                 document.getElementById("mgCurrentScore").textContent = mgScore;
                 
-                // Boost chance on kill
                 if(Math.random() < 0.05) {
                     const types = ['pepper', 'energy', 'flower', 'luck'];
                     const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
@@ -1650,7 +1648,6 @@ function drawDefender() {
     }
 
     if(dEnemies.every(e => !e.alive)) {
-        // Next Wave
         for(let row=0; row<3; row++) {
             for(let col=0; col<6; col++) {
                 dEnemies.push({x: 30 + col*40, y: 30 + row*35, alive: true});
