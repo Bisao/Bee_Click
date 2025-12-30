@@ -479,9 +479,24 @@ input[type=range]::-webkit-slider-thumb {
     width: 100%; max-width: 400px; padding: 20px; 
     display: flex; justify-content: space-between; align-items: center; 
 }
-.mg-stats-panel { text-align: left; }
+.mg-stats-panel { text-align: left; display: flex; align-items: center; gap: 15px; }
+.mg-score-box { display: flex; flex-direction: column; }
 .mg-label { font-size: 10px; text-transform: uppercase; opacity: 0.7; font-weight: 800; }
 .mg-val { font-size: 24px; font-weight: 900; color: var(--accent); display: block; }
+
+#mgLiveBoosts {
+    display: flex;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    padding: 5px 10px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    height: 40px;
+    align-items: center;
+    min-width: 40px;
+}
+.mg-live-boost-icon { font-size: 20px; animation: popBoost 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes popBoost { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .mg-controls { margin-top: 20px; display: grid; grid-template-areas: ". up ." "left down right"; gap: 15px; }
 .dpad-btn { 
@@ -856,9 +871,12 @@ input[type=range]::-webkit-slider-thumb {
 
     <div class="mg-header">
         <div class="mg-stats-panel">
-            <span class="mg-label" id="mgLabelText">Pontuação Atual</span>
-            <span class="mg-val" id="mgCurrentScore">0</span>
-            <div id="rainHearts" style="display: none; font-size: 16px; margin-top: 5px;">❤️❤️❤️</div>
+            <div class="mg-score-box">
+                <span class="mg-label" id="mgLabelText">Pontuação Atual</span>
+                <span class="mg-val" id="mgCurrentScore">0</span>
+            </div>
+            <div id="mgLiveBoosts"></div>
+            <div id="rainHearts" style="display: none; font-size: 16px;">❤️❤️❤️</div>
         </div>
         <button onclick="exitMinigame()" style="width: auto; padding: 10px 20px; margin-top: 0; background: rgba(0,0,0,0.4); border: 1px solid white; color: white; border-radius: 12px;">SAIR</button>
     </div>
@@ -1174,6 +1192,15 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "6.8.0",
+        title: "🛡️ VISUAL DE BOOSTS",
+        changes: [
+            { type: "add", text: "Painel de Boosts em Tempo Real: Agora os bônus coletados aparecem à direita dos pontos durante a partida." },
+            { type: "mod", text: "Otimização visual no cabeçalho dos minijogos para melhor leitura em dispositivos móveis." },
+            { type: "add", text: "Efeito de 'Pop' animado ao coletar um novo boost durante o jogo." }
+        ]
+    },
+    {
         version: "6.7.0",
         title: "🍀 SORTE NA CHUVA",
         changes: [
@@ -1208,15 +1235,6 @@ let updateHistory = [
             { type: "mod", text: "Padronização completa de todos os fluxos de início de jogo." },
             { type: "fix", text: "Correção na velocidade de queda dos potes em níveis elevados." }
         ]
-    },
-    {
-        version: "6.3.0",
-        title: "🕹️ TUTORIAL BEE-LINE",
-        changes: [
-            { type: "add", text: "Novo painel informativo para o jogo Bee-Line (Snake) antes da partida." },
-            { type: "mod", text: "Padronização das telas de tutorial para todos os minijogos." },
-            { type: "fix", text: "Melhoria na sincronia visual do D-Pad durante movimentos rápidos." }
-        ]
     }
 ];
 
@@ -1248,7 +1266,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V8"); // Incrementado para V8
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V9"); // Incrementado para V9
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1260,7 +1278,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V8", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V9", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1413,6 +1431,7 @@ function startMinigameActual(type) {
     document.getElementById("flightControls").style.display = "none";
     document.getElementById("rainHearts").style.display = "none";
     document.getElementById("flightHint").style.display = "none";
+    document.getElementById("mgLiveBoosts").innerHTML = ""; // Limpa visual de boosts live
     const countdownEl = document.getElementById("mgCountdown");
     countdownEl.style.display = "block";
     let count = 3; countdownEl.textContent = count;
@@ -1443,10 +1462,23 @@ function startMG() {
     }
 }
 
+// NOVO: Função para atualizar boosts na interface do jogo em tempo real
+function updateMgLiveBoostsVisual() {
+    const container = document.getElementById("mgLiveBoosts");
+    container.innerHTML = "";
+    fCollectedBoosts.forEach(b => {
+        const span = document.createElement("span");
+        span.className = "mg-live-boost-icon";
+        span.textContent = b.icon;
+        container.appendChild(span);
+    });
+}
+
 function initRain() {
     rainCanvas.width = 300; rainCanvas.height = 300;
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
     rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0; rBeeYOffset = 0;
+    fCollectedBoosts = []; // Limpa coleções
     updateRainHearts();
     rainCanvas.onclick = (e) => {
         if(!mgRunning) return;
@@ -1462,8 +1494,9 @@ function initRain() {
                     createRainParticles(d.x, d.y, "#ff0000", 20); 
                     rDrops.splice(i, 1);
                     if(rHearts <= 0) finishMG();
-                } else if(d.isBoost) { // NOVO: Lógica de coleta de Boost no Rain
+                } else if(d.isBoost) { 
                     fCollectedBoosts.push({type: d.boostType, icon: d.boostIcon});
+                    updateMgLiveBoostsVisual(); // Update UI
                     createRainParticles(d.x, d.y, "#ffffff", 15);
                     playClickSound();
                     rDrops.splice(i, 1);
@@ -1530,7 +1563,7 @@ function drawRain() {
     if(rSpawnTimer > spawnThreshold) {
         const rng = Math.random();
         let isBomb = rng < 0.35;
-        let isBoost = !isBomb && rng < 0.43; // 8% de chance se não for bomba (0.43 - 0.35 = 0.08)
+        let isBoost = !isBomb && rng < 0.43; 
         
         let drop = { x: rBeeX + 20, y: 45 + rBeeYOffset, isBomb: isBomb, isBoost: isBoost };
         
@@ -1568,6 +1601,7 @@ function initSnake() {
     snakeCanvas.width = 300; snakeCanvas.height = 300;
     snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
     sdx = 20; sdy = 0; snextDx = 20; snextDy = 0;
+    fCollectedBoosts = []; 
     snakeBoost = null; snakeBoostTimer = 0; snakeBoostLife = 0; 
     createSnakeFood(); startSnakeLoop();
 }
@@ -1621,6 +1655,7 @@ function drawSnake() {
     } 
     else if(snakeBoost && head.x === snakeBoost.x && head.y === snakeBoost.y) {
         fCollectedBoosts.push({type: snakeBoost.type, icon: snakeBoost.icon});
+        updateMgLiveBoostsVisual(); // Real-time UI update
         playClickSound();
         snakeBoost = null;
     }
@@ -1707,6 +1742,7 @@ function drawFlight() {
         
         if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) {
             fCollectedBoosts.push(b); 
+            updateMgLiveBoostsVisual(); // Real-time UI update
             playClickSound();
             fBoosts.splice(i, 1);
         }
