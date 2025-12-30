@@ -466,7 +466,7 @@ input[type=range]::-webkit-slider-thumb {
     display: none; flex-direction: column; align-items: center; justify-content: center;
     backdrop-filter: blur(20px);
 }
-#snakeCanvas, #flightCanvas, #rainCanvas { 
+#snakeCanvas, #flightCanvas, #rainCanvas, #defenderCanvas { 
     background: #000; 
     border: 3px solid rgba(255,255,255,0.2); 
     border-radius: 20px; 
@@ -509,6 +509,18 @@ input[type=range]::-webkit-slider-thumb {
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 .dpad-btn:active { background: var(--accent); color: var(--main-blue); transform: scale(0.9); }
+
+.fire-btn {
+    width: 80px; height: 80px;
+    background: #ff4757;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: white;
+    border: 3px solid rgba(255,255,255,0.3);
+    box-shadow: 0 6px 0 #c0392b;
+    grid-area: fire;
+}
+.fire-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #c0392b; background: #ff6b81; }
 
 #mgCountdown { position: absolute; font-size: 120px; color: var(--accent); font-weight: 900; text-shadow: 0 0 30px rgba(0,0,0,0.5); z-index: 20005; display: none; }
 #mgResultScreen {
@@ -735,7 +747,7 @@ input[type=range]::-webkit-slider-thumb {
                 </div>
 
                 <div id="shop_cosmetics" class="sub-shop-pane" style="display:none;">
-                  <div class="section-title">👔 GUARDA-ROUPA</div>
+                  <div class="section-title">👔 GUARDA-ROUMA</div>
                   <div class="shop-grid">
                     <button class="buy-btn-small" id="btn_cos_Bee" onclick="handleCosmetic('Bee')">
                       <img src="Bee.png" class="skin-preview">
@@ -744,6 +756,10 @@ input[type=range]::-webkit-slider-thumb {
                     <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')">
                       <img src="NoelBee.png" class="skin-preview">
                       <b>Noel (+15%)</b>
+                    </button>
+                    <button class="buy-btn-small" id="btn_cos_SkullBee" onclick="handleCosmetic('SkullBee')">
+                      <img src="SkullBee.png" class="skin-preview">
+                      <b>Skull (+8% Crit)</b>
                     </button>
                   </div>
 
@@ -777,6 +793,19 @@ input[type=range]::-webkit-slider-thumb {
           <div id="events" class="tab-pane">
               <div class="scroll-area">
                   <div class="section-title">CENTRAL DE JOGOS</div>
+
+                  <div class="game-card">
+                    <div class="game-card-header">
+                        <div class="game-icon">🔫</div>
+                        <div class="game-meta">
+                            <div class="game-title">Bee Defender (v1.3)</div>
+                            <div class="game-record">RECORD: <span id="defenderRecordDisplay">0</span></div>
+                        </div>
+                    </div>
+                    <div class="game-play-area">
+                        <button onclick="prepareMinigame('defender')">INICIAR PARTIDA</button>
+                    </div>
+                </div>
                   
                   <div class="game-card">
                       <div class="game-card-header">
@@ -884,6 +913,7 @@ input[type=range]::-webkit-slider-thumb {
     <canvas id="snakeCanvas"></canvas>
     <canvas id="flightCanvas"></canvas>
     <canvas id="rainCanvas"></canvas>
+    <canvas id="defenderCanvas"></canvas>
 
     <div id="snakeControls" class="mg-controls" style="display: none;">
         <div class="dpad-btn" style="grid-area: up;" ontouchstart="changeSnakeDir('UP')" onmousedown="changeSnakeDir('UP')">▲</div>
@@ -892,8 +922,40 @@ input[type=range]::-webkit-slider-thumb {
         <div class="dpad-btn" style="grid-area: right;" ontouchstart="changeSnakeDir('RIGHT')" onmousedown="changeSnakeDir('RIGHT')">▶</div>
     </div>
 
+    <div id="defenderControls" class="mg-controls" style="display: none; grid-template-areas: 'left . fire' 'right . fire';">
+        <div class="dpad-btn" style="grid-area: left;" ontouchstart="moveDefender('LEFT')" onmousedown="moveDefender('LEFT')" ontouchend="stopDefender()" onmouseup="stopDefender()">◀</div>
+        <div class="dpad-btn" style="grid-area: right;" ontouchstart="moveDefender('RIGHT')" onmousedown="moveDefender('RIGHT')" ontouchend="stopDefender()" onmouseup="stopDefender()">▶</div>
+        <div class="fire-btn" style="grid-area: fire;" ontouchstart="defenderFire()" onmousedown="defenderFire()">📍</div>
+    </div>
+
     <div id="flightControls" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;" ontouchstart="flightJump()" onmousedown="flightJump()"></div>
     <div id="flightHint" style="display: none; color: white; margin-top: 10px; font-weight: 800; opacity: 0.6;">TOQUE PARA SUBIR</div>
+</div>
+
+<div class="modal" id="defenderPreGameModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>BEE DEFENDER 🔫</span>
+            <span style="cursor:pointer" onclick="closeModal('defenderPreGameModal')">✖</span>
+        </div>
+        <div class="modal-content-scroll" style="text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 15px;">🛸</div>
+            <h2 style="margin:0; color:var(--accent);">DEFENDA A COLMEIA</h2>
+            <p style="font-size:14px; opacity:0.8;">Use as setas para mover e o BOTÃO VERMELHO para disparar ferrões!</p>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
+                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
+                <div style="font-size:12px; line-height:1.6;">
+                    • 150x Mel por vespa derrotada.<br>
+                    • Bônus de XP ao final da partida.<br>
+                    • <b>DROP DE ITENS:</b> Derrotar ondas completas pode gerar Boosts de 30s!
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('defenderPreGameModal'); startMinigameActual('defender');" style="background:var(--xp-bar); color:white;">ÀS ARMAS!</button>
+        </div>
+    </div>
 </div>
 
 <div class="modal" id="flightPreGameModal">
@@ -990,7 +1052,7 @@ input[type=range]::-webkit-slider-thumb {
 <div class="modal" id="rerollModal">
     <div class="modal-box" style="text-align: center; padding: 20px;">
         <div style="font-size: 50px; margin-bottom: 15px;">🔄</div>
-        <h2 style="margin: 0 0 10px; color: var(--accent); font-weight: 900;">Nova Tarefa?</h2>
+        <h2 id="rerollTitle" style="margin: 0 0 10px; color: var(--accent); font-weight: 900;">Nova Tarefa?</h2>
         <p style="font-size: 14px; line-height: 1.4; color: inherit; margin-bottom: 25px;">
             Você deseja trocar esta missão por uma nova tarefa aleatória? 
             <br><small style="opacity: 0.7;">(O progresso atual será perdido)</small>
@@ -1192,48 +1254,48 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
-        version: "6.8.0",
-        title: "🛡️ VISUAL DE BOOSTS",
+        version: "7.3.0",
+        title: "🛡️ CONTROLES BEE DEFENDER",
         changes: [
-            { type: "add", text: "Painel de Boosts em Tempo Real: Agora os bônus coletados aparecem à direita dos pontos durante a partida." },
-            { type: "mod", text: "Otimização visual no cabeçalho dos minijogos para melhor leitura em dispositivos móveis." },
-            { type: "add", text: "Efeito de 'Pop' animado ao coletar um novo boost durante o jogo." }
+            { type: "mod", text: "Disparo automático removido do Bee Defender. Adicionado botão '📍' para disparar ferrões manualmente." },
+            { type: "mod", text: "Layout do D-Pad ajustado no minijogo Defender para suportar o novo botão de ação." },
+            { type: "add", text: "Teclado: Agora você pode disparar ferrões usando a tecla 'Espaço' ou 'W' no Bee Defender." }
         ]
     },
     {
-        version: "6.7.0",
-        title: "🍀 SORTE NA CHUVA",
+        version: "7.2.0",
+        title: "🛡️ AJUSTE VISUAL DEFENDER",
         changes: [
-            { type: "add", text: "Minijogo Honey Rain agora tem 8% de chance de soltar Boosts aleatórios de 30s." },
-            { type: "mod", text: "Melhoria na sincronia de colisão dos itens especiais no Honey Rain." },
-            { type: "fix", text: "Ajuste na visualização do recorde para suportar novos multiplicadores." }
+            { type: "mod", text: "Orientação da abelha no Bee Defender ajustada (90 graus + inversão) para melhor alinhamento." },
+            { type: "mod", text: "Refinamento na velocidade de disparo e física do minijogo Defender." },
+            { type: "fix", text: "Ajuste na proporção do asset BeeUp.png para evitar distorções no canvas." }
         ]
     },
     {
-        version: "6.6.0",
-        title: "🐍 REFORMA NA SNAKE",
+        version: "7.1.0",
+        title: "🛡️ ATUALIZAÇÃO BEE DEFENDER",
         changes: [
-            { type: "mod", text: "Velocidade inicial da Bee-Line reduzida para 320ms (mais controle)." },
-            { type: "add", text: "Sistema de Boosts na Snake: Itens aleatórios aparecem a cada 40s e ficam por 5s." },
-            { type: "mod", text: "Aceleração da Snake ajustada para a nova velocidade base." }
+            { type: "mod", text: "A abelha do Bee Defender agora utiliza a imagem BeeUp.png invertida para baixo." },
+            { type: "mod", text: "Ajuste na escala visual dos projéteis ferrões no combate." },
+            { type: "fix", text: "Melhoria na detecção de colisão entre ferrões e vespas." }
         ]
     },
     {
-        version: "6.5.0",
-        title: "💣 PERIGO NO HONEY RAIN",
+        version: "7.0.0",
+        title: "🛡️ NOVO JOGO: BEE DEFENDER",
         changes: [
-            { type: "add", text: "Nova mecânica: A abelha agora solta Bombas (35% de chance) no minijogo Honey Rain." },
-            { type: "add", text: "Efeito visual de explosão e perda de vida ao clicar nas bombas." },
-            { type: "add", text: "Partículas de mel adicionadas ao coletar itens com sucesso." }
+            { type: "add", text: "Minijogo Bee Defender adicionado! Combata as vespas em um shooter clássico estilo Space Invaders." },
+            { type: "add", text: "Novas recompensas de Mel e XP específicas para o modo Defender." },
+            { type: "mod", text: "Interface da Central de Jogos reorganizada para suportar o novo título." }
         ]
     },
     {
-        version: "6.4.0",
-        title: "🍯 TUTORIAL HONEY RAIN",
+        version: "6.9.0",
+        title: "💀 SKIN SKULLBEE",
         changes: [
-            { type: "add", text: "Painel informativo implementado para o minijogo Honey Rain." },
-            { type: "mod", text: "Padronização completa de todos os fluxos de início de jogo." },
-            { type: "fix", text: "Correção na velocidade de queda dos potes em níveis elevados." }
+            { type: "add", text: "Nova Skin SkullBee adicionada à loja: Concede +8% de chance crítica permanente." },
+            { type: "mod", text: "Habilidade passiva de sorte agora é somada corretamente ao equipar diferentes visuais." },
+            { type: "fix", text: "Correção na renderização de skins raras no menu de visualização." }
         ]
     }
 ];
@@ -1266,7 +1328,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V9"); // Incrementado para V9
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V14"); // Incrementado para V14
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1278,7 +1340,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V9", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V14", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1300,7 +1362,7 @@ let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, auto
 let clickLvl = 1, autoLvlLvl = 1; 
 let luckLvl = 1, luckCost = 6400;
 
-let ownedCosmetics = ["Bee", "NoelBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
+let ownedCosmetics = ["Bee", "NoelBee", "SkullBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0, crown: 0 }; 
 let clickBuffer = [], gameLoaded = false;
 let currentAchFilter = 'all', autoProduceInterval = null, gameTickInterval = null;
@@ -1308,7 +1370,7 @@ let dailyMissions = [];
 let lastMissionReset = 0;
 let audioSettings = { music: 50, click: 80, lvlUp: 100 };
 let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
-let records = { snake: 0, flight: 0, rain: 0 };
+let records = { snake: 0, flight: 0, rain: 0, defender: 0 };
 let pendingRerollId = null;
 
 const soundMusic = new Audio('Music.mp3');
@@ -1356,17 +1418,40 @@ let rDropSpeed = 1.5;
 let rSpawnTimer = 0;
 let rBeeYOffset = 0; 
 
+// BEE DEFENDER CONFIG
+const defenderCanvas = document.getElementById("defenderCanvas");
+const defenderCtx = defenderCanvas.getContext("2d");
+const defenderBeeSprite = new Image();
+defenderBeeSprite.src = 'BeeUp.png';
+
+let dPlayerX = 135;
+let dBullets = [];
+let dEnemies = [];
+let dEnemyDir = 1;
+let dEnemyTimer = 0;
+let dMoving = 0; // -1 Left, 0 Stop, 1 Right
+
 window.addEventListener('keydown', (e) => {
     if(!mgRunning) return;
+    const key = e.key.toLowerCase();
     if(activeMG === 'snake') {
-        const key = e.key.toLowerCase();
         if ((key === 'arrowup' || key === 'w')) changeSnakeDir('UP');
         if ((key === 'arrowdown' || key === 's')) changeSnakeDir('DOWN');
         if ((key === 'arrowleft' || key === 'a')) changeSnakeDir('LEFT');
         if ((key === 'arrowright' || key === 'd')) changeSnakeDir('RIGHT');
     } else if(activeMG === 'flight') {
-        if(e.code === 'Space' || e.key === 'w' || e.key === 'ArrowUp') flightJump();
+        if(e.code === 'Space' || key === 'w' || key === 'arrowup') flightJump();
+    } else if(activeMG === 'defender') {
+        if (key === 'arrowleft' || key === 'a') dMoving = -1;
+        if (key === 'arrowright' || key === 'd') dMoving = 1;
+        if (e.code === 'Space' || key === 'w' || key === 'arrowup') defenderFire();
     }
+});
+
+window.addEventListener('keyup', (e) => {
+    if(!mgRunning || activeMG !== 'defender') return;
+    const key = e.key.toLowerCase();
+    if (key === 'arrowleft' || key === 'a' || key === 'arrowright' || key === 'd') dMoving = 0;
 });
 
 function updateTheme() {
@@ -1415,6 +1500,8 @@ function prepareMinigame(type) {
         openModal('snakePreGameModal');
     } else if(type === 'rain') {
         openModal('rainPreGameModal');
+    } else if(type === 'defender') {
+        openModal('defenderPreGameModal');
     } else {
         startMinigameActual(type);
     }
@@ -1427,11 +1514,13 @@ function startMinigameActual(type) {
     document.getElementById("snakeCanvas").style.display = "none";
     document.getElementById("flightCanvas").style.display = "none";
     document.getElementById("rainCanvas").style.display = "none";
+    document.getElementById("defenderCanvas").style.display = "none";
     document.getElementById("snakeControls").style.display = "none";
     document.getElementById("flightControls").style.display = "none";
+    document.getElementById("defenderControls").style.display = "none";
     document.getElementById("rainHearts").style.display = "none";
     document.getElementById("flightHint").style.display = "none";
-    document.getElementById("mgLiveBoosts").innerHTML = ""; // Limpa visual de boosts live
+    document.getElementById("mgLiveBoosts").innerHTML = ""; 
     const countdownEl = document.getElementById("mgCountdown");
     countdownEl.style.display = "block";
     let count = 3; countdownEl.textContent = count;
@@ -1459,10 +1548,13 @@ function startMG() {
         document.getElementById("rainCanvas").style.display = "block";
         document.getElementById("rainHearts").style.display = "block";
         initRain();
+    } else if(activeMG === 'defender') {
+        document.getElementById("defenderCanvas").style.display = "block";
+        document.getElementById("defenderControls").style.display = "grid";
+        initDefender();
     }
 }
 
-// NOVO: Função para atualizar boosts na interface do jogo em tempo real
 function updateMgLiveBoostsVisual() {
     const container = document.getElementById("mgLiveBoosts");
     container.innerHTML = "";
@@ -1474,11 +1566,104 @@ function updateMgLiveBoostsVisual() {
     });
 }
 
+// BEE DEFENDER LOGIC
+function initDefender() {
+    defenderCanvas.width = 300; defenderCanvas.height = 300;
+    dPlayerX = 135; dBullets = []; dEnemies = []; dEnemyDir = 1; dEnemyTimer = 0; dMoving = 0; fCollectedBoosts = [];
+    for(let row=0; row<3; row++) {
+        for(let col=0; col<6; col++) {
+            dEnemies.push({x: 30 + col*40, y: 30 + row*35, alive: true});
+        }
+    }
+    if(mgInterval) clearInterval(mgInterval);
+    mgInterval = setInterval(drawDefender, 20);
+}
+
+function moveDefender(dir) { dMoving = (dir === 'LEFT' ? -1 : 1); }
+function stopDefender() { dMoving = 0; }
+function defenderFire() {
+    if(!mgRunning || activeMG !== 'defender') return;
+    dBullets.push({x: dPlayerX + 15, y: 260});
+    playClickSound();
+}
+
+function drawDefender() {
+    defenderCtx.fillStyle = "#000"; defenderCtx.fillRect(0, 0, 300, 300);
+    
+    // Player Move
+    dPlayerX += dMoving * 4;
+    if(dPlayerX < 0) dPlayerX = 0;
+    if(dPlayerX > 270) dPlayerX = 270;
+    
+    // Draw Player
+    if(defenderBeeSprite.complete) {
+        defenderCtx.save();
+        defenderCtx.translate(dPlayerX + 15, 260 + 15);
+        defenderCtx.rotate(Math.PI / 2); 
+        defenderCtx.scale(1, -1); 
+        defenderCtx.drawImage(defenderBeeSprite, -15, -15, 30, 30);
+        defenderCtx.restore();
+    }
+
+    // Bullets
+    dBullets.forEach((b, i) => {
+        b.y -= 5;
+        defenderCtx.fillStyle = varProp('--accent');
+        defenderCtx.fillRect(b.x - 1, b.y, 2, 8); 
+        if(b.y < 0) dBullets.splice(i, 1);
+    });
+
+    // Enemies
+    let hitSide = false;
+    dEnemies.forEach(e => {
+        if(!e.alive) return;
+        e.x += dEnemyDir * 1;
+        if(e.x > 270 || e.x < 0) hitSide = true;
+        
+        defenderCtx.font = "20px Arial";
+        defenderCtx.fillText("🛸", e.x, e.y);
+        
+        dBullets.forEach((b, bi) => {
+            if(b.x > e.x && b.x < e.x + 25 && b.y > e.y - 20 && b.y < e.y) {
+                e.alive = false;
+                dBullets.splice(bi, 1);
+                mgScore++;
+                document.getElementById("mgCurrentScore").textContent = mgScore;
+                
+                // Boost chance on kill
+                if(Math.random() < 0.05) {
+                    const types = ['pepper', 'energy', 'flower', 'luck'];
+                    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+                    const t = types[Math.floor(Math.random()*4)];
+                    fCollectedBoosts.push({type: t, icon: icons[t]});
+                    updateMgLiveBoostsVisual();
+                }
+            }
+        });
+
+        if(e.y > 250) finishMG();
+    });
+
+    if(hitSide) {
+        dEnemyDir *= -1;
+        dEnemies.forEach(e => e.y += 10);
+    }
+
+    if(dEnemies.every(e => !e.alive)) {
+        // Next Wave
+        for(let row=0; row<3; row++) {
+            for(let col=0; col<6; col++) {
+                dEnemies.push({x: 30 + col*40, y: 30 + row*35, alive: true});
+            }
+        }
+    }
+}
+
 function initRain() {
     rainCanvas.width = 300; rainCanvas.height = 300;
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
     rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0; rBeeYOffset = 0;
-    fCollectedBoosts = []; // Limpa coleções
+    fCollectedBoosts = []; 
     updateRainHearts();
     rainCanvas.onclick = (e) => {
         if(!mgRunning) return;
@@ -1496,7 +1681,7 @@ function initRain() {
                     if(rHearts <= 0) finishMG();
                 } else if(d.isBoost) { 
                     fCollectedBoosts.push({type: d.boostType, icon: d.boostIcon});
-                    updateMgLiveBoostsVisual(); // Update UI
+                    updateMgLiveBoostsVisual(); 
                     createRainParticles(d.x, d.y, "#ffffff", 15);
                     playClickSound();
                     rDrops.splice(i, 1);
@@ -1655,7 +1840,7 @@ function drawSnake() {
     } 
     else if(snakeBoost && head.x === snakeBoost.x && head.y === snakeBoost.y) {
         fCollectedBoosts.push({type: snakeBoost.type, icon: snakeBoost.icon});
-        updateMgLiveBoostsVisual(); // Real-time UI update
+        updateMgLiveBoostsVisual(); 
         playClickSound();
         snakeBoost = null;
     }
@@ -1742,7 +1927,7 @@ function drawFlight() {
         
         if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) {
             fCollectedBoosts.push(b); 
-            updateMgLiveBoostsVisual(); // Real-time UI update
+            updateMgLiveBoostsVisual(); 
             playClickSound();
             fBoosts.splice(i, 1);
         }
@@ -1764,6 +1949,7 @@ function finishMG() {
     let multiplier = 50; 
     if(activeMG === 'flight') multiplier = 120; 
     if(activeMG === 'rain') multiplier = 180; 
+    if(activeMG === 'defender') multiplier = 150; 
     
     let hGain = mgScore * multiplier * (1 + level * 0.1);
     let xGain = hGain * 0.20; 
@@ -1803,6 +1989,7 @@ function updateRecordsUI() {
     document.getElementById("rainRecordDisplay").textContent = records.rain || 0;
     document.getElementById("snakeRecordDisplay").textContent = records.snake || 0;
     document.getElementById("flightRecordDisplay").textContent = records.flight || 0;
+    document.getElementById("defenderRecordDisplay").textContent = records.defender || 0;
 }
 
 function exitMinigame() { 
@@ -2117,6 +2304,7 @@ function getMPSBase() {
 }
 
 function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
+
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length, e = achievements.filter(a => a.u && a.r === 'epic').length;
     let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); 
@@ -2138,10 +2326,15 @@ function updateUI() {
     const crown = document.getElementById("beeCrown");
     if(activeBoosts.crown > 0) crown.style.display = "block"; else crown.style.display = "none";
     buildShop(); renderActiveBoosts(); updateRecordsUI();
-    ['Bee', 'NoelBee'].forEach(id => {
+    ['Bee', 'NoelBee', 'SkullBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
         if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; document.getElementById("mainBeeSprite").src = `${id}.png`; document.getElementById("miniBeeHeader").src = `${id}.png`; }
-        else { let label = (id === "NoelBee") ? "Noel (+15%)" : "Comum"; btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
+        else { 
+            let label = "Comum";
+            if(id === "NoelBee") label = "Noel (+15%)";
+            if(id === "SkullBee") label = "Skull (+8% Crit)";
+            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; 
+        }
     });
     const bgs = ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'], clickZone = document.getElementById("clickZone");
     bgs.forEach(id => {
@@ -2190,8 +2383,13 @@ function triggerImpact(isTarget, isSuperCritical) {
 }
 
 function doClick(event, isTarget = false) {
-    playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); if(activeBoosts.luck > 0) baseChance *= 5;
-    const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
+    playClickSound(); 
+    let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); 
+    if(equippedCosmetic === "SkullBee") baseChance += 0.08; 
+    if(activeBoosts.luck > 0) baseChance *= 5;
+    
+    const superCriticalChance = Math.random() < baseChance; 
+    let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
     if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
     updateMissionProgress('honey_gain', g);
