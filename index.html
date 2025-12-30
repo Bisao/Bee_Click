@@ -621,7 +621,7 @@ input[type=range]::-webkit-slider-thumb {
     
     <div style="display: flex; flex-direction: column; gap: 10px; width: 280px; z-index: 10;">
         <button style="font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
-        <button id="btnChangelog" style="background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openChangelog()">O QUE MUDOU?</button>
+        <button id="btnChangelog" class="btn-chromatic-pulse" style="background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openChangelog()">O QUE MUDOU?</button>
         
         <div class="pwa-btn-container">
             <button style="flex: 1; background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openModal('settingsModal')">
@@ -726,7 +726,7 @@ input[type=range]::-webkit-slider-thumb {
                       <img src="Bee.png" class="skin-preview">
                       <b>Comum</b>
                     </button>
-                    <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleBackground('NoelBee')">
+                    <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')">
                       <img src="NoelBee.png" class="skin-preview">
                       <b>Noel (+15%)</b>
                     </button>
@@ -767,7 +767,7 @@ input[type=range]::-webkit-slider-thumb {
                       <div class="game-card-header">
                           <div class="game-icon">🍯</div>
                           <div class="game-meta">
-                              <div class="game-title">Honey Rain (v3.1)</div>
+                              <div class="game-title">Honey Rain (v4.5)</div>
                               <div class="game-record">RECORD: <span id="rainRecordDisplay">0</span></div>
                           </div>
                       </div>
@@ -793,7 +793,7 @@ input[type=range]::-webkit-slider-thumb {
                       <div class="game-card-header">
                           <div class="game-icon">🌸</div>
                           <div class="game-meta">
-                              <div class="game-title">Flower Flight</div>
+                              <div class="game-title">Bee Flight</div>
                               <div class="game-record">RECORD: <span id="flightRecordDisplay">0</span></div>
                           </div>
                       </div>
@@ -849,6 +849,7 @@ input[type=range]::-webkit-slider-thumb {
     <div id="mgResultScreen">
         <h1 id="mgResultTitle">FIM DE JOGO</h1>
         <p style="font-size: 20px; margin-bottom: 5px;">Pontuação: <span id="mgResultScore">0</span></p>
+        <p id="mgResultBoosts" style="color: #4caf50; font-weight: 800; font-size: 14px; margin-bottom: 5px;"></p>
         <p id="mgResultReward" style="color: var(--accent); font-weight: 800; margin-bottom: 20px;"></p>
         <button onclick="closeMgResult()" style="width: 200px; background: var(--xp-bar); color: white;">REIVINDICAR</button>
     </div>
@@ -875,6 +876,84 @@ input[type=range]::-webkit-slider-thumb {
 
     <div id="flightControls" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;" ontouchstart="flightJump()" onmousedown="flightJump()"></div>
     <div id="flightHint" style="display: none; color: white; margin-top: 10px; font-weight: 800; opacity: 0.6;">TOQUE PARA SUBIR</div>
+</div>
+
+<div class="modal" id="flightPreGameModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>BEE FLIGHT 🌸</span>
+            <span style="cursor:pointer" onclick="closeModal('flightPreGameModal')">✖</span>
+        </div>
+        <div class="modal-content-scroll" style="text-align: center;">
+            <img src="Bee.png" style="width: 80px; margin-bottom: 15px;">
+            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
+            <p style="font-size:14px; opacity:0.8;">Toque na tela ou pressione Espaço para voar e desviar dos canos.</p>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
+                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
+                <div style="font-size:12px; line-height:1.6;">
+                    • 120x Mel por ponto.<br>
+                    • 20% do Mel convertido em XP.<br>
+                    • <b>BOOSTS (A cada 50 pts):</b> Pegue itens entre os canos para ganhar Mel 3x, Velocidade 2x, XP 5x ou Sorte 5x (30s) após o jogo!
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('flightPreGameModal'); startMinigameActual('flight');" style="background:var(--xp-bar); color:white;">COMEÇAR VOO!</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="snakePreGameModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>BEE-LINE 🐍</span>
+            <span style="cursor:pointer" onclick="closeModal('snakePreGameModal')">✖</span>
+        </div>
+        <div class="modal-content-scroll" style="text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 15px;">🍎</div>
+            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
+            <p style="font-size:14px; opacity:0.8;">Use o D-Pad ou as setas do teclado para guiar a abelha e coletar as maçãs.</p>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
+                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
+                <div style="font-size:12px; line-height:1.6;">
+                    • 50x Mel por maçã coletada.<br>
+                    • Ganho de XP proporcional à pontuação final.<br>
+                    • <b>NOVIDADE:</b> Boosts aleatórios aparecem a cada 40s! Você tem 5s para pegá-los!
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('snakePreGameModal'); startMinigameActual('snake');" style="background:var(--xp-bar); color:white;">INICIAR COLETA!</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="rainPreGameModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>HONEY RAIN 🌦️</span>
+            <span style="cursor:pointer" onclick="closeModal('rainPreGameModal')">✖</span>
+        </div>
+        <div class="modal-content-scroll" style="text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 15px;">🍯</div>
+            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
+            <p style="font-size:14px; opacity:0.8;">Toque nos potes de mel que caem do céu.</p>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
+                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS & PERIGOS:</h4>
+                <div style="font-size:12px; line-height:1.6;">
+                    • 180x Mel por cada pote coletado.<br>
+                    • <b>CUIDADO:</b> A abelha pode soltar <b>BOMBAS (💣)</b>! Se clicar nela, explode e você perde uma vida.<br>
+                    • <b>SORTE REAIS:</b> 8% de chance de soltar um **BOOST de 30s** aleatório!
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('rainPreGameModal'); startMinigameActual('rain');" style="background:var(--xp-bar); color:white;">COLETAR MEL!</button>
+        </div>
+    </div>
 </div>
 
 <div class="modal" id="missionsModal">
@@ -1095,48 +1174,48 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
-        version: "5.9.0",
-        title: "🐝 REFINO DE COLETA",
+        version: "6.7.0",
+        title: "🍀 SORTE NA CHUVA",
         changes: [
-            { type: "mod", text: "Ganho base por clique reduzido de 1 para 0.2 para aumentar o valor dos upgrades." },
-            { type: "mod", text: "Curva de progresso inicial agora é mais focada em estratégia de upgrades e missões." },
-            { type: "mod", text: "Ajuste na visualização de bônus flutuantes para números pequenos." }
+            { type: "add", text: "Minijogo Honey Rain agora tem 8% de chance de soltar Boosts aleatórios de 30s." },
+            { type: "mod", text: "Melhoria na sincronia de colisão dos itens especiais no Honey Rain." },
+            { type: "fix", text: "Ajuste na visualização do recorde para suportar novos multiplicadores." }
         ]
     },
     {
-        version: "5.8.0",
-        title: "🛠️ CORREÇÃO DE SEGURANÇA REAL",
+        version: "6.6.0",
+        title: "🐍 REFORMA NA SNAKE",
         changes: [
-            { type: "fix", text: "Corrigido erro onde missões de 'Automatização' podiam ser completadas sem o desbloqueio do Auto-Mel." },
-            { type: "mod", text: "Recompensas de missões balanceadas para acompanhar os novos custos de upgrades (1200+)." },
-            { type: "fix", text: "Adicionada trava lógica: Missões de upgrade agora exigem posse do item para progredir." }
+            { type: "mod", text: "Velocidade inicial da Bee-Line reduzida para 320ms (mais controle)." },
+            { type: "add", text: "Sistema de Boosts na Snake: Itens aleatórios aparecem a cada 40s e ficam por 5s." },
+            { type: "mod", text: "Aceleração da Snake ajustada para a nova velocidade base." }
         ]
     },
     {
-        version: "5.7.0",
-        title: "🕹️ ECONOMIA DOS JOGOS",
+        version: "6.5.0",
+        title: "💣 PERIGO NO HONEY RAIN",
         changes: [
-            { type: "mod", text: "Multiplicadores de mel em minigames ajustados para garantir longevidade econômica." },
-            { type: "mod", text: "Ganho de XP em minigames reduzido de 50% para 20% da produção de mel." },
-            { type: "mod", text: "Honey Rain recalibrado para 180x e Flower Flight para 120x." }
+            { type: "add", text: "Nova mecânica: A abelha agora solta Bombas (35% de chance) no minijogo Honey Rain." },
+            { type: "add", text: "Efeito visual de explosão e perda de vida ao clicar nas bombas." },
+            { type: "add", text: "Partículas de mel adicionadas ao coletar itens com sucesso." }
         ]
     },
     {
-        version: "5.6.0",
-        title: "📈 RECALIBRAGEM DE MERCADO",
+        version: "6.4.0",
+        title: "🍯 TUTORIAL HONEY RAIN",
         changes: [
-            { type: "mod", text: "Valores iniciais de Upgrades aumentados para tornar a progressão inicial mais significativa." },
-            { type: "mod", text: "Novos preços base: Clique (1200), Auto (5600) e Sorte (6400)." },
-            { type: "mod", text: "Balanceamento aplicado para incentivar o uso de minijogos e missões no early game." }
+            { type: "add", text: "Painel informativo implementado para o minijogo Honey Rain." },
+            { type: "mod", text: "Padronização completa de todos os fluxos de início de jogo." },
+            { type: "fix", text: "Correção na velocidade de queda dos potes em níveis elevados." }
         ]
     },
     {
-        version: "5.5.0",
-        title: "🛡️ BALANCEAMENTO DE MISSÕES",
+        version: "6.3.0",
+        title: "🕹️ TUTORIAL BEE-LINE",
         changes: [
-            { type: "mod", text: "Objetivos de missões agora escalam de forma não linear para evitar facilidade no início." },
-            { type: "mod", text: "Recompensas de mel e XP ajustadas para acompanhar o novo nível de dificuldade." },
-            { type: "fix", text: "Correção no multiplicador de 'Mira Real' para níveis baixos." }
+            { type: "add", text: "Novo painel informativo para o jogo Bee-Line (Snake) antes da partida." },
+            { type: "mod", text: "Padronização das telas de tutorial para todos os minijogos." },
+            { type: "fix", text: "Melhoria na sincronia visual do D-Pad durante movimentos rápidos." }
         ]
     }
 ];
@@ -1169,11 +1248,10 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V1");
-    const hasSeenNewest = localStorage.getItem("BeeKind_HasSeenChangelog_V5.9");
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V8"); // Incrementado para V8
     const btn = document.getElementById("btnChangelog");
 
-    if(lastSeen !== currentVersion && hasSeenNewest !== "true") {
+    if(!lastSeen || lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
         btn.classList.remove("btn-chromatic-pulse");
@@ -1182,8 +1260,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V1", currentVersion);
-    localStorage.setItem("BeeKind_HasSeenChangelog_V5.9", "true"); 
+    localStorage.setItem("BeeKind_LastVersionSeen_V8", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1200,7 +1277,6 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-// AJUSTE DE GANHO INICIAL (V5.9.0)
 let honey = 0, totalHoneyEver = 0, hPerClick = 0.2, clickCost = 1200, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 5600;
 let clickLvl = 1, autoLvlLvl = 1; 
@@ -1231,13 +1307,21 @@ let mgSpeed = 150;
 let snake = [];
 let snakeFood = {x: 0, y: 0};
 let sdx = 20, sdy = 0, snextDx = 20, snextDy = 0;
+let snakeBoost = null; 
+let snakeBoostTimer = 0; 
+let snakeBoostLife = 0; 
 const snakeCanvas = document.getElementById("snakeCanvas");
 const snakeCtx = snakeCanvas.getContext("2d");
 
+// BEE FLIGHT CONFIG
 let fBeeY = 150, fVelocity = 0, fGravity = 0.5, fJump = -7;
 let fPipes = [];
+let fBoosts = []; 
+let fCollectedBoosts = []; 
 const flightCanvas = document.getElementById("flightCanvas");
 const flightCtx = flightCanvas.getContext("2d");
+const beeSprite = new Image();
+beeSprite.src = 'Bee.png';
 
 const rainCanvas = document.getElementById("rainCanvas");
 const rainCtx = rainCanvas.getContext("2d");
@@ -1307,6 +1391,18 @@ function applyTheme() {
 }
 
 function prepareMinigame(type) {
+    if(type === 'flight') {
+        openModal('flightPreGameModal');
+    } else if(type === 'snake') {
+        openModal('snakePreGameModal');
+    } else if(type === 'rain') {
+        openModal('rainPreGameModal');
+    } else {
+        startMinigameActual(type);
+    }
+}
+
+function startMinigameActual(type) {
     activeMG = type;
     document.getElementById("minigameOverlay").style.display = "flex";
     document.getElementById("mgResultScreen").style.display = "none";
@@ -1333,7 +1429,8 @@ function startMG() {
     if(activeMG === 'snake') {
         document.getElementById("snakeCanvas").style.display = "block";
         document.getElementById("snakeControls").style.display = "grid";
-        mgSpeed = 150; initSnake();
+        mgSpeed = 320; 
+        initSnake();
     } else if(activeMG === 'flight') {
         document.getElementById("flightCanvas").style.display = "block";
         document.getElementById("flightControls").style.display = "block";
@@ -1358,11 +1455,25 @@ function initRain() {
         const mouseY = (e.clientY - rect.top) * (300 / rect.height);
         rDrops.forEach((d, i) => {
             const dist = Math.sqrt((mouseX - d.x)**2 + (mouseY - d.y)**2);
-            if(dist < 22) { 
-                rDrops.splice(i, 1);
-                mgScore++;
-                document.getElementById("mgCurrentScore").textContent = mgScore;
-                playClickSound();
+            if(dist < 25) { 
+                if(d.isBomb) {
+                    rHearts--;
+                    updateRainHearts();
+                    createRainParticles(d.x, d.y, "#ff0000", 20); 
+                    rDrops.splice(i, 1);
+                    if(rHearts <= 0) finishMG();
+                } else if(d.isBoost) { // NOVO: Lógica de coleta de Boost no Rain
+                    fCollectedBoosts.push({type: d.boostType, icon: d.boostIcon});
+                    createRainParticles(d.x, d.y, "#ffffff", 15);
+                    playClickSound();
+                    rDrops.splice(i, 1);
+                } else {
+                    rDrops.splice(i, 1);
+                    mgScore++;
+                    document.getElementById("mgCurrentScore").textContent = mgScore;
+                    createRainParticles(d.x, d.y, "#ffcc00", 12); 
+                    playClickSound();
+                }
             }
         });
     };
@@ -1370,8 +1481,24 @@ function initRain() {
     mgInterval = setInterval(drawRain, 20);
 }
 
+function createRainParticles(x, y, color, count) {
+    for(let i=0; i<count; i++) {
+        const p = document.createElement("div");
+        p.className = "honey-particle";
+        p.style.background = color;
+        p.style.left = `calc(50vw - 150px + ${x}px)`;
+        p.style.top = `calc(50vh - 150px + ${y}px)`;
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 50 + 20;
+        p.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 500);
+    }
+}
+
 function updateRainHearts() {
-    document.getElementById("rainHearts").textContent = "❤️".repeat(rHearts);
+    document.getElementById("rainHearts").textContent = "❤️".repeat(Math.max(0, rHearts));
 }
 
 function drawRain() {
@@ -1397,26 +1524,41 @@ function drawRain() {
             rainCtx.drawImage(rainBeeSprite, rBeeX, 10 + rBeeYOffset, 40, 40);
         }
         rainCtx.restore();
-    } else {
-        rainCtx.fillStyle = varProp('--accent');
-        rainCtx.fillRect(rBeeX, 15 + rBeeYOffset, 30, 20);
     }
     rSpawnTimer++;
-    const spawnThreshold = Math.max(12, 50 - Math.floor(mgScore/4));
+    const spawnThreshold = Math.max(10, 45 - Math.floor(mgScore/4));
     if(rSpawnTimer > spawnThreshold) {
-        rDrops.push({ x: rBeeX + 20, y: 45 + rBeeYOffset });
+        const rng = Math.random();
+        let isBomb = rng < 0.35;
+        let isBoost = !isBomb && rng < 0.43; // 8% de chance se não for bomba (0.43 - 0.35 = 0.08)
+        
+        let drop = { x: rBeeX + 20, y: 45 + rBeeYOffset, isBomb: isBomb, isBoost: isBoost };
+        
+        if(isBoost) {
+            const types = ['pepper', 'energy', 'flower', 'luck'];
+            const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+            drop.boostType = types[Math.floor(Math.random() * types.length)];
+            drop.boostIcon = icons[drop.boostType];
+        }
+        
+        rDrops.push(drop);
         rSpawnTimer = 0;
     }
     rDrops.forEach((d, i) => {
         d.y += rDropSpeed;
         rainCtx.font = "24px Arial";
         rainCtx.textAlign = "center";
-        rainCtx.fillText("🍯", d.x, d.y);
+        
+        let icon = d.isBomb ? "💣" : (d.isBoost ? d.boostIcon : "🍯");
+        rainCtx.fillText(icon, d.x, d.y);
+        
         if(d.y > 295) {
             rDrops.splice(i, 1);
-            rHearts--;
-            updateRainHearts();
-            if(rHearts <= 0) finishMG();
+            if(!d.isBomb && !d.isBoost) { 
+                rHearts--;
+                updateRainHearts();
+                if(rHearts <= 0) finishMG();
+            }
         }
     });
     rDropSpeed = 1.5 + (mgScore * 0.04);
@@ -1425,7 +1567,9 @@ function drawRain() {
 function initSnake() {
     snakeCanvas.width = 300; snakeCanvas.height = 300;
     snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
-    sdx = 20; sdy = 0; snextDx = 20; snextDy = 0; createSnakeFood(); startSnakeLoop();
+    sdx = 20; sdy = 0; snextDx = 20; snextDy = 0;
+    snakeBoost = null; snakeBoostTimer = 0; snakeBoostLife = 0; 
+    createSnakeFood(); startSnakeLoop();
 }
 
 function startSnakeLoop() { if(mgInterval) clearInterval(mgInterval); mgInterval = setInterval(drawSnake, mgSpeed); }
@@ -1435,18 +1579,64 @@ function createSnakeFood() {
     snakeFood.y = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20;
 }
 
+function spawnSnakeBoost() {
+    const types = ['pepper', 'energy', 'flower', 'luck'];
+    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+    const type = types[Math.floor(Math.random() * types.length)];
+    
+    let bx, by;
+    let valid = false;
+    while(!valid) {
+        bx = Math.floor(Math.random() * (snakeCanvas.width / 20)) * 20;
+        by = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20;
+        valid = !snake.some(s => s.x === bx && s.y === by) && (bx !== snakeFood.x || by !== snakeFood.y);
+    }
+    
+    snakeBoost = { x: bx, y: by, type: type, icon: icons[type] };
+    snakeBoostLife = 5000; 
+}
+
 function drawSnake() {
+    snakeBoostTimer += mgSpeed;
+    if(snakeBoostTimer >= 40000) { 
+        spawnSnakeBoost();
+        snakeBoostTimer = 0;
+    }
+    
+    if(snakeBoost) {
+        snakeBoostLife -= mgSpeed;
+        if(snakeBoostLife <= 0) snakeBoost = null;
+    }
+
     sdx = snextDx; sdy = snextDy;
     const head = {x: snake[0].x + sdx, y: snake[0].y + sdy};
     if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height || snake.some(s => s.x === head.x && s.y === head.y)) { finishMG(); return; }
+    
     snake.unshift(head);
+    
     if(head.x === snakeFood.x && head.y === snakeFood.y) {
         mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore;
-        createSnakeFood(); if(mgScore % 2 === 0 && mgSpeed > 60) { mgSpeed *= 0.97; startSnakeLoop(); }
-    } else snake.pop();
+        createSnakeFood(); 
+        if(mgScore % 2 === 0 && mgSpeed > 60) { mgSpeed *= 0.97; startSnakeLoop(); }
+    } 
+    else if(snakeBoost && head.x === snakeBoost.x && head.y === snakeBoost.y) {
+        fCollectedBoosts.push({type: snakeBoost.type, icon: snakeBoost.icon});
+        playClickSound();
+        snakeBoost = null;
+    }
+    else snake.pop();
+
     snakeCtx.fillStyle = "#000"; snakeCtx.fillRect(0, 0, 300, 300);
+    
     snakeCtx.fillStyle = "#ff4757"; snakeCtx.beginPath();
     snakeCtx.arc(snakeFood.x + 10, snakeFood.y + 10, 8, 0, Math.PI * 2); snakeCtx.fill();
+    
+    if(snakeBoost) {
+        snakeCtx.font = "16px Arial";
+        snakeCtx.textAlign = "center";
+        snakeCtx.fillText(snakeBoost.icon, snakeBoost.x + 10, snakeBoost.y + 15);
+    }
+
     snake.forEach((p, i) => {
         snakeCtx.fillStyle = i === 0 ? varProp('--accent') : "rgba(255,255,255,0.4)";
         snakeCtx.fillRect(p.x, p.y, 18, 18);
@@ -1464,28 +1654,66 @@ function changeSnakeDir(dir) {
 
 function initFlight() {
     flightCanvas.width = 300; flightCanvas.height = 300;
-    fBeeY = 150; fVelocity = 0; fPipes = [];
+    fBeeY = 150; fVelocity = 0; fPipes = []; fBoosts = []; fCollectedBoosts = [];
     if(mgInterval) clearInterval(mgInterval); mgInterval = setInterval(drawFlight, 30);
 }
 
 function flightJump() { if(mgRunning && activeMG === 'flight') fVelocity = fJump; }
 
+function spawnFlightBoost(x, gapY, gapH) {
+    const types = ['pepper', 'energy', 'flower', 'luck'];
+    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+    const type = types[Math.floor(Math.random() * types.length)];
+    fBoosts.push({
+        x: x + 10,
+        y: gapY + (gapH / 2) - 10,
+        type: type,
+        icon: icons[type]
+    });
+}
+
 function drawFlight() {
     fVelocity += fGravity; fBeeY += fVelocity;
     if(fBeeY < 0 || fBeeY > 285) { finishMG(); return; }
+    
     if(fPipes.length === 0 || fPipes[fPipes.length-1].x < 150) {
         let gap = 110; let topH = Math.random() * (180 - gap) + 20;
-        fPipes.push({x: 350, topH: topH, gap: gap, passed: false});
+        let newX = 350;
+        fPipes.push({x: newX, topH: topH, gap: gap, passed: false, boostSpawned: false});
+        
+        if(mgScore > 0 && mgScore % 50 === 0 && !fPipes[fPipes.length-1].boostSpawned) {
+             spawnFlightBoost(newX, topH, gap);
+             fPipes[fPipes.length-1].boostSpawned = true;
+        }
     }
+    
     flightCtx.fillStyle = "#000"; flightCtx.fillRect(0, 0, 300, 300);
-    flightCtx.fillStyle = varProp('--accent'); flightCtx.fillRect(40, fBeeY, 20, 15);
+    
+    if(beeSprite.complete) {
+        flightCtx.drawImage(beeSprite, 40, fBeeY, 25, 25);
+    }
+    
     fPipes.forEach((p, i) => {
         p.x -= 3; flightCtx.fillStyle = "rgba(255,255,255,0.2)";
         flightCtx.fillRect(p.x, 0, 40, p.topH); flightCtx.fillRect(p.x, p.topH + p.gap, 40, 300);
-        if(p.x < 60 && p.x + 40 > 40) if(fBeeY < p.topH || fBeeY + 15 > p.topH + p.gap) { finishMG(); return; }
+        if(p.x < 65 && p.x + 40 > 40) if(fBeeY < p.topH || fBeeY + 20 > p.topH + p.gap) { finishMG(); return; }
         if(!p.passed && p.x < 40) { p.passed = true; mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore; }
     });
+
+    fBoosts.forEach((b, i) => {
+        b.x -= 3;
+        flightCtx.font = "20px Arial";
+        flightCtx.fillText(b.icon, b.x, b.y + 15);
+        
+        if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) {
+            fCollectedBoosts.push(b); 
+            playClickSound();
+            fBoosts.splice(i, 1);
+        }
+    });
+    
     fPipes = fPipes.filter(p => p.x > -50);
+    fBoosts = fBoosts.filter(b => b.x > -50);
 }
 
 function finishMG() {
@@ -1496,29 +1724,55 @@ function finishMG() {
         updateRecordsUI(); 
     }
     updateMissionProgress('mg_score', mgScore);
+    
     let multiplier = 50; 
     if(activeMG === 'flight') multiplier = 120; 
     if(activeMG === 'rain') multiplier = 180; 
+    
     let hGain = mgScore * multiplier * (1 + level * 0.1);
     let xGain = hGain * 0.20; 
-    honey = validateNum(honey + hGain); addXP(xGain);
+    
     document.getElementById("mgResultScore").textContent = mgScore;
     document.getElementById("mgResultReward").innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
+    
+    const boostDisplay = document.getElementById("mgResultBoosts");
+    if(fCollectedBoosts.length > 0) {
+        let icons = fCollectedBoosts.map(b => b.icon).join(' ');
+        boostDisplay.innerHTML = `BOOSTS COLETADOS: ${icons} (30s cada)`;
+    } else {
+        boostDisplay.innerHTML = "";
+    }
+
     document.getElementById("mgResultScreen").style.display = "flex";
-    updateUI(); executeSave();
+    activeMGData = { hGain, xGain, boosts: [...fCollectedBoosts] };
+}
+
+let activeMGData = null;
+
+function closeMgResult() { 
+    if(activeMGData) {
+        honey = validateNum(honey + activeMGData.hGain); 
+        addXP(activeMGData.xGain);
+        activeMGData.boosts.forEach(b => {
+            activeBoosts[b.type] += 300; 
+        });
+        updateUI(); 
+        executeSave();
+        activeMGData = null;
+    }
+    document.getElementById("minigameOverlay").style.display = "none"; 
 }
 
 function updateRecordsUI() {
-    document.getElementById("snakeRecordDisplay").textContent = records.snake;
-    document.getElementById("flightRecordDisplay").textContent = records.flight;
     document.getElementById("rainRecordDisplay").textContent = records.rain || 0;
+    document.getElementById("snakeRecordDisplay").textContent = records.snake || 0;
+    document.getElementById("flightRecordDisplay").textContent = records.flight || 0;
 }
 
 function exitMinigame() { 
     clearInterval(mgInterval); mgRunning = false; 
     document.getElementById("minigameOverlay").style.display = "none"; 
 }
-function closeMgResult() { document.getElementById("minigameOverlay").style.display = "none"; }
 
 function updateVolume(type) {
     tryPlayMusic();
