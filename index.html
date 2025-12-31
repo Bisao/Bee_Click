@@ -29,7 +29,6 @@
   --panel-blur: blur(15px);
 }
 
-/* OTIMIZAÇÃO MOBILE: Impede zoom e comportamentos nativos */
 *{ 
     box-sizing:border-box; 
     user-select:none; 
@@ -192,30 +191,35 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     box-shadow: none !important;
     font-size: 13px !important;
     font-weight: 700 !important;
+    position: relative;
+    border-radius: 18px !important;
 }
 
-/* BOTÃO CROMÁTICO PULSANTE REFINADO */
+/* CORREÇÃO: CONTORNO CROMÁTICO PULSANTE */
 .btn-chromatic-pulse {
-    position: relative;
-    z-index: 10;
+    border: none !important; /* Remove borda original para não conflitar */
 }
+
 .btn-chromatic-pulse::before {
-    content: '';
+    content: "";
     position: absolute;
-    inset: -3px;
-    border-radius: 20px;
-    padding: 3px;
+    top: -3px; left: -3px; right: -3px; bottom: -3px;
     background: linear-gradient(90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
     background-size: 400% 400%;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    border-radius: 20px; /* Um pouco maior que o botão */
+    z-index: -1;
+    animation: chromaticRotate 3s linear infinite, glowPulse 1.5s ease-in-out infinite;
+    /* Efeito de Máscara para manter apenas o contorno */
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
     -webkit-mask-composite: destination-out;
     mask-composite: exclude;
-    animation: chromaticRotate 3s linear infinite, glowPulse 1.5s ease-in-out infinite;
+    padding: 3px; /* Espessura da borda */
 }
 
 @keyframes chromaticRotate { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-@keyframes glowPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes glowPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
 .letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: inherit; }
 .tree-overlay {
@@ -1309,42 +1313,41 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "8.9.1",
+        title: "✨ REFINAMENTO VISUAL",
+        changes: [
+            { type: "fix", text: "Botão Novidades: O contorno cromático foi ajustado para ser apenas uma borda fina e pulsante, sem cobrir o fundo." },
+            { type: "mod", text: "Otimização de Máscaras: Implementado sistema de clipping para garantir bordas suaves em dispositivos mobile." }
+        ]
+    },
+    {
+        version: "8.8.0",
+        title: "🛡️ COLETA GARANTIDA",
+        changes: [
+            { type: "add", text: "Missões Esquecidas: Agora, recompensas concluídas e não coletadas do dia anterior aparecem no Painel de Descanso." },
+            { type: "fix", text: "Consistência de Reset: O sistema de reset das 22h agora garante a entrega de prêmios antes de gerar novas tarefas." }
+        ]
+    },
+    {
+        version: "8.7.0",
+        title: "📈 AJUSTE DE ECONOMIA",
+        changes: [
+            { type: "mod", text: "Inflação Controlada: Os custos de upgrades foram recalibrados para manter o desafio constante." }
+        ]
+    },
+    {
         version: "8.6.0",
         title: "✨ VISUAL PREMIUM",
         changes: [
             { type: "add", text: "Parallax Suave: Efeito de profundidade com nuvens em movimento na tela inicial." },
-            { type: "add", text: "Glassmorphism: Botões secundários agora usam o moderno efeito de vidro fosco." },
-            { type: "mod", text: "UX Refinada: Tipografia e sombras melhoradas para um look mais profissional." },
-            { type: "mod", text: "Hierarquia Visual: Botão de JOGAR agora tem destaque máximo com gradientes." }
+            { type: "add", text: "Glassmorphism: Botões secundários agora usam o moderno efeito de vidro fosco." }
         ]
     },
     {
         version: "8.5.0",
-        title: "📈 INFLAÇÃO DINÂMICA",
+        title: "🐍 BEE-LINE BOOSTS",
         changes: [
-            { type: "mod", text: "Economia Real: Preços de Upgrades e Boosts agora escalam com seu Poder de Clique." },
-            { type: "mod", text: "Balanceamento de Boosts: Bônus moderados para uma progressão mais justa." }
-        ]
-    },
-    {
-        version: "8.4.0",
-        title: "⚖️ EQUILÍBRIO ADAPTATIVO",
-        changes: [
-            { type: "mod", text: "Missões Dinâmicas: Metas de cliques agora escalam com seu Poder de Clique atual." }
-        ]
-    },
-    {
-        version: "8.3.0",
-        title: "📋 AGENDA REAL ROBUSTA",
-        changes: [
-            { type: "add", text: "Novo Sistema de Missões: Objetivos variados para cada minijogo." }
-        ]
-    },
-    {
-        version: "8.2.0",
-        title: "📢 FILA DE NOTIFICAÇÕES",
-        changes: [
-            { type: "add", text: "Fila de Notificações Inteligente: As mensagens agora aparecem em ordem sem se sobrepor." }
+            { type: "add", text: "Novos Power-ups aleatórios aparecem durante as partidas de Snake!" }
         ]
     }
 ];
@@ -1377,7 +1380,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V27"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V29"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1389,7 +1392,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V27", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V29", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -2333,15 +2336,31 @@ const missionTemplates = [
 ];
 
 function checkMissionReset() {
-    const now = new Date(), resetHour = 22; 
-    let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0);
-    if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
+    const now = new Date();
+    const resetHour = 22; 
+    let resetLimit = new Date();
+    resetLimit.setHours(resetHour, 0, 0, 0);
+
+    if (now.getHours() < resetHour) {
+        resetLimit.setDate(resetLimit.getDate() - 1);
+    }
+
+    if (lastMissionReset < resetLimit.getTime()) {
+        let forgottenHoney = 0;
+        let forgottenXP = 0;
+        
         dailyMissions.forEach(m => {
             if (m.completed && !m.collected) {
-                honey = validateNum(honey + m.rewardHoney);
-                addXP(m.rewardXP);
+                forgottenHoney += m.rewardHoney;
+                forgottenXP += m.rewardXP;
             }
         });
+
+        if (forgottenHoney > 0) {
+            pendingOfflineHoney += forgottenHoney;
+            pendingOfflineXP += forgottenXP;
+        }
+
         generateDailyMissions(); 
         lastMissionReset = now.getTime(); 
         executeSave(); 
@@ -2371,36 +2390,16 @@ function createSingleMission(tmp, scaleFactor, powerScale) {
     let target = 0;
     
     switch(tmp.type) {
-        case 'clicks': 
-            target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); 
-            break;
-        case 'target_clicks': 
-            target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); 
-            break;
-        case 'honey_gain': 
-            target = Math.ceil(tmp.baseGoal * hPerClick * scaleFactor * 10); 
-            break;
-        case 'xp_gain': 
-            target = Math.ceil(tmp.baseGoal * scaleFactor * 3); 
-            break;
-        case 'buy_upgrade': 
-            target = Math.ceil(tmp.baseGoal + Math.floor(level/15)); 
-            break;
-        case 'play_time': 
-            target = Math.ceil(tmp.baseGoal * (1 + level * 0.1)); 
-            break;
-        case 'mg_item_collect': 
-            target = Math.ceil(tmp.baseGoal * (1 + level * 0.05)); 
-            break;
-        case 'mg_kills': 
-            target = Math.ceil(tmp.baseGoal * (1 + level * 0.15)); 
-            break;
-        case 'mg_boost_collect': 
-            target = Math.ceil(tmp.baseGoal); 
-            break;
-        case 'mg_session_finished': 
-            target = Math.ceil(tmp.baseGoal); 
-            break;
+        case 'clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); break;
+        case 'target_clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); break;
+        case 'honey_gain': target = Math.ceil(tmp.baseGoal * hPerClick * scaleFactor * 10); break;
+        case 'xp_gain': target = Math.ceil(tmp.baseGoal * scaleFactor * 3); break;
+        case 'buy_upgrade': target = Math.ceil(tmp.baseGoal + Math.floor(level/15)); break;
+        case 'play_time': target = Math.ceil(tmp.baseGoal * (1 + level * 0.1)); break;
+        case 'mg_item_collect': target = Math.ceil(tmp.baseGoal * (1 + level * 0.05)); break;
+        case 'mg_kills': target = Math.ceil(tmp.baseGoal * (1 + level * 0.15)); break;
+        case 'mg_boost_collect': target = Math.ceil(tmp.baseGoal); break;
+        case 'mg_session_finished': target = Math.ceil(tmp.baseGoal); break;
     }
     
     const clickValue = hPerClick * getGlobalBonus();
@@ -2715,7 +2714,7 @@ function startGameTicks() {
 }
 
 function executeSave(){ 
-    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress}; 
+    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
     const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
@@ -2724,10 +2723,12 @@ function executeSave(){
 function checkOfflineGains(lastTimestamp) {
     if (!autoUnlocked) return; const now = Date.now(); 
     const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
-    if (diffInSeconds < 60) return; 
+    if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; 
+    
     const offlineIconEl = document.getElementById("offlineIcon");
     const offlineTitleEl = document.getElementById("offlineTitle");
     const btnCollect = document.getElementById("btnCollectOffline");
+    
     if (diffInSeconds > 604800) {
         pendingOfflineHoney = 0; pendingOfflineXP = 0;
         offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)";
@@ -2736,14 +2737,20 @@ function checkOfflineGains(lastTimestamp) {
         btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f";
         return;
     }
+    
     offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
     offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit";
     btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)";
+    
     const mps = getMPSBase() * getGlobalBonus(); 
-    pendingOfflineHoney = Math.floor(mps * diffInSeconds * 0.7); 
-    pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.2);
+    const calculatedHoney = Math.floor(mps * diffInSeconds * 0.7); 
+    const calculatedXP = Math.floor(calculatedHoney * 0.2);
+    
+    pendingOfflineHoney += calculatedHoney;
+    pendingOfflineXP += calculatedXP;
+
     if (pendingOfflineHoney > 0) {
-        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas produziram mel para você.<br><br><b>Produção acumulada:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas produziram mel e coletaram prêmios de missões antigas para você.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
     }
 }
 
@@ -2766,6 +2773,8 @@ function load(){
             honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 0.2; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
             if(d.defenderProgress) defenderProgress = d.defenderProgress;
+            if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney;
+            if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP;
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
