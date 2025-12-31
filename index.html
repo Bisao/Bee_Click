@@ -1254,51 +1254,45 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "8.4.0",
+        title: "⚖️ EQUILÍBRIO ADAPTATIVO",
+        changes: [
+            { type: "mod", text: "Missões Dinâmicas: Metas de cliques agora escalam com seu Poder de Clique atual." },
+            { type: "mod", text: "Economia Real: Metas de coleta de mel agora levam em conta seus upgrades passivos e ativos." },
+            { type: "fix", text: "Recompensas: Ajustado o ganho de XP das missões para não quebrar a progressão em níveis altos." },
+            { type: "add", text: "Legenda: Missões que exigem esforço real agora mostram ícones de dificuldade variável." }
+        ]
+    },
+    {
+        version: "8.3.0",
+        title: "📋 AGENDA REAL ROBUSTA",
+        changes: [
+            { type: "add", text: "Novo Sistema de Missões: Objetivos variados para cada minijogo." },
+            { type: "add", text: "Desafios Dinâmicos: Metas de tempo, coleta de itens específicos e marcos de produção." },
+            { type: "mod", text: "Recompensas Escaladas: Ganhos maiores de Mel e XP baseados no seu nível atual." }
+        ]
+    },
+    {
         version: "8.2.0",
         title: "📢 FILA DE NOTIFICAÇÕES",
         changes: [
             { type: "add", text: "Fila de Notificações Inteligente: As mensagens agora aparecem em ordem sem se sobrepor." },
-            { type: "mod", text: "Tempo de exibição aumentado para 8 segundos por notificação para melhor leitura." },
-            { type: "fix", text: "Corrigido bug onde múltiplas conquistas simultâneas travavam o painel." }
+            { type: "mod", text: "Tempo de exibição aumentado para 8 segundos por notificação para melhor leitura." }
         ]
     },
     {
         version: "8.1.0",
         title: "🛡️ HIVE DEFENDER EVOLUÇÃO",
         changes: [
-            { type: "mod", text: "Minijogo renomeado para Hive Defender." },
             { type: "mod", text: "Novas Skins: Invasores comuns agora são Moscas (🪰) e Elites são Besouros (🪲)." },
-            { type: "mod", text: "Orientação Visual: Inimigos agora aparecem rotacionados em 180° para indicar invasão." },
-            { type: "fix", text: "Ajuste na renderização de texto e emojis em telas de alta densidade." }
+            { type: "mod", text: "Orientação Visual: Inimigos agora aparecem rotacionados em 180° para indicar invasão." }
         ]
     },
     {
         version: "8.0.0",
         title: "🛡️ VISUAL ELITE DEFENDER",
         changes: [
-            { type: "mod", text: "Vespas de Elite (Nível 4-7) agora usam skin amarela brilhante para facilitar a identificação." },
-            { type: "fix", text: "Ajuste na hitbox dos disparos duplos para maior precisão." },
-            { type: "mod", text: "Tutorial do Bee Defender atualizado com a nova legenda de inimigos." }
-        ]
-    },
-    {
-        version: "7.9.0",
-        title: "🛡️ PROGRESSÃO BEE DEFENDER",
-        changes: [
-            { type: "add", text: "Sistema de 7 Níveis: Progrida para enfrentar desafios maiores!" },
-            { type: "add", text: "Vespas de Elite (Nível 4-7): Inimigos da fileira superior precisam de 2 acertos." },
-            { type: "add", text: "Power-up Tiro Duplo: 8% de chance de drop para disparar 2 ferrões." },
-            { type: "mod", text: "Inatividade: O nível reseta para 1 se não jogar o minijogo em 24h." }
-        ]
-    },
-    {
-        version: "7.8.0",
-        title: "🛡️ AJUSTES BEE DEFENDER",
-        changes: [
-            { type: "add", text: "Player agora possui 3 vidas no Bee Defender. Ícone: 🐝." },
-            { type: "mod", text: "Vespas agora fazem mergulhos rasantes de ida e volta ao topo da tela." },
-            { type: "mod", text: "Fire Rate reduzido: o player agora tem um cooldown entre disparos." },
-            { type: "fix", text: "Otimização na lógica de colisão e spawn de balas inimigas." }
+            { type: "mod", text: "Vespas de Elite (Nível 4-7) agora usam skin amarela brilhante para facilitar a identificação." }
         ]
     }
 ];
@@ -1331,7 +1325,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V23"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V25"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1343,7 +1337,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V23", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V25", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1772,6 +1766,7 @@ function drawDefender() {
                 if(e.hp <= 0) {
                     e.alive = false;
                     mgScore++;
+                    updateMissionProgress('mg_kills', 1);
                     if(Math.random() < 0.08) dModDrops.push({x: e.x + 10, y: e.y});
 
                     if(Math.random() < 0.005) {
@@ -1821,9 +1816,11 @@ function initRain() {
                     createRainParticles(d.x, d.y, "#ffffff", 15);
                     playClickSound();
                     rDrops.splice(i, 1);
+                    updateMissionProgress('mg_boost_collect', 1);
                 } else {
                     rDrops.splice(i, 1);
                     mgScore++;
+                    updateMissionProgress('mg_item_collect', 1);
                     document.getElementById("mgCurrentScore").textContent = mgScore;
                     createRainParticles(d.x, d.y, "#ffcc00", 12); 
                     playClickSound();
@@ -1966,12 +1963,14 @@ function drawSnake() {
     snake.unshift(head);
     if(head.x === snakeFood.x && head.y === snakeFood.y) {
         mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore;
+        updateMissionProgress('mg_item_collect', 1);
         createSnakeFood(); 
         if(mgScore % 2 === 0 && mgSpeed > 60) { mgSpeed *= 0.97; startSnakeLoop(); }
     } 
     else if(snakeBoost && head.x === snakeBoost.x && head.y === snakeBoost.y) {
         fCollectedBoosts.push({type: snakeBoost.type, icon: snakeBoost.icon});
         updateMgLiveBoostsVisual(); 
+        updateMissionProgress('mg_boost_collect', 1);
         playClickSound();
         snakeBoost = null;
     }
@@ -2040,7 +2039,7 @@ function drawFlight() {
         p.x -= 3; flightCtx.fillStyle = "rgba(255,255,255,0.2)";
         flightCtx.fillRect(p.x, 0, 40, p.topH); flightCtx.fillRect(p.x, p.topH + p.gap, 40, 300);
         if(p.x < 65 && p.x + 40 > 40) if(fBeeY < p.topH || fBeeY + 20 > p.topH + p.gap) { finishMG(); return; }
-        if(!p.passed && p.x < 40) { p.passed = true; mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore; }
+        if(!p.passed && p.x < 40) { p.passed = true; mgScore++; updateMissionProgress('mg_item_collect', 1); document.getElementById("mgCurrentScore").textContent = mgScore; }
     });
     fBoosts.forEach((b, i) => {
         b.x -= 3;
@@ -2049,6 +2048,7 @@ function drawFlight() {
         if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) {
             fCollectedBoosts.push(b); 
             updateMgLiveBoostsVisual(); 
+            updateMissionProgress('mg_boost_collect', 1);
             playClickSound();
             fBoosts.splice(i, 1);
         }
@@ -2072,7 +2072,7 @@ function finishMG() {
         executeSave();
     }
     
-    updateMissionProgress('mg_score', mgScore);
+    updateMissionProgress('mg_session_finished', 1);
     
     let multiplier = 50; 
     if(activeMG === 'flight') multiplier = 120; 
@@ -2221,13 +2221,10 @@ let notificationQueue = [];
 let isProcessingNotifs = false;
 
 function notify(a) {
-    // Adiciona o objeto de notificação à fila
     notificationQueue.push({
         n: a.n,
         d: a.d ? a.d : ""
     });
-    
-    // Se não estiver processando, começa a processar
     if (!isProcessingNotifs) {
         processNextNotification();
     }
@@ -2238,27 +2235,19 @@ function processNextNotification() {
         isProcessingNotifs = false;
         return;
     }
-
     isProcessingNotifs = true;
     const currentNotif = notificationQueue.shift();
     const container = document.getElementById("notifContainer");
-    
-    // Limpa o container antes de adicionar a nova (v8.2.0 garante unicidade)
     container.innerHTML = "";
-    
     const div = document.createElement("div");
     div.className = "popup";
     div.textContent = `${currentNotif.n} ${currentNotif.d ? '(' + currentNotif.d + ')' : ''}`;
     container.appendChild(div);
-    
-    // Animação de 8 segundos (entrada, espera, saída)
     div.style.animation = "slideInNotif 8s ease-in-out forwards";
-
-    // Aguarda o tempo da animação acabar para chamar a próxima
     setTimeout(() => {
         if(div) div.remove();
         processNextNotification();
-    }, 8000); // 8 segundos exatos
+    }, 8000);
 }
 
 function startDynamicNotifications() {
@@ -2266,7 +2255,7 @@ function startDynamicNotifications() {
         if (!gameLoaded || document.getElementById('gameUI').style.opacity !== '1') return;
         let msg = lastNotifType === "fact" ? gameTips[Math.floor(Math.random() * gameTips.length)] : "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)];
         lastNotifType = lastNotifType === "fact" ? "tip" : "fact";
-        notify({n: msg}); // Agora usa a fila de notificações
+        notify({n: msg});
     }, 45000); 
 }
 
@@ -2275,17 +2264,20 @@ const boostBases = { pepper: 500, energy: 300, flower: 1000, luck: 1500 };
 const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
+// ==========================================
+// SISTEMA DE MISSÕES ADAPTATIVO (v8.4.0)
+// ==========================================
 const missionTemplates = [
-    { id: 'm1', type: 'clicks', title: "Dedos Ágeis", desc: "Clique {target} vezes na abelha", baseGoal: 100, rewardMult: 2.5 },
-    { id: 'm2', type: 'honey_gain', title: "Colheita Farta", desc: "Produza {target} de Mel", baseGoal: 500, rewardMult: 2.8 },
-    { id: 'm3', type: 'target_clicks', title: "Mira Real", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 3.2 },
-    { id: 'm4', type: 'buy_upgrade', title: "Mestre Engenheiro", desc: "Compre {target} Upgrades", baseGoal: 3, rewardMult: 4.2 },
-    { id: 'm5', type: 'xp_gain', title: "Sabedoria das Flores", desc: "Ganhe {target} de XP total", baseGoal: 1000, rewardMult: 2.6 },
-    { id: 'm6', type: 'play_time', title: "Voo de Longa Distância", desc: "Jogue ativamente por {target} segundos", baseGoal: 300, rewardMult: 3.0 },
-    { id: 'm7', type: 'mg_score', title: "Abelha Atleta", desc: "Faça {target} pontos totais em minigames", baseGoal: 20, rewardMult: 3.8 },
-    { id: 'm8', type: 'buy_upgrade', title: "Automatização", desc: "Melhore o Auto-Mel {target} vezes", baseGoal: 2, rewardMult: 4.8 },
-    { id: 'm9', type: 'target_clicks', title: "Precisão Cirúrgica", desc: "Acerte os alvos {target} vezes mais", baseGoal: 50, rewardMult: 3.5 },
-    { id: 'm10', type: 'clicks', title: "Lenda da Colmeia", desc: "Realize {target} cliques hoje", baseGoal: 500, rewardMult: 8.0 }
+    { id: 'm_click', type: 'clicks', title: "Ginástica de Asas", desc: "Clique na abelha {target} vezes", baseGoal: 100, rewardMult: 2.2 },
+    { id: 'm_honey', type: 'honey_gain', title: "Reserva de Inverno", desc: "Colete {target} de Mel total", baseGoal: 500, rewardMult: 2.5 },
+    { id: 'm_target', type: 'target_clicks', title: "Foco Absoluto", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 3.5 },
+    { id: 'm_time', type: 'play_time', title: "Voo de Reconhecimento", desc: "Fique no jogo por {target} segundos", baseGoal: 300, rewardMult: 3.0 },
+    { id: 'm_upg', type: 'buy_upgrade', title: "Evolução Necessária", desc: "Compre ou melhore {target} Upgrades", baseGoal: 3, rewardMult: 4.0 },
+    { id: 'm_mg_item', type: 'mg_item_collect', title: "Explorador de Games", desc: "Colete {target} itens em minigames", baseGoal: 15, rewardMult: 3.8 },
+    { id: 'm_mg_boost', type: 'mg_boost_collect', title: "Caçador de Boosts", desc: "Pegue {target} itens de Boost em minigames", baseGoal: 2, rewardMult: 5.0 },
+    { id: 'm_mg_kill', type: 'mg_kills', title: "Exterminador de Insetos", desc: "Abata {target} invasores no Hive Defender", baseGoal: 20, rewardMult: 4.5 },
+    { id: 'm_mg_play', type: 'mg_session_finished', title: "Fã de Entretenimento", desc: "Termine {target} partidas de minijogos", baseGoal: 2, rewardMult: 3.2 },
+    { id: 'm_xp', type: 'xp_gain', title: "Pólen Intelectual", desc: "Acumule {target} de XP total", baseGoal: 1000, rewardMult: 2.8 }
 ];
 
 function checkMissionReset() {
@@ -2311,34 +2303,73 @@ function checkMissionReset() {
 
 function generateDailyMissions() {
     dailyMissions = []; 
-    const scaleFactor = Math.pow(level, 1.3); 
-    const clickPowerFactor = Math.sqrt(hPerClick);
-    missionTemplates.forEach((tmp, index) => {
-        dailyMissions.push(createSingleMission(tmp, scaleFactor, clickPowerFactor));
-    });
+    // Fatores de escala adaptativos
+    const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
+    const clickLevelScale = 1 + (clickLvl * 0.15); 
+    const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
+    
+    const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
+    
+    for(let i=0; i<10; i++) {
+        const tmp = shuffled[i % shuffled.length];
+        dailyMissions.push(createSingleMission(tmp, scaleFactor, powerScale));
+    }
 }
 
-function createSingleMission(tmp, scaleFactor, clickPowerFactor) {
-    let target = 0, rewardHoney = 0, rewardXP = 0;
-    if (tmp.type === 'clicks' || tmp.type === 'target_clicks') {
-        target = Math.ceil(tmp.baseGoal * scaleFactor);
-    } else if (tmp.type === 'honey_gain') {
-        target = Math.ceil(tmp.baseGoal * scaleFactor * clickPowerFactor * 10);
-    } else if (tmp.type === 'xp_gain') {
-        target = Math.ceil(tmp.baseGoal * scaleFactor * 5);
-    } else if (tmp.type === 'buy_upgrade') {
-        target = Math.ceil(tmp.baseGoal + Math.floor(level/5));
-    } else if (tmp.type === 'play_time') {
-        target = Math.ceil(tmp.baseGoal * (1 + level * 0.1));
-    } else if (tmp.type === 'mg_score') {
-        target = Math.ceil(tmp.baseGoal * (1 + level * 0.2));
+function createSingleMission(tmp, scaleFactor, powerScale) {
+    let target = 0;
+    
+    // LÓGICA DE ESCALA ADAPTATIVA (v8.4.0)
+    switch(tmp.type) {
+        case 'clicks': 
+            // Escala com o nível de clique. Mais upgrades = meta maior.
+            target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); 
+            break;
+        case 'target_clicks': 
+            target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); 
+            break;
+        case 'honey_gain': 
+            // Escala diretamente com o hPerClick atual.
+            target = Math.ceil(tmp.baseGoal * hPerClick * scaleFactor * 10); 
+            break;
+        case 'xp_gain': 
+            target = Math.ceil(tmp.baseGoal * scaleFactor * 3); 
+            break;
+        case 'buy_upgrade': 
+            target = Math.ceil(tmp.baseGoal + Math.floor(level/15)); 
+            break;
+        case 'play_time': 
+            target = Math.ceil(tmp.baseGoal * (1 + level * 0.1)); 
+            break;
+        case 'mg_item_collect': 
+            target = Math.ceil(tmp.baseGoal * (1 + level * 0.05)); 
+            break;
+        case 'mg_kills': 
+            target = Math.ceil(tmp.baseGoal * (1 + level * 0.15)); 
+            break;
+        case 'mg_boost_collect': 
+            target = Math.ceil(tmp.baseGoal); 
+            break;
+        case 'mg_session_finished': 
+            target = Math.ceil(tmp.baseGoal); 
+            break;
     }
+    
     const clickValue = hPerClick * getGlobalBonus();
-    rewardHoney = Math.max(target * (tmp.type === 'play_time' ? 25 : (tmp.type === 'mg_score' ? 200 : clickValue * 1.5)), 350) * tmp.rewardMult; 
-    rewardXP = (nextLevelXP * 0.12) * tmp.rewardMult;
+    const rewardHoney = Math.max(target * (tmp.type.includes('mg') ? 500 : (tmp.type === 'play_time' ? 50 : clickValue * 2.5)), 600) * tmp.rewardMult;
+    const rewardXP = (nextLevelXP * 0.15) * tmp.rewardMult;
+    
     return { 
-        id: tmp.id + Date.now() + Math.random(), type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), 
-        target: target, progress: 0, completed: false, collected: false, rewardHoney: rewardHoney, rewardXP: rewardXP, 
+        id: tmp.id + Date.now() + Math.random(), 
+        type: tmp.type, 
+        title: tmp.title, 
+        desc: tmp.desc.replace("{target}", formatNum(target)), 
+        target: target, 
+        progress: 0, 
+        completed: false, 
+        collected: false, 
+        rewardHoney: rewardHoney, 
+        rewardXP: rewardXP, 
         rewardLabel: `${formatNum(rewardHoney)} 🍯 | ${formatNum(rewardXP)} XP` 
     };
 }
@@ -2348,12 +2379,11 @@ function updateMissionProgress(type, amt = 1) {
     let changed = false;
     dailyMissions.forEach(m => { 
         if (m.type === type && !m.completed) { 
-            if(m.title === "Automatização" && !autoUnlocked) return;
             m.progress = validateNum(m.progress + amt); 
             if (m.progress >= m.target) { 
                 m.progress = m.target; 
                 m.completed = true; 
-                notify({n: "Missão Finalizada!", d: m.title});
+                notify({n: "Missão Realizada!", d: m.title});
             }
             changed = true; 
         } 
@@ -2381,8 +2411,10 @@ document.getElementById('btnConfirmReroll').onclick = () => {
         const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
         if (index !== -1) {
             const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-            const scaleFactor = Math.pow(level, 1.3), clickPowerFactor = Math.sqrt(hPerClick);
-            dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, clickPowerFactor);
+            const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
+            const clickLevelScale = 1 + (clickLvl * 0.15); 
+            const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
+            dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, powerScale);
             renderMissions();
             updateMissionAlertStatus();
             executeSave();
@@ -2421,7 +2453,10 @@ function getMissionIcon(type) {
         case 'buy_upgrade': return '🚀';
         case 'xp_gain': return '✨';
         case 'play_time': return '⏳';
-        case 'mg_score': return '🕹️';
+        case 'mg_item_collect': return '🍎';
+        case 'mg_boost_collect': return '🥤';
+        case 'mg_kills': return '🔫';
+        case 'mg_session_finished': return '🎮';
         default: return '📝';
     }
 }
@@ -2571,8 +2606,9 @@ function doClick(event, isTarget = false) {
 
 function addXP(amt) {
     let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); 
-    currentXP = validateNum(currentXP + (amt * 0.25 * m)); 
-    updateMissionProgress('xp_gain', amt * 0.25 * m);
+    let xpGain = validateNum(amt * 0.25 * m);
+    currentXP = validateNum(currentXP + xpGain); 
+    updateMissionProgress('xp_gain', xpGain);
     while(currentXP >= nextLevelXP){ 
         currentXP = validateNum(currentXP - nextLevelXP); 
         level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); 
