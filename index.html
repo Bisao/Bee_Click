@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>BeeKind 🐝</title>
 
-<link rel="icon" type="image/x-icon" href="Bee.ico">
-<link rel="apple-touch-icon" href="Bee.ico">
+<link rel="icon" type="image/png" href="NoelBeeUp.png">
+<link rel="apple-touch-icon" href="NoelBeeUp.png">
+<link rel="shortcut icon" href="NoelBeeUp.png">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -76,8 +77,8 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center;
 }
 .loading-container { width: 80%; max-width: 300px; position: relative; }
-.loading-bar-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 10px; transition: width 0.1s linear; }
 .loading-bar-bg { width: 100%; height: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); overflow: visible; position: relative; }
+.loading-bar-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 10px; transition: width 0.1s linear; }
 .loading-bee { 
     position: absolute; top: -45px; left: 0%; 
     width: 40px; height: 40px; 
@@ -1202,7 +1203,7 @@ input[type=range]::-webkit-slider-thumb {
 
 <div class="modal" id="offlineModal">
     <div class="modal-box">
-        <div class="modal-header">🐝 Produção de Descanso</div>
+        <div class="modal-header">Produção de Descanso 🐝</div>
         <div class="modal-content-scroll" style="text-align: center;">
             <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
             <h2 id="offlineTitle" style="margin: 0 0 10px; font-weight: 900; color: inherit;">Bem-vindo de volta!</h2>
@@ -1341,6 +1342,14 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "9.3.0",
+        title: "📲 ICONIZAÇÃO REAL",
+        changes: [
+            { type: "mod", text: "Ícone Superior: O aplicativo e navegador agora exibem o NoelBeeUp.png como ícone oficial." },
+            { type: "fix", text: "Resolução Visual: Ajuste na nitidez do logotipo em telas de alta densidade (Retina/OLED)." }
+        ]
+    },
+    {
         version: "9.2.0",
         title: "🐝 IDENTIDADE VISUAL",
         changes: [
@@ -1369,13 +1378,6 @@ let updateHistory = [
         title: "🛡️ COLETA GARANTIDA",
         changes: [
             { type: "add", text: "Missões Esquecidas: Agora recompensas não coletadas aparecem no Painel de Descanso." }
-        ]
-    },
-    {
-        version: "8.7.0",
-        title: "📈 AJUSTE DE ECONOMIA",
-        changes: [
-            { type: "mod", text: "Inflação Controlada: Custos de upgrades foram recalibrados para manter o desafio constante." }
         ]
     }
 ];
@@ -1408,7 +1410,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V32"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V33"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1420,7 +1422,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V32", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V33", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -2803,7 +2805,6 @@ function collectOfflineRewards() {
     addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; 
     closeModal('offlineModal'); 
     updateUI(); executeSave(); 
-    // ABRE A DIARIA
     checkDailyLogic();
 }
 
