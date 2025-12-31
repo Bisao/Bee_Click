@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>BeeKind 🐝</title>
 
+<link rel="icon" type="image/x-icon" href="Bee.ico">
+<link rel="apple-touch-icon" href="Bee.ico">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#071B87">
-<link rel="apple-touch-icon" href="NoelBee.png">
 <link rel="manifest" href="manifest.json">
 
 <style>
@@ -74,8 +76,8 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center;
 }
 .loading-container { width: 80%; max-width: 300px; position: relative; }
-.loading-bar-bg { width: 100%; height: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); overflow: visible; position: relative; }
 .loading-bar-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 10px; transition: width 0.1s linear; }
+.loading-bar-bg { width: 100%; height: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); overflow: visible; position: relative; }
 .loading-bee { 
     position: absolute; top: -45px; left: 0%; 
     width: 40px; height: 40px; 
@@ -1339,6 +1341,14 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "9.2.0",
+        title: "🐝 IDENTIDADE VISUAL",
+        changes: [
+            { type: "mod", text: "Ícone Unificado: O arquivo Bee.ico agora é o ícone oficial do navegador e aplicativo." },
+            { type: "add", text: "Notificação de Update: Novo sistema visual para destacar atualizações pendentes." }
+        ]
+    },
+    {
         version: "9.1.0",
         title: "🎁 RECOMPENSA DIÁRIA v2",
         changes: [
@@ -1366,13 +1376,6 @@ let updateHistory = [
         title: "📈 AJUSTE DE ECONOMIA",
         changes: [
             { type: "mod", text: "Inflação Controlada: Custos de upgrades foram recalibrados para manter o desafio constante." }
-        ]
-    },
-    {
-        version: "8.6.0",
-        title: "✨ VISUAL PREMIUM",
-        changes: [
-            { type: "add", text: "Parallax Suave: Efeito de profundidade com nuvens em movimento na tela inicial." }
         ]
     }
 ];
@@ -1405,7 +1408,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V31"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V32"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1417,7 +1420,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V31", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V32", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -2800,7 +2803,7 @@ function collectOfflineRewards() {
     addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; 
     closeModal('offlineModal'); 
     updateUI(); executeSave(); 
-    // AGORA ABRE A DIARIA
+    // ABRE A DIARIA
     checkDailyLogic();
 }
 
@@ -2810,7 +2813,6 @@ function checkDailyLogic() {
     const lastStr = new Date(dailyState.lastClaim).toDateString();
     
     if (todayStr !== lastStr) {
-        // Verifica se pulou um dia para resetar streak
         const diffTime = now.getTime() - dailyState.lastClaim;
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         if (diffDays > 1) dailyState.streak = 0;
