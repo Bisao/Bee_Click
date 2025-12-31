@@ -195,27 +195,25 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     border-radius: 18px !important;
 }
 
-/* CORREÇÃO: CONTORNO CROMÁTICO PULSANTE */
+/* CONTORNO CROMÁTICO PULSANTE */
 .btn-chromatic-pulse {
-    border: none !important; /* Remove borda original para não conflitar */
+    position: relative;
+    overflow: visible !important;
 }
 
 .btn-chromatic-pulse::before {
     content: "";
     position: absolute;
-    top: -3px; left: -3px; right: -3px; bottom: -3px;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
     background: linear-gradient(90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
     background-size: 400% 400%;
-    border-radius: 20px; /* Um pouco maior que o botão */
+    border-radius: 22px;
     z-index: -1;
     animation: chromaticRotate 3s linear infinite, glowPulse 1.5s ease-in-out infinite;
-    /* Efeito de Máscara para manter apenas o contorno */
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: destination-out;
     mask-composite: exclude;
-    padding: 3px; /* Espessura da borda */
+    padding: 3px;
 }
 
 @keyframes chromaticRotate { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
@@ -312,9 +310,10 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .save-icon.visible { opacity: 1; animation: pulseSave 1s ease-out; }
 @keyframes pulseSave { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 
-.settings-gear, .daily-mission-btn { position: absolute; top: 18px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.settings-gear, .daily-mission-btn, .daily-reward-btn { position: absolute; top: 18px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .settings-gear { right: 18px; font-size: 24px; }
 .daily-mission-btn { right: 55px; font-size: 24px; border-radius: 50%; padding: 2px; }
+.daily-reward-btn { right: 92px; font-size: 24px; border-radius: 50%; padding: 2px; }
 
 .level-container { margin-top: 12px; text-align: left; }
 .level-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: inherit; }
@@ -674,6 +673,15 @@ input[type=range]::-webkit-slider-thumb {
 }
 .dl-step { margin-bottom: 20px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; max-width: 300px; }
 .dl-icon { width: 45px; height: 45px; background: var(--accent); color: var(--main-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; flex-shrink: 0; }
+
+/* RECOMPENSA DIARIA CSS */
+.daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+.day-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 5px; text-align: center; position: relative; }
+.day-card.active { border-color: var(--accent); background: rgba(255,204,0,0.1); box-shadow: 0 0 10px rgba(255,204,0,0.3); }
+.day-card.claimed { opacity: 0.5; filter: grayscale(1); border-color: var(--xp-bar); }
+.day-num { font-size: 9px; font-weight: 900; opacity: 0.6; display: block; margin-bottom: 5px; }
+.day-icon { font-size: 20px; display: block; }
+.day-reward-val { font-size: 9px; font-weight: 800; color: var(--accent); }
 </style>
 </head>
 
@@ -725,6 +733,7 @@ input[type=range]::-webkit-slider-thumb {
   
   <div class="card" id="statsCard">
     <div id="saveIndicator" class="save-icon">💾</div>
+    <div class="daily-reward-btn" onclick="openModal('dailyRewardModal')">🎁</div>
     <div id="btnMissionAlert" class="daily-mission-btn" onclick="openModal('missionsModal')">📝</div>
     <div class="settings-gear" onclick="openModal('settingsModal')">⚙️</div>
 
@@ -1203,6 +1212,23 @@ input[type=range]::-webkit-slider-thumb {
     </div>
 </div>
 
+<div class="modal" id="dailyRewardModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>Prêmios de Login 🎁</span>
+            <span style="cursor:pointer" onclick="closeModal('dailyRewardModal')">✖</span>
+        </div>
+        <div class="modal-content-scroll" style="text-align: center;">
+            <h3 style="margin-top:0; color:var(--accent);">CICLO DE 7 DIAS</h3>
+            <p style="font-size:12px; opacity:0.8; margin-bottom:20px;">Entre todos os dias para acumular prêmios reais!</p>
+            <div id="dailyGrid" class="daily-grid"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="btnClaimDaily" onclick="claimDailyReward()" style="background:var(--xp-bar); color:white;">RESGATAR HOJE</button>
+        </div>
+    </div>
+</div>
+
 <script>
 /* BLOQUEIO DE ZOOM PARA MOBILE */
 document.addEventListener('touchstart', function (event) {
@@ -1313,41 +1339,40 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "9.1.0",
+        title: "🎁 RECOMPENSA DIÁRIA v2",
+        changes: [
+            { type: "add", text: "Login 7 Dias: Novo sistema de fidelidade progressiva. Entre todos os dias para ganhar!" },
+            { type: "add", text: "Botão de Acesso: Adicionado ícone de presente no painel superior para conferir prêmios." },
+            { type: "mod", text: "Fluxo Melhorado: O painel de prêmios diários agora aparece logo após coletar o mel de descanso." }
+        ]
+    },
+    {
         version: "8.9.1",
         title: "✨ REFINAMENTO VISUAL",
         changes: [
-            { type: "fix", text: "Botão Novidades: O contorno cromático foi ajustado para ser apenas uma borda fina e pulsante, sem cobrir o fundo." },
-            { type: "mod", text: "Otimização de Máscaras: Implementado sistema de clipping para garantir bordas suaves em dispositivos mobile." }
+            { type: "fix", text: "Botão Novidades: O contorno cromático foi ajustado para ser apenas uma borda fina e pulsante." }
         ]
     },
     {
         version: "8.8.0",
         title: "🛡️ COLETA GARANTIDA",
         changes: [
-            { type: "add", text: "Missões Esquecidas: Agora, recompensas concluídas e não coletadas do dia anterior aparecem no Painel de Descanso." },
-            { type: "fix", text: "Consistência de Reset: O sistema de reset das 22h agora garante a entrega de prêmios antes de gerar novas tarefas." }
+            { type: "add", text: "Missões Esquecidas: Agora recompensas não coletadas aparecem no Painel de Descanso." }
         ]
     },
     {
         version: "8.7.0",
         title: "📈 AJUSTE DE ECONOMIA",
         changes: [
-            { type: "mod", text: "Inflação Controlada: Os custos de upgrades foram recalibrados para manter o desafio constante." }
+            { type: "mod", text: "Inflação Controlada: Custos de upgrades foram recalibrados para manter o desafio constante." }
         ]
     },
     {
         version: "8.6.0",
         title: "✨ VISUAL PREMIUM",
         changes: [
-            { type: "add", text: "Parallax Suave: Efeito de profundidade com nuvens em movimento na tela inicial." },
-            { type: "add", text: "Glassmorphism: Botões secundários agora usam o moderno efeito de vidro fosco." }
-        ]
-    },
-    {
-        version: "8.5.0",
-        title: "🐍 BEE-LINE BOOSTS",
-        changes: [
-            { type: "add", text: "Novos Power-ups aleatórios aparecem durante as partidas de Snake!" }
+            { type: "add", text: "Parallax Suave: Efeito de profundidade com nuvens em movimento na tela inicial." }
         ]
     }
 ];
@@ -1380,7 +1405,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V29"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V31"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1392,7 +1417,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V29", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V31", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1403,6 +1428,7 @@ const AUDIO_KEY = "BeeRoyal_Audio_V1";
 const MISSION_KEY = "BeeRoyal_Missions_V2";
 const THEME_KEY = "BeeRoyal_Theme_V1";
 const RECORDS_KEY = "BeeRoyal_Records_V1";
+const DAILY_REWARD_KEY = "BeeRoyal_Daily_V2";
 
 function validateNum(n) {
     if (isNaN(n) || n === undefined || n === null || n < 0) return 0;
@@ -1425,6 +1451,18 @@ let themeSettings = { mainColor: "#071B87", opacity: 0.85 };
 let records = { snake: 0, flight: 0, rain: 0, defender: 0 };
 let defenderProgress = { level: 1, lastPlayed: 0 };
 let pendingRerollId = null;
+
+// SISTEMA DIARIO
+let dailyState = { streak: 0, lastClaim: 0, claimedToday: false };
+const dailyCycle = [
+    { type: 'honey', val: 5000, icon: '🍯' },
+    { type: 'xp', val: 2000, icon: '✨' },
+    { type: 'honey', val: 15000, icon: '🍯' },
+    { type: 'boost', boost: 'pepper', ticks: 1800, icon: '🌶️', label: '3m' },
+    { type: 'honey', val: 50000, icon: '🍯' },
+    { type: 'xp', val: 10000, icon: '✨' },
+    { type: 'super', val: 200000, boost: 'crown', ticks: 1800, icon: '👑', label: 'REI' }
+];
 
 const soundMusic = new Audio('Music.mp3');
 const soundClick = new Audio('Click.mp3');
@@ -2716,7 +2754,10 @@ function startGameTicks() {
 function executeSave(){ 
     const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
-    const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
+    const missionData = {dailyMissions, lastMissionReset}; 
+    localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); 
+    localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
+    localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState));
     const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
 }
 
@@ -2757,7 +2798,70 @@ function checkOfflineGains(lastTimestamp) {
 function collectOfflineRewards() { 
     honey = validateNum(honey + pendingOfflineHoney); totalHoneyEver = validateNum(totalHoneyEver + pendingOfflineHoney); 
     addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; 
-    closeModal('offlineModal'); updateUI(); executeSave(); 
+    closeModal('offlineModal'); 
+    updateUI(); executeSave(); 
+    // AGORA ABRE A DIARIA
+    checkDailyLogic();
+}
+
+function checkDailyLogic() {
+    const now = new Date();
+    const todayStr = now.toDateString();
+    const lastStr = new Date(dailyState.lastClaim).toDateString();
+    
+    if (todayStr !== lastStr) {
+        // Verifica se pulou um dia para resetar streak
+        const diffTime = now.getTime() - dailyState.lastClaim;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays > 1) dailyState.streak = 0;
+        
+        dailyState.claimedToday = false;
+        renderDailyGrid();
+        openModal('dailyRewardModal');
+    }
+}
+
+function renderDailyGrid() {
+    const grid = document.getElementById('dailyGrid');
+    grid.innerHTML = "";
+    dailyCycle.forEach((item, i) => {
+        let status = i < dailyState.streak ? 'claimed' : (i === dailyState.streak ? 'active' : '');
+        let valText = item.type === 'honey' ? formatNum(item.val) : (item.type === 'xp' ? formatNum(item.val) + 'xp' : item.label);
+        grid.innerHTML += `
+            <div class="day-card ${status}">
+                <span class="day-num">DIA ${i+1}</span>
+                <span class="day-icon">${item.icon}</span>
+                <span class="day-reward-val">${valText}</span>
+            </div>
+        `;
+    });
+    
+    document.getElementById('btnClaimDaily').disabled = dailyState.claimedToday;
+    document.getElementById('btnClaimDaily').textContent = dailyState.claimedToday ? "COLETADO HOJE" : "RESGATAR HOJE";
+}
+
+function claimDailyReward() {
+    if (dailyState.claimedToday) return;
+    
+    const reward = dailyCycle[dailyState.streak];
+    if (reward.type === 'honey') {
+        honey += reward.val;
+    } else if (reward.type === 'xp') {
+        addXP(reward.val);
+    } else if (reward.type === 'boost' || reward.type === 'super') {
+        if (reward.val) honey += reward.val;
+        activeBoosts[reward.boost] += reward.ticks;
+    }
+    
+    dailyState.lastClaim = Date.now();
+    dailyState.streak = (dailyState.streak + 1) % 7;
+    dailyState.claimedToday = true;
+    
+    notify({n: "Recompensa Diária!", d: "Prêmio resgatado com sucesso"});
+    updateUI();
+    executeSave();
+    renderDailyGrid();
+    setTimeout(() => closeModal('dailyRewardModal'), 800);
 }
 
 function load(){
@@ -2765,6 +2869,7 @@ function load(){
     const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings();
     const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); document.getElementById('uiMainColor').value = themeSettings.mainColor; document.getElementById('uiOpacity').value = themeSettings.opacity * 100; document.getElementById('uiOpacityLabel').textContent = (themeSettings.opacity * 100) + '%'; applyTheme(); }
     const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords);
+    const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); if(savedDaily) dailyState = JSON.parse(savedDaily);
     const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; }
     const raw = localStorage.getItem(SAVE_KEY);
     if(raw){
@@ -2805,7 +2910,11 @@ function enterGame() {
                 const gameUI = document.getElementById('gameUI'); 
                 gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; 
                 gameLoaded = true;
-                if(pendingOfflineHoney > 0 || document.getElementById("offlineTitle").textContent.includes("abandonada")) openModal('offlineModal');
+                if(pendingOfflineHoney > 0 || (document.getElementById("offlineTitle") && document.getElementById("offlineTitle").textContent.includes("abandonada"))) {
+                    openModal('offlineModal');
+                } else {
+                    checkDailyLogic();
+                }
                 startGameTicks(); 
                 if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
             }, 300);
@@ -2823,6 +2932,7 @@ function openModal(id) {
         renderMissions();
         document.getElementById("btnMissionAlert").classList.remove("mission-alert");
     }
+    if(id === 'dailyRewardModal') renderDailyGrid();
 }
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
