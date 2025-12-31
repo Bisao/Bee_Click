@@ -56,10 +56,10 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     object-fit: contain;
 }
 .bee-img-large {
-    width: 130px;
-    height: 130px;
+    width: 140px;
+    height: 140px;
     object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(255,204,0,0.3));
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
 }
 
 .skin-preview {
@@ -92,22 +92,35 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 @keyframes spinCookie { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+/* DESIGN PROFISSIONAL TELA INICIAL */
 #startScreen {
     position: fixed; inset: 0; background: var(--bg-gradient);
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.5s ease;
+    overflow: hidden;
 }
+
+.bg-clouds {
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/clouds.png');
+    opacity: 0.1;
+    animation: moveClouds 60s linear infinite;
+    pointer-events: none;
+}
+@keyframes moveClouds { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 .studio-brand {
     position: absolute;
-    bottom: 20px;
-    font-size: 14px;
+    bottom: 25px;
+    font-size: 12px;
     font-weight: 800;
-    letter-spacing: 1px;
-    opacity: 0.7;
+    letter-spacing: 2px;
+    opacity: 0.6;
     z-index: 5;
     color: var(--text-color);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-transform: uppercase;
 }
 
 .snow-container { 
@@ -122,46 +135,87 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .snowflake { position: absolute; color: white; font-size: 1.2em; top: -20px; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-.start-bee-wrapper { position: relative; z-index: 2; margin-bottom: 20px; }
-.start-logo { animation: floatBee 3s infinite ease-in-out; }
+.start-bee-wrapper { 
+    position: relative; 
+    z-index: 2; 
+    margin-bottom: 10px;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+}
+.start-logo { animation: floatBee 4s infinite ease-in-out; }
 
 .start-title { 
-    font-size: clamp(30px, 12vw, 48px); font-weight: 900; color: var(--text-color); margin-top: 20px; 
-    text-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 2;
-    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(34px, 14vw, 54px); 
+    font-weight: 900; 
+    color: var(--text-color); 
+    margin-top: 10px; 
+    letter-spacing: -1px;
+    text-shadow: 0 10px 20px rgba(0,0,0,0.4); 
+    z-index: 2;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
 }
 
 .start-subtitle {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--accent);
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     opacity: 0.9;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     z-index: 2;
 }
 
-/* BOTÃO CROMÁTICO PULSANTE */
+/* BOTÃO JOGAR PREMIUM */
+.btn-play-premium {
+    width: 100%;
+    padding: 20px !important;
+    font-size: 20px !important;
+    background: linear-gradient(135deg, var(--accent), #ffaa00) !important;
+    color: var(--main-blue) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 25px rgba(255, 204, 0, 0.3), inset 0 -4px 0 rgba(0,0,0,0.2) !important;
+    border: none !important;
+    transition: 0.2s !important;
+}
+.btn-play-premium:active { transform: scale(0.96) translateY(4px) !important; box-shadow: 0 5px 10px rgba(255, 204, 0, 0.2) !important; }
+
+/* GLASSMORPHISM BOTÕES SECUNDÁRIOS */
+.btn-secondary-glass {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    box-shadow: none !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+}
+
+/* BOTÃO CROMÁTICO PULSANTE REFINADO */
 .btn-chromatic-pulse {
     position: relative;
-    border: none !important;
-    animation: chromaticGlow 1.5s linear infinite;
     z-index: 10;
 }
-
-.mission-alert {
-    border-radius: 50%;
-    animation: chromaticGlow 1.5s linear infinite;
+.btn-chromatic-pulse::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 20px;
+    padding: 3px;
+    background: linear-gradient(90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+    background-size: 400% 400%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    animation: chromaticRotate 3s linear infinite, glowPulse 1.5s ease-in-out infinite;
 }
 
-@keyframes chromaticGlow {
-    0% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 3px solid #ff0000; }
-    20% { box-shadow: 0 0 15px #ffcc00, inset 0 0 10px #ffcc00; outline: 3px solid #ffcc00; }
-    40% { box-shadow: 0 0 5px #00ff00, inset 0 0 5px #00ff00; outline: 3px solid #00ff00; }
-    60% { box-shadow: 0 0 15px #00ffff, inset 0 0 10px #00ffff; outline: 3px solid #00ffff; }
-    80% { box-shadow: 0 0 5px #0000ff, inset 0 0 5px #0000ff; outline: 3px solid #0000ff; }
-    100% { box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000; outline: 3px solid #ff0000; }
-}
+@keyframes chromaticRotate { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+@keyframes glowPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
 .letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: inherit; }
 .tree-overlay {
@@ -422,7 +476,7 @@ input[type=range]::-webkit-slider-thumb {
 
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter: blur(12px); display:none; justify-content:center; align-items:center; z-index:10001; padding: 20px; transition: background 0.3s; }
 .modal-box{ background: var(--card); backdrop-filter: var(--panel-blur); width:100%; max-width:380px; max-height: 85svh; border-radius:35px; overflow:hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transition: background 0.3s; }
-.modal-header{ padding:20px; background: var(--accent); font-weight:900; display:flex; justify-content:space-between; color: var(--main-blue); font-size: 18px; flex-shrink: 0; }
+.modal-header{ padding:20px; background: var(--accent); font-weight:900; font-size: 18px; display:flex; justify-content:space-between; color: var(--main-blue); flex-shrink: 0; }
 
 .modal-content-scroll { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; color: inherit; touch-action: pan-y; }
 .modal-footer { padding: 0 20px 20px 20px; background: transparent; flex-shrink: 0; }
@@ -633,6 +687,7 @@ input[type=range]::-webkit-slider-thumb {
 </div>
 
 <div id="startScreen">
+    <div class="bg-clouds"></div>
     <div class="snow-container" id="snowContainer"></div>
     <div class="start-bee-wrapper">
         <div class="start-logo">
@@ -644,13 +699,13 @@ input[type=range]::-webkit-slider-thumb {
     </div>
     <div class="start-subtitle">Be kind to bees and earn honey.</div>
     
-    <div style="display: flex; flex-direction: column; gap: 10px; width: 280px; z-index: 10;">
-        <button style="font-size: 18px;" onclick="enterGame()">JOGAR AGORA</button>
-        <button id="btnChangelog" class="btn-chromatic-pulse" style="background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openChangelog()">O QUE MUDOU?</button>
+    <div style="display: flex; flex-direction: column; gap: 15px; width: 280px; z-index: 10;">
+        <button class="btn-play-premium" onclick="enterGame()">JOGAR AGORA</button>
+        <button id="btnChangelog" class="btn-secondary-glass" onclick="openChangelog()">O QUE MUDOU?</button>
         
         <div class="pwa-btn-container">
-            <button style="flex: 1; background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.3); font-size: 14px; padding: 12px; box-shadow: none;" onclick="openModal('settingsModal')">
-                CONFIGURAÇÕES ⚙️
+            <button class="btn-secondary-glass" style="flex: 1; padding: 12px !important;" onclick="openModal('settingsModal')">
+                AJUSTES ⚙️
             </button>
             <button id="pwaMainActionBtn" class="circular-btn" onclick="handlePwaClick()">
                 <span id="pwaIcon">📥</span>
@@ -727,19 +782,19 @@ input[type=range]::-webkit-slider-thumb {
               </div>
               <div class="scroll-area">
                 <div id="shop_boosts" class="sub-shop-pane">
-                  <div class="section-title">🌶️ PIMENTA (3x MEL)</div>
+                  <div class="section-title">🌶️ PIMENTA (2x MEL)</div>
                   <small id="status_pepper" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                   <div class="shop-grid" id="grid_pepper"></div>
                   
-                  <div class="section-title">🥤 ENERGÉTICO (2x VEL)</div>
+                  <div class="section-title">🥤 ENERGÉTICO (1.5x VEL)</div>
                   <small id="status_energy" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                   <div class="shop-grid" id="grid_energy"></div>
                   
-                  <div class="section-title">🌼 FLOR (5x XP)</div>
+                  <div class="section-title">🌼 FLOR (3x XP)</div>
                   <small id="status_flower" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                   <div class="shop-grid" id="grid_flower"></div>
                   
-                  <div class="section-title">🍀 TREVO (5x SORTE)</div>
+                  <div class="section-title">🍀 TREVO (2x SORTE)</div>
                   <small id="status_luck" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Inativo</small>
                   <div class="shop-grid" id="grid_luck"></div>
                 </div>
@@ -753,11 +808,11 @@ input[type=range]::-webkit-slider-thumb {
                     </button>
                     <button class="buy-btn-small" id="btn_cos_NoelBee" onclick="handleCosmetic('NoelBee')">
                       <img src="NoelBee.png" class="skin-preview">
-                      <b>Noel (+15%)</b>
+                      <b>Noel (+10%)</b>
                     </button>
                     <button class="buy-btn-small" id="btn_cos_SkullBee" onclick="handleCosmetic('SkullBee')">
                       <img src="SkullBee.png" class="skin-preview">
-                      <b>Skull (+8% Crit)</b>
+                      <b>Skull (+5% Crit)</b>
                     </button>
                   </div>
 
@@ -931,111 +986,6 @@ input[type=range]::-webkit-slider-thumb {
     <div id="flightHint" style="display: none; color: white; margin-top: 10px; font-weight: 800; opacity: 0.6;">TOQUE PARA SUBIR</div>
 </div>
 
-<div class="modal" id="defenderPreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>HIVE DEFENDER 🔫</span>
-            <span style="cursor:pointer" onclick="closeModal('defenderPreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
-            <h2 style="margin:0; color:var(--accent);">SISTEMA DE NÍVEIS</h2>
-            <p style="font-size:14px; opacity:0.8;">Enfrente <b>7 níveis</b> de dificuldade. Insetos de Elite aparecem no Nível 4!</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">⚠️ IDENTIFICAÇÃO:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 🪰 Moscas: Invasores Comuns (1 HP).<br>
-                    • 🪲 Besouros: Elite Blindada (2 HP).<br>
-                    • <b>INATIVIDADE:</b> Se não jogar por 24h, volta ao Nível 1.<br>
-                    • <b>POWER-UP:</b> Pegue o item 🔫 (8% de chance) para tiro duplo!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('defenderPreGameModal'); startMinigameActual('defender');" style="background:var(--xp-bar); color:white;">ÀS ARMAS!</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="flightPreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>BEE FLIGHT 🌸</span>
-            <span style="cursor:pointer" onclick="closeModal('flightPreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <img src="Bee.png" style="width: 80px; margin-bottom: 15px;">
-            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
-            <p style="font-size:14px; opacity:0.8;">Toque na tela ou pressione Espaço para voar e desviar dos canos.</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 120x Mel por ponto.<br>
-                    • 20% do Mel convertido em XP.<br>
-                    • <b>BOOSTS (A cada 50 pts):</b> Pegue itens entre os canos para ganhar Mel 3x, Velocidade 2x, XP 5x ou Sorte 5x (30s) após o jogo!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('flightPreGameModal'); startMinigameActual('flight');" style="background:var(--xp-bar); color:white;">COMEÇAR VOO!</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="snakePreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>BEE-LINE 🐍</span>
-            <span style="cursor:pointer" onclick="closeModal('snakePreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🍎</div>
-            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
-            <p style="font-size:14px; opacity:0.8;">Use o D-Pad ou as setas do teclado para guiar a abelha e coletar as maçãs.</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 50x Mel por maçã coletada.<br>
-                    • Ganho de XP proporcional à pontuação final.<br>
-                    • <b>NOVIDADE:</b> Boosts aleatórios aparecem a cada 40s! Você tem 5s para pegá-los!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('snakePreGameModal'); startMinigameActual('snake');" style="background:var(--xp-bar); color:white;">INICIAR COLETA!</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="rainPreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>HONEY RAIN 🌦️</span>
-            <span style="cursor:pointer" onclick="closeModal('rainPreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🍯</div>
-            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
-            <p style="font-size:14px; opacity:0.8;">Toque nos potes de mel que caem do céu.</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS & PERIGOS:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 180x Mel por cada pote coletado.<br>
-                    • <b>CUIDADO:</b> A abelha pode soltar <b>BOMBAS (💣)</b>! Se clicar nela, explode e você perde uma vida.<br>
-                    • <b>SORTE REAIS:</b> 8% de chance de soltar um **BOOST de 30s** aleatório!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('rainPreGameModal'); startMinigameActual('rain');" style="background:var(--xp-bar); color:white;">COLETAR MEL!</button>
-        </div>
-    </div>
-</div>
-
 <div class="modal" id="missionsModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -1071,7 +1021,6 @@ input[type=range]::-webkit-slider-thumb {
             <span style="cursor:pointer" onclick="closeModal('settingsModal')">✖</span>
         </div>
         <div class="modal-content-scroll">
-            
             <div class="section-title">AUDIO & SOM 🔊</div>
             <div class="config-group-card">
                 <div class="config-row">
@@ -1254,45 +1203,43 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "8.7.0",
+        title: "🛡️ AUTO-COLETA DE MISSÕES",
+        changes: [
+            { type: "fix", text: "Reset Persistente: Agora as missões reiniciam corretamente às 22h, mesmo que o player entre dias depois." },
+            { type: "add", text: "Auto-Claim: Recompensas concluídas não coletadas são somadas automaticamente ao saldo antes do novo ciclo começar." },
+            { type: "mod", text: "Sincronização: Melhoria na precisão do cronômetro de reset das missões." }
+        ]
+    },
+    {
+        version: "8.6.0",
+        title: "✨ VISUAL PREMIUM",
+        changes: [
+            { type: "add", text: "Parallax Suave: Efeito de profundidade com nuvens em movimento na tela inicial." },
+            { type: "add", text: "Glassmorphism: Botões secundários agora usam o moderno efeito de vidro fosco." },
+            { type: "mod", text: "UX Refinada: Tipografia e sombras melhoradas para um look mais profissional." }
+        ]
+    },
+    {
+        version: "8.5.0",
+        title: "📈 INFLAÇÃO DINÂMICA",
+        changes: [
+            { type: "mod", text: "Economia Real: Preços de Upgrades e Boosts agora escalam com seu Poder de Clique." },
+            { type: "mod", text: "Balanceamento de Boosts: Bônus moderados para uma progressão mais justa." }
+        ]
+    },
+    {
         version: "8.4.0",
         title: "⚖️ EQUILÍBRIO ADAPTATIVO",
         changes: [
-            { type: "mod", text: "Missões Dinâmicas: Metas de cliques agora escalam com seu Poder de Clique atual." },
-            { type: "mod", text: "Economia Real: Metas de coleta de mel agora levam em conta seus upgrades passivos e ativos." },
-            { type: "fix", text: "Recompensas: Ajustado o ganho de XP das missões para não quebrar a progressão em níveis altos." },
-            { type: "add", text: "Legenda: Missões que exigem esforço real agora mostram ícones de dificuldade variável." }
+            { type: "mod", text: "Missões Dinâmicas: Metas de cliques agora escalam com seu Poder de Clique atual." }
         ]
     },
     {
         version: "8.3.0",
         title: "📋 AGENDA REAL ROBUSTA",
         changes: [
-            { type: "add", text: "Novo Sistema de Missões: Objetivos variados para cada minijogo." },
-            { type: "add", text: "Desafios Dinâmicos: Metas de tempo, coleta de itens específicos e marcos de produção." },
-            { type: "mod", text: "Recompensas Escaladas: Ganhos maiores de Mel e XP baseados no seu nível atual." }
-        ]
-    },
-    {
-        version: "8.2.0",
-        title: "📢 FILA DE NOTIFICAÇÕES",
-        changes: [
-            { type: "add", text: "Fila de Notificações Inteligente: As mensagens agora aparecem em ordem sem se sobrepor." },
-            { type: "mod", text: "Tempo de exibição aumentado para 8 segundos por notificação para melhor leitura." }
-        ]
-    },
-    {
-        version: "8.1.0",
-        title: "🛡️ HIVE DEFENDER EVOLUÇÃO",
-        changes: [
-            { type: "mod", text: "Novas Skins: Invasores comuns agora são Moscas (🪰) e Elites são Besouros (🪲)." },
-            { type: "mod", text: "Orientação Visual: Inimigos agora aparecem rotacionados em 180° para indicar invasão." }
-        ]
-    },
-    {
-        version: "8.0.0",
-        title: "🛡️ VISUAL ELITE DEFENDER",
-        changes: [
-            { type: "mod", text: "Vespas de Elite (Nível 4-7) agora usam skin amarela brilhante para facilitar a identificação." }
+            { type: "add", text: "Novo Sistema de Missões: Objetivos variados para cada minijogo." }
         ]
     }
 ];
@@ -1325,7 +1272,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V25"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V28"); 
     const btn = document.getElementById("btnChangelog");
 
     if(!lastSeen || lastSeen !== currentVersion) {
@@ -1337,7 +1284,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V25", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V28", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -2211,7 +2158,7 @@ function returnToMain() {
 }
 
 const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Uma colmeia pode ter até 60.000 abelhas no verão."];
-const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+15%) é aplicado no final!", "💡 DICA: Complete as 10 missões para um crescimento explosivo!"];
+const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+10%) é aplicado no final!", "💡 DICA: Complete as 10 missões para um crescimento explosivo!"];
 let lastNotifType = "fact"; 
 
 // ==========================================
@@ -2265,7 +2212,7 @@ const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
 // ==========================================
-// SISTEMA DE MISSÕES ADAPTATIVO (v8.4.0)
+// SISTEMA DE MISSÕES ADAPTATIVO (v8.7.0 Corrigido)
 // ==========================================
 const missionTemplates = [
     { id: 'm_click', type: 'clicks', title: "Ginástica de Asas", desc: "Clique na abelha {target} vezes", baseGoal: 100, rewardMult: 2.2 },
@@ -2281,78 +2228,71 @@ const missionTemplates = [
 ];
 
 function checkMissionReset() {
-    const now = new Date(), resetHour = 22; 
-    let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0);
-    if (now.getTime() > resetLimit.getTime() && lastMissionReset < resetLimit.getTime()) {
+    const now = new Date();
+    const resetHour = 22;
+    
+    // Calcula o último marco das 22h que deveria ter ocorrido
+    let lastScheduledReset = new Date(now);
+    lastScheduledReset.setHours(resetHour, 0, 0, 0);
+    
+    // Se agora ainda não passou das 22h de hoje, o reset válido foi o de ontem
+    if (now.getTime() < lastScheduledReset.getTime()) {
+        lastScheduledReset.setDate(lastScheduledReset.getDate() - 1);
+    }
+
+    // Se o player nunca resetou OU se o último reset salvo for ANTERIOR ao último marco programado
+    if (lastMissionReset < lastScheduledReset.getTime()) {
+        
+        let autoClaimHoney = 0;
+        let autoClaimXP = 0;
+        let missionsClaimed = 0;
+
+        // Auto-coleta antes de apagar
         dailyMissions.forEach(m => {
             if (m.completed && !m.collected) {
-                honey = validateNum(honey + m.rewardHoney);
-                addXP(m.rewardXP);
+                autoClaimHoney += m.rewardHoney;
+                autoClaimXP += m.rewardXP;
+                missionsClaimed++;
             }
         });
-        generateDailyMissions(); 
-        lastMissionReset = now.getTime(); 
-        executeSave(); 
-    }
-    else if (!dailyMissions || dailyMissions.length < 10) { 
-        generateDailyMissions(); 
-        lastMissionReset = now.getTime(); 
-        executeSave(); 
+
+        if (missionsClaimed > 0) {
+            honey = validateNum(honey + autoClaimHoney);
+            addXP(autoClaimXP);
+            notify({n: "Ciclo Encerrado!", d: `Coletamos ${formatNum(autoClaimHoney)} 🍯 pendentes para você.`});
+        }
+
+        generateDailyMissions();
+        lastMissionReset = now.getTime(); // Marca que o reset foi feito agora
+        executeSave();
     }
 }
 
 function generateDailyMissions() {
     dailyMissions = []; 
-    // Fatores de escala adaptativos
-    const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
     const clickLevelScale = 1 + (clickLvl * 0.15); 
     const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
-    
     const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
     
     for(let i=0; i<10; i++) {
         const tmp = shuffled[i % shuffled.length];
-        dailyMissions.push(createSingleMission(tmp, scaleFactor, powerScale));
+        dailyMissions.push(createSingleMission(tmp, scaleFactor));
     }
 }
 
-function createSingleMission(tmp, scaleFactor, powerScale) {
+function createSingleMission(tmp, scaleFactor) {
     let target = 0;
-    
-    // LÓGICA DE ESCALA ADAPTATIVA (v8.4.0)
     switch(tmp.type) {
-        case 'clicks': 
-            // Escala com o nível de clique. Mais upgrades = meta maior.
-            target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); 
-            break;
-        case 'target_clicks': 
-            target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); 
-            break;
-        case 'honey_gain': 
-            // Escala diretamente com o hPerClick atual.
-            target = Math.ceil(tmp.baseGoal * hPerClick * scaleFactor * 10); 
-            break;
-        case 'xp_gain': 
-            target = Math.ceil(tmp.baseGoal * scaleFactor * 3); 
-            break;
-        case 'buy_upgrade': 
-            target = Math.ceil(tmp.baseGoal + Math.floor(level/15)); 
-            break;
-        case 'play_time': 
-            target = Math.ceil(tmp.baseGoal * (1 + level * 0.1)); 
-            break;
-        case 'mg_item_collect': 
-            target = Math.ceil(tmp.baseGoal * (1 + level * 0.05)); 
-            break;
-        case 'mg_kills': 
-            target = Math.ceil(tmp.baseGoal * (1 + level * 0.15)); 
-            break;
-        case 'mg_boost_collect': 
-            target = Math.ceil(tmp.baseGoal); 
-            break;
-        case 'mg_session_finished': 
-            target = Math.ceil(tmp.baseGoal); 
-            break;
+        case 'clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); break;
+        case 'target_clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); break;
+        case 'honey_gain': target = Math.ceil(tmp.baseGoal * hPerClick * scaleFactor * 10); break;
+        case 'xp_gain': target = Math.ceil(tmp.baseGoal * scaleFactor * 3); break;
+        case 'buy_upgrade': target = Math.ceil(tmp.baseGoal + Math.floor(level/15)); break;
+        case 'play_time': target = Math.ceil(tmp.baseGoal * (1 + level * 0.1)); break;
+        case 'mg_item_collect': target = Math.ceil(tmp.baseGoal * (1 + level * 0.05)); break;
+        case 'mg_kills': target = Math.ceil(tmp.baseGoal * (1 + level * 0.15)); break;
+        case 'mg_boost_collect': target = Math.ceil(tmp.baseGoal); break;
+        case 'mg_session_finished': target = Math.ceil(tmp.baseGoal); break;
     }
     
     const clickValue = hPerClick * getGlobalBonus();
@@ -2411,10 +2351,9 @@ document.getElementById('btnConfirmReroll').onclick = () => {
         const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
         if (index !== -1) {
             const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-            const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
             const clickLevelScale = 1 + (clickLvl * 0.15); 
             const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
-            dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, powerScale);
+            dailyMissions[index] = createSingleMission(randomTmp, scaleFactor);
             renderMissions();
             updateMissionAlertStatus();
             executeSave();
@@ -2508,19 +2447,24 @@ function getMPSBase() {
     return (autoLevel * (2 + (autoLevel * 0.1))) + (level * 2.5); 
 }
 
-function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.15 : 1.0; }
+function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.10 : 1.0; }
 
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length, e = achievements.filter(a => a.u && a.r === 'epic').length;
-    let b = (1 + (r * 0.02) + (e * 0.10)) * getSkinBonus(); 
-    if(activeBoosts.pepper > 0) b += 2; 
-    if(activeBoosts.energy > 0) b += 1; 
+    let b = (1 + (r * 0.01) + (e * 0.05)) * getSkinBonus(); 
+    if(activeBoosts.pepper > 0) b += 1; 
+    if(activeBoosts.energy > 0) b += 0.5; 
     if(activeBoosts.crown > 0) b *= 8;
     return b;
 }
 
 function updateUI() {
     honey = validateNum(honey);
+    const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 10);
+    clickCost = Math.floor(1200 * Math.pow(1.35, clickLvl - 1) * inflationFactor);
+    autoCost = Math.floor(5600 * Math.pow(1.45, autoLevel - 1) * inflationFactor);
+    luckCost = Math.floor(6400 * Math.pow(1.65, luckLvl - 1) * inflationFactor);
+
     document.getElementById("honey").textContent = formatNum(honey); 
     document.getElementById("mps").textContent = formatNum(getMPSBase() * getGlobalBonus());
     document.getElementById("lvlDisplay").textContent = level; document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
@@ -2528,6 +2472,7 @@ function updateUI() {
     document.getElementById("btnUpgradeClick").disabled = (honey < clickCost); document.getElementById("btnUpgradeClick").innerHTML = `<b>Upgrade Clique (Lvl ${clickLvl})</b><br>${formatNum(clickCost)} 🍯`;
     document.getElementById("btnAutoAction").disabled = (honey < autoCost); document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `<b>Desbloquear Auto</b><br>${formatNum(autoCost)} 🍯` : `<b>Upgrade Auto (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
     document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost); document.getElementById("btnUpgradeLuck").innerHTML = `<b>Upgrade Sorte (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
+    
     const crown = document.getElementById("beeCrown");
     if(activeBoosts.crown > 0) crown.style.display = "block"; else crown.style.display = "none";
     buildShop(); renderActiveBoosts(); updateRecordsUI();
@@ -2535,9 +2480,7 @@ function updateUI() {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
         if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; document.getElementById("mainBeeSprite").src = `${id}.png`; document.getElementById("miniBeeHeader").src = `${id}.png`; }
         else { 
-            let label = "Comum";
-            if(id === "NoelBee") label = "Noel (+15%)";
-            if(id === "SkullBee") label = "Skull (+8% Crit)";
+            let label = (id === "NoelBee") ? "Noel (+10%)" : (id === "SkullBee" ? "Skull (+5% Crit)" : "Comum");
             btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; 
         }
     });
@@ -2562,7 +2505,7 @@ function spawnFloatingNumber(amount, isTarget, isSuperCritical) {
     const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2);
     const container = document.createElement("div"); container.className = "floating-num-container";
     const numEl = document.createElement("div"); numEl.className = "floating-num"; numEl.textContent = `+${formatNum(amount)}`;
-    if(isSuperCritical) { numEl.style.color = "#ff4757"; numEl.style.fontSize = "38px"; const label = document.createElement("div"); label.className = "super-critical-label"; label.textContent = "SORTE REAL! (10x)"; container.appendChild(numEl); container.appendChild(label); }
+    if(isSuperCritical) { numEl.style.color = "#ff4757"; numEl.style.fontSize = "38px"; const label = document.createElement("div"); label.className = "super-critical-label"; label.textContent = "SORTE REAL! (5x)"; container.appendChild(numEl); container.appendChild(label); }
     else if(isTarget) { numEl.style.color = "#ffcc00"; numEl.style.fontSize = "32px"; container.appendChild(numEl); }
     else container.appendChild(numEl);
     container.style.left = `${centerX}px`; container.style.top = `${centerY}px`; document.body.appendChild(container); setTimeout(() => container.remove(), 800);
@@ -2589,12 +2532,11 @@ function triggerImpact(isTarget, isSuperCritical) {
 
 function doClick(event, isTarget = false) {
     playClickSound(); 
-    let baseChance = 0.001 + ((luckLvl - 1) * 0.0005); 
-    if(equippedCosmetic === "SkullBee") baseChance += 0.08; 
-    if(activeBoosts.luck > 0) baseChance *= 5;
-    
+    let baseChance = 0.001 + ((luckLvl - 1) * 0.0002); 
+    if(equippedCosmetic === "SkullBee") baseChance += 0.05; 
+    if(activeBoosts.luck > 0) baseChance *= 2;
     const superCriticalChance = Math.random() < baseChance; 
-    let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 10 : 1);
+    let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 5 : 1);
     const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
     if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
     updateMissionProgress('honey_gain', g);
@@ -2605,13 +2547,13 @@ function doClick(event, isTarget = false) {
 }
 
 function addXP(amt) {
-    let m = ((activeBoosts.flower > 0) ? 5 : 1) * getSkinBonus(); 
-    let xpGain = validateNum(amt * 0.25 * m);
+    let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); 
+    let xpGain = validateNum(amt * 0.15 * m); 
     currentXP = validateNum(currentXP + xpGain); 
     updateMissionProgress('xp_gain', xpGain);
     while(currentXP >= nextLevelXP){ 
         currentXP = validateNum(currentXP - nextLevelXP); 
-        level++; nextLevelXP = Math.floor(nextLevelXP * 1.25); 
+        level++; nextLevelXP = Math.floor(nextLevelXP * 1.35); 
         triggerLevelUpCelebration(); 
     }
 }
@@ -2685,10 +2627,10 @@ function checkOfflineGains(lastTimestamp) {
     offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit";
     btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)";
     const mps = getMPSBase() * getGlobalBonus(); 
-    pendingOfflineHoney = Math.floor(mps * diffInSeconds * 1.0); 
-    pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.3);
+    pendingOfflineHoney = Math.floor(mps * diffInSeconds * 0.7); 
+    pendingOfflineXP = Math.floor(pendingOfflineHoney * 0.2);
     if (pendingOfflineHoney > 0) {
-        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu não pararam um instante e produziram mel para você.<br><br><b>Produção acumulada:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas produziram mel para você.<br><br><b>Produção acumulada:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
     }
 }
 
@@ -2776,10 +2718,11 @@ function openSubShop(id, btn) {
 function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderAchs(); }
 
 function buildShop() {
+    const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); 
     ['pepper', 'energy', 'flower', 'luck'].forEach(type => {
         const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
         durations.forEach(d => {
-            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.12)) * d.m));
+            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor));
             const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn);
         });
     });
@@ -2793,29 +2736,25 @@ function renderAchs() {
 }
 
 document.getElementById("btnUpgradeClick").onclick = () => { 
-    const cost = validateNum(clickCost);
-    if(honey >= cost){ 
-        honey = validateNum(honey - cost); 
+    if(honey >= clickCost){ 
+        honey = validateNum(honey - clickCost); 
         clickLvl++; 
-        hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.15) + (Math.log10(clickLvl)))); 
-        clickCost = validateNum(Math.floor(clickCost * 1.25)); 
+        hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.1) + (Math.log2(clickLvl)))); 
         updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
 document.getElementById("btnAutoAction").onclick = () => { 
-    const cost = validateNum(autoCost);
-    if(honey >= cost){ 
-        honey = validateNum(honey - cost); 
-        if(!autoUnlocked){ autoUnlocked = true; autoCost = Math.floor(5600 * 1.35); startAutoProducing(); } 
-        else { autoLevel++; autoCost = validateNum(Math.floor(autoCost * 1.35)); } 
+    if(honey >= autoCost){ 
+        honey = validateNum(honey - autoCost); 
+        if(!autoUnlocked){ autoUnlocked = true; startAutoProducing(); } 
+        else { autoLevel++; } 
         updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
 document.getElementById("btnUpgradeLuck").onclick = () => { 
-    const cost = validateNum(luckCost);
-    if(honey >= cost) { 
-        honey = validateNum(honey - cost); 
-        luckLvl++; luckCost = validateNum(Math.floor(luckCost * 1.5)); 
+    if(honey >= luckCost) { 
+        honey = validateNum(honey - luckCost); 
+        luckLvl++; 
         updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
     } 
 };
@@ -2838,7 +2777,7 @@ setInterval(() => { if(gameLoaded && document.getElementById('gameUI').style.opa
 function initAchievements() {
     achievements.length = 0;
     for(let i=1; i<=200; i++) {
-        let val = Math.pow(1.58, i) * 120, theme = achThemes[i % achThemes.length];
+        let val = Math.pow(1.65, i) * 150, theme = achThemes[i % achThemes.length];
         achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:i < 80 ? "common" : (i < 160 ? "rare" : "epic"),i:theme.i});
     }
 }
