@@ -316,6 +316,18 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .settings-gear, .daily-mission-btn, .daily-reward-btn { position: absolute; top: 18px; cursor: pointer; transition: transform 0.3s ease; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .settings-gear { right: 18px; font-size: 24px; }
 .daily-mission-btn { right: 55px; font-size: 24px; border-radius: 50%; padding: 2px; }
+
+/* ALERT PULSANTE NAS MISSÕES */
+.mission-alert {
+    animation: alertPulse 1.5s infinite;
+    background: var(--xp-bar) !important;
+}
+@keyframes alertPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(76, 175, 80, 0); }
+    50% { transform: scale(1.1); box-shadow: 0 0 15px var(--xp-bar); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(76, 175, 80, 0); }
+}
+
 .daily-reward-btn { right: 92px; font-size: 24px; border-radius: 50%; padding: 2px; }
 
 .level-container { margin-top: 12px; text-align: left; }
@@ -402,7 +414,26 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     align-items: center; 
     gap: 4px;
     transition: 0.3s;
+    position: relative;
 }
+
+/* CIRCULO COLORIDO PULSANTE NO BOTAO JOGOS */
+.tab-btn-games-highlight::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px; height: 60px;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    background: linear-gradient(var(--card), var(--card)) padding-box,
+                linear-gradient(90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000) border-box;
+    z-index: -1;
+    animation: chromaticRotate 3s linear infinite, gamesPulse 2s ease-in-out infinite;
+}
+
+@keyframes gamesPulse { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
+
 .tab-btn span { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
 .tab-btn.active { color: var(--accent); border-bottom: 4px solid var(--accent); }
 .tab-btn.active span { color: var(--text-color); }
@@ -713,6 +744,10 @@ input[type=range]::-webkit-slider-thumb {
     background: rgba(0,0,0,0.3); border: 1.5px dashed var(--accent); 
     border-radius: 18px; padding: 12px; margin-top: 12px; display: none;
 }
+
+#expResultInline {
+    padding: 15px; background: rgba(76, 175, 80, 0.1); border: 2px solid var(--xp-bar); border-radius: 18px; display: none;
+}
 </style>
 </head>
 
@@ -801,7 +836,7 @@ input[type=range]::-webkit-slider-thumb {
       <div class="tabs-header">
           <button class="tab-btn active" onclick="openTab('upgrades', this)">🚀<span>Upgrades</span></button>
           <button class="tab-btn" onclick="openTab('shop', this)">🛒<span>Loja</span></button>
-          <button class="tab-btn" onclick="openTab('events', this)">🎮<span>Jogos</span></button>
+          <button id="btnTabGames" class="tab-btn tab-btn-games-highlight" onclick="openTab('events', this)">🎮<span>Jogos</span></button>
           <button class="tab-btn" onclick="openTab('achievements', this)">🎖️<span>Conquistas</span></button>
       </div>
       
@@ -891,6 +926,13 @@ input[type=range]::-webkit-slider-thumb {
               <div class="scroll-area">
                   <div class="section-title">EXPEDIÇÃO REAL (INVESTIMENTO)</div>
                   <div class="expedition-card">
+                      <div id="expResultInline">
+                          <div style="font-size: 30px; text-align: center;">📦</div>
+                          <h3 style="margin: 5px 0; color: var(--accent); text-align: center;">O ENXAME VOLTOU!</h3>
+                          <div id="expResultInlineText" style="font-size: 13px; text-align: center; margin-bottom: 10px;"></div>
+                          <button onclick="collectExpeditionRewards()" style="background: var(--xp-bar); color: white; margin-top:0;">REIVINDICAR</button>
+                      </div>
+
                       <div id="expeditionActiveUI" style="display: none; text-align: center;">
                           <div style="font-size: 30px;">🛰️</div>
                           <b id="expActiveTitle">ENXAME EM EXPEDIÇÃO</b>
@@ -903,8 +945,8 @@ input[type=range]::-webkit-slider-thumb {
                           </div>
                       </div>
                       <div id="expIdleUI">
-                          <div style="font-size: 24px;">🧭</div>
-                          <p style="font-size: 11px; opacity: 0.8; margin: 8px 0;">Escolha o tempo, o destino e a quantidade de abelhas para a missão.</p>
+                          <div style="font-size: 24px; text-align: center;">🧭</div>
+                          <p style="font-size: 11px; opacity: 0.8; margin: 8px 0; text-align: center;">Escolha o tempo, o destino e a quantidade de abelhas para a missão.</p>
                           
                           <div class="biome-selector">
                             <div class="biome-btn selected" id="biome_clover" onclick="selectBiome('clover')">
@@ -1012,20 +1054,6 @@ input[type=range]::-webkit-slider-thumb {
           </div>
       </div>
   </div>
-</div>
-
-<div class="modal" id="expResultModal">
-    <div class="modal-box">
-        <div class="modal-header">O Enxame Retornou! 🛰️</div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div id="expResultIcon" style="font-size: 50px; margin-bottom: 20px;">📦</div>
-            <h2 id="expResultTitle" style="margin: 0; color: var(--accent);">MISSÃO CUMPRIDA</h2>
-            <p id="expResultText" style="font-size: 14px; opacity: 0.9; line-height: 1.4; margin-top: 10px;"></p>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('expResultModal')" style="background: var(--xp-bar); color: white;">REIVINDICAR</button>
-        </div>
-    </div>
 </div>
 
 <div id="downloadOverlay">
@@ -1439,21 +1467,35 @@ async function handlePwaClick() {
 // ==========================================
 let updateHistory = [
     {
+        version: "9.9.0",
+        title: "🛡️ REVISÃO DE MISSÕES",
+        changes: [
+            { type: "mod", text: "Robustez: Sincronização de progresso refatorada para evitar perdas em minigames." },
+            { type: "mod", text: "Balanceamento: Recompensas agora escalam logaritmicamente com seu poder de clique." },
+            { type: "add", text: "Proteção de Ciclo: Prêmios não coletados no reset das 22h são convertidos em ganhos offline." },
+            { type: "fix", text: "Interface: Botão de missões agora possui alerta pulsante quando há recompensas." }
+        ]
+    },
+    {
+        version: "9.8.0",
+        title: "🛸 EXPEDIÇÕES 2.0",
+        changes: [
+            { type: "mod", text: "Interface Limpa: Resultados agora aparecem diretamente na aba de expedições, sem modais." },
+            { type: "add", text: "Eventos Dinâmicos: Enfrente ataques de Vespas ou aproveite Ventos Favoráveis no caminho." }
+        ]
+    },
+    {
         version: "9.7.0",
         title: "🌍 BIOMAS DE EXPEDIÇÃO",
         changes: [
-            { type: "add", text: "Destinos Especializados: Escolha entre Campos de Trevo, Plantação de Pimentas ou Pomar Abandonado." },
-            { type: "mod", text: "Estratégia: Cada bioma garante recompensas específicas, como buffs de Sorte, Mel ou XP." },
-            { type: "add", text: "Novos Tempos: Selecione durações de 5m, 30m, 1h ou 24h para maior flexibilidade." },
-            { type: "fix", text: "Painel Changelog: Agora exibindo o histórico profissional das últimas 5 versões." }
+            { type: "add", text: "Destinos Especializados: Escolha entre Campos de Trevo, Plantação de Pimentas ou Pomar." }
         ]
     },
     {
         version: "9.6.0",
         title: "🛰️ EXPEDIÇÕES REAIS",
         changes: [
-            { type: "add", text: "Sistema de Envio: Lance tropas para missões exploratórias em troca de mel massivo." },
-            { type: "mod", text: "Risco Tático: Seu poder de clique reduz temporariamente enquanto o enxame está fora." }
+            { type: "add", text: "Sistema de Envio: Lance tropas para missões exploratórias em troca de mel massivo." }
         ]
     },
     {
@@ -1461,20 +1503,6 @@ let updateHistory = [
         title: "🐝 EXPANSÃO DO ENXAME",
         changes: [
             { type: "mod", text: "Narrativa: Upgrade de cliques agora é o 'Recrutamento de Abelhas'." }
-        ]
-    },
-    {
-        version: "9.4.0",
-        title: "⚙️ CORREÇÃO DE MÉTRICAS",
-        changes: [
-            { type: "fix", text: "Missões: Ajustada contagem de mel para considerar multiplicadores ativos." }
-        ]
-    },
-    {
-        version: "9.3.0",
-        title: "📲 ICONIZAÇÃO REAL",
-        changes: [
-            { type: "mod", text: "Visual: Ícone NoelBeeUp.png definido como padrão do sistema." }
         ]
     }
 ];
@@ -1507,7 +1535,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V37"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V39"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
@@ -1520,7 +1548,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V37", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V39", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1545,7 +1573,7 @@ let clickLvl = 1, autoLvlLvl = 1;
 let luckLvl = 1, luckCost = 6400;
 
 // EXPEDITION STATE
-let expedition = { active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0 };
+let expedition = { active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0, finished: false, pendingRewards: null };
 
 let ownedCosmetics = ["Bee", "NoelBee", "SkullBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0, crown: 0 }; 
@@ -2539,7 +2567,7 @@ const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
 // ==========================================
-// SISTEMA DE MISSÕES ADAPTATIVO (v8.4.0)
+// SISTEMA DE MISSÕES ADAPTATIVO (v9.9.0)
 // ==========================================
 const missionTemplates = [
     { id: 'm_click', type: 'clicks', title: "Ginástica de Asas", desc: "Coletas manuais {target} vezes", baseGoal: 100, rewardMult: 2.2 },
@@ -2559,55 +2587,29 @@ function checkMissionReset() {
     const resetHour = 22; 
     let resetLimit = new Date();
     resetLimit.setHours(resetHour, 0, 0, 0);
-
-    if (now.getHours() < resetHour) {
-        resetLimit.setDate(resetLimit.getDate() - 1);
-    }
-
+    if (now.getHours() < resetHour) { resetLimit.setDate(resetLimit.getDate() - 1); }
     if (lastMissionReset < resetLimit.getTime()) {
-        let forgottenHoney = 0;
-        let forgottenXP = 0;
-        
-        dailyMissions.forEach(m => {
-            if (m.completed && !m.collected) {
-                forgottenHoney += m.rewardHoney;
-                forgottenXP += m.rewardXP;
-            }
-        });
-
-        if (forgottenHoney > 0) {
-            pendingOfflineHoney += forgottenHoney;
-            pendingOfflineXP += forgottenXP;
-        }
-
-        generateDailyMissions(); 
-        lastMissionReset = now.getTime(); 
-        executeSave(); 
+        let forgottenHoney = 0; let forgottenXP = 0;
+        dailyMissions.forEach(m => { if (m.completed && !m.collected) { forgottenHoney += m.rewardHoney; forgottenXP += m.rewardXP; } });
+        if (forgottenHoney > 0) { pendingOfflineHoney += forgottenHoney; pendingOfflineXP += forgottenXP; }
+        generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); 
     }
-    else if (!dailyMissions || dailyMissions.length < 10) { 
-        generateDailyMissions(); 
-        lastMissionReset = now.getTime(); 
-        executeSave(); 
-    }
+    else if (!dailyMissions || dailyMissions.length < 10) { generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); }
 }
 
 function generateDailyMissions() {
     dailyMissions = []; 
-    const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
     const clickLevelScale = 1 + (clickLvl * 0.15); 
     const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
-    
     const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
-    
-    for(let i=0; i<10; i++) {
-        const tmp = shuffled[i % shuffled.length];
-        dailyMissions.push(createSingleMission(tmp, scaleFactor, powerScale));
+    for(let i=0; i<10; i++) { 
+        const tmp = shuffled[i % shuffled.length]; 
+        dailyMissions.push(createSingleMission(tmp, scaleFactor)); 
     }
 }
 
-function createSingleMission(tmp, scaleFactor, powerScale) {
+function createSingleMission(tmp, scaleFactor) {
     let target = 0;
-    
     switch(tmp.type) {
         case 'clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); break;
         case 'target_clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); break;
@@ -2620,10 +2622,10 @@ function createSingleMission(tmp, scaleFactor, powerScale) {
         case 'mg_boost_collect': target = Math.ceil(tmp.baseGoal); break;
         case 'mg_session_finished': target = Math.ceil(tmp.baseGoal); break;
     }
-    
-    const clickValue = hPerClick * getGlobalBonus();
-    const rewardHoney = Math.max(target * (tmp.type.includes('mg') ? 500 : (tmp.type === 'play_time' ? 50 : clickValue * 2.5)), 600) * tmp.rewardMult;
-    const rewardXP = (nextLevelXP * 0.15) * tmp.rewardMult;
+    // RECOMPENSA DINÂMICA (Escala Logarítmica com hPerClick)
+    const logBase = Math.max(1, Math.log10(hPerClick * 100));
+    const rewardHoney = Math.max(target * (hPerClick * 2.5), 600) * tmp.rewardMult * logBase;
+    const rewardXP = (nextLevelXP * 0.12) * tmp.rewardMult;
     
     return { 
         id: tmp.id + Date.now() + Math.random(), 
@@ -2641,7 +2643,7 @@ function createSingleMission(tmp, scaleFactor, powerScale) {
 }
 
 function updateMissionProgress(type, amt = 1) {
-    if (!gameLoaded) return;
+    if (!gameLoaded) return; 
     let changed = false;
     dailyMissions.forEach(m => { 
         if (m.type === type && !m.completed) { 
@@ -2649,30 +2651,27 @@ function updateMissionProgress(type, amt = 1) {
             if (m.progress >= m.target) { 
                 m.progress = m.target; 
                 m.completed = true; 
-                notify({n: "Missão Realizada!", d: m.title});
-            }
+                notify({n: "Missão Realizada!", d: m.title}); 
+            } 
             changed = true; 
         } 
     });
-    if (changed) {
-        const modal = document.getElementById('missionsModal');
-        if (modal && modal.style.display === 'flex') renderMissions();
-        updateMissionAlertStatus();
+    if (changed) { 
+        const modal = document.getElementById('missionsModal'); 
+        if (modal && modal.style.display === 'flex') renderMissions(); 
+        updateMissionAlertStatus(); 
     }
 }
 
-function updateMissionAlertStatus() {
-    const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected);
-    const alertBtn = document.getElementById("btnMissionAlert");
-    if(!alertBtn) return;
-    if (hasRewardsToClaim) alertBtn.classList.add("mission-alert");
-    else alertBtn.classList.remove("mission-alert");
+function updateMissionAlertStatus() { 
+    const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected); 
+    const alertBtn = document.getElementById("btnMissionAlert"); 
+    if(!alertBtn) return; 
+    if (hasRewardsToClaim) alertBtn.classList.add("mission-alert"); 
+    else alertBtn.classList.remove("mission-alert"); 
 }
 
-function openRerollConfirmation(id) {
-    pendingRerollId = id;
-    openModal('rerollModal');
-}
+function openRerollConfirmation(id) { pendingRerollId = id; openModal('rerollModal'); }
 
 const confirmRerollBtn = document.getElementById('btnConfirmReroll');
 if(confirmRerollBtn) {
@@ -2681,15 +2680,9 @@ if(confirmRerollBtn) {
             const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
             if (index !== -1) {
                 const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-                const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
-                const clickLevelScale = 1 + (clickLvl * 0.15); 
-                const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
-                dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, powerScale);
-                renderMissions();
-                updateMissionAlertStatus();
-                executeSave();
-                closeModal('rerollModal');
-                pendingRerollId = null;
+                const scaleFactor = Math.pow(level, 1.2) * (1 + (clickLvl * 0.15));
+                dailyMissions[index] = createSingleMission(randomTmp, scaleFactor);
+                renderMissions(); updateMissionAlertStatus(); executeSave(); closeModal('rerollModal'); pendingRerollId = null;
             }
         }
     };
@@ -2698,555 +2691,181 @@ if(confirmRerollBtn) {
 function collectMissionReward(id) {
     const m = dailyMissions.find(x => x.id === id);
     if (m && m.completed && !m.collected) {
-        m.collected = true;
-        honey = validateNum(honey + m.rewardHoney);
+        m.collected = true; 
+        honey = validateNum(honey + m.rewardHoney); 
         addXP(m.rewardXP);
         notify({n: "Recompensa Coletada!", d: m.rewardLabel});
-        const allCollected = dailyMissions.every(x => x.collected);
+        const allCollected = dailyMissions.every(x => x.collected); 
         if(allCollected && dailyMissions.length >= 10) triggerCrownBonus();
-        renderMissions();
-        updateMissionAlertStatus();
-        updateUI();
+        renderMissions(); 
+        updateMissionAlertStatus(); 
+        updateUI(); 
         executeSave();
     }
 }
 
-function triggerCrownBonus() {
-    activeBoosts.crown = 36000;
-    notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 8x ATIVO por 1h!"});
-}
+function triggerCrownBonus() { activeBoosts.crown = 36000; notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 8x ATIVO por 1h!"}); }
 
 function getMissionIcon(type) {
     switch(type) {
-        case 'clicks': return '🐝';
-        case 'honey_gain': return '🍯';
-        case 'target_clicks': return '🎯';
-        case 'buy_upgrade': return '🚀';
-        case 'xp_gain': return '✨';
-        case 'play_time': return '⏳';
-        case 'mg_item_collect': return '🍎';
-        case 'mg_boost_collect': return '🥤';
-        case 'mg_kills': return '🔫';
-        case 'mg_session_finished': return '🎮';
-        default: return '📝';
+        case 'clicks': return '🐝'; case 'honey_gain': return '🍯'; case 'target_clicks': return '🎯'; case 'buy_upgrade': return '🚀'; case 'xp_gain': return '✨'; case 'play_time': return '⏳'; case 'mg_item_collect': return '🍎'; case 'mg_boost_collect': return '🥤'; case 'mg_kills': return '🔫'; case 'mg_session_finished': return '🎮'; default: return '📝';
     }
 }
 
 function renderMissions() {
-    const list = document.getElementById("missionsList"); 
-    if(!list) return;
-    list.innerHTML = "";
-    const sortedMissions = [...dailyMissions].sort((a, b) => {
-        const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2);
-        const scoreB = (b.completed && !b.collected) ? 0 : (!b.completed ? 1 : 2);
-        return scoreA - scoreB;
-    });
+    const list = document.getElementById("missionsList"); if(!list) return; list.innerHTML = "";
+    const sortedMissions = [...dailyMissions].sort((a, b) => { const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2); const scoreB = (b.completed && !b.collected) ? 0 : (!b.completed ? 1 : 2); return scoreA - scoreB; });
     sortedMissions.forEach(m => {
-        const perc = Math.min(100, (m.progress / m.target) * 100);
-        const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
+        const perc = Math.min(100, (m.progress / m.target) * 100); const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
         let actionButton = '';
-        if (m.completed && !m.collected) {
-            actionButton = `<button onclick="collectMissionReward('${m.id}')" style="margin-top:8px; padding:8px; background:var(--xp-bar); font-size:12px; height:auto; box-shadow:0 3px 0 #2e7d32;">COLETAR RECOMPENSA</button>`;
-        } else if (!m.completed) {
-            actionButton = `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>`;
-        }
-        list.innerHTML += `
-            <div class="mission-card ${m.completed ? 'completed' : ''} ${m.collected ? 'collected' : ''}">
-                <div style="font-size: 24px">${icon}</div>
-                <div style="flex: 1">
-                    <div style="font-weight: 900; font-size: 14px; color: inherit">${m.title}</div>
-                    <div style="font-size: 11px; color: inherit; opacity: 0.6;">${m.desc}</div>
-                    <div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div>
-                    <div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div>
-                    ${actionButton}
-                </div>
-                <div style="font-size: 10px; font-weight: 800; min-width: 50px; text-align: right; padding-right: 5px;">
-                    ${formatNum(m.progress)}/${formatNum(m.target)}
-                </div>
-            </div>`;
+        if (m.completed && !m.collected) { actionButton = `<button onclick="collectMissionReward('${m.id}')" style="margin-top:8px; padding:8px; background:var(--xp-bar); font-size:12px; height:auto; box-shadow:0 3px 0 #2e7d32;">COLETAR RECOMPENSA</button>`; }
+        else if (!m.completed) { actionButton = `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>`; }
+        list.innerHTML += `<div class="mission-card ${m.completed ? 'completed' : ''} ${m.collected ? 'collected' : ''}"><div style="font-size: 24px">${icon}</div><div style="flex: 1"><div style="font-weight: 900; font-size: 14px; color: inherit">${m.title}</div><div style="font-size: 11px; color: inherit; opacity: 0.6;">${m.desc}</div><div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div><div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div>${actionButton}</div><div style="font-size: 10px; font-weight: 800; min-width: 50px; text-align: right; padding-right: 5px;">${formatNum(m.progress)}/${formatNum(m.target)}</div></div>`;
     });
 }
 
 function formatNum(n) {
-    n = validateNum(n);
-    if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return parseFloat(n.toFixed(2)).toString();
+    n = validateNum(n); if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return parseFloat(n.toFixed(2)).toString();
 }
 
-function formatTime(t) {
-    let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h";
-}
+function formatTime(t) { let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h"; }
 
-function getMPSBase() { 
-    if(!autoUnlocked) return 0; 
-    return (autoLevel * (2 + (autoLevel * 0.1))) + (level * 2.5); 
-}
+function getMPSBase() { if(!autoUnlocked) return 0; return (autoLevel * (2 + (autoLevel * 0.1))) + (level * 2.5); }
 
 function getSkinBonus() { return (equippedCosmetic === "NoelBee") ? 1.10 : 1.0; }
 
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length, e = achievements.filter(a => a.u && a.r === 'epic').length;
-    let b = (1 + (r * 0.01) + (e * 0.05)) * getSkinBonus(); 
-    if(activeBoosts.pepper > 0) b += 1; 
-    if(activeBoosts.energy > 0) b += 0.5; 
-    if(activeBoosts.crown > 0) b *= 8;
-    return b;
+    let b = (1 + (r * 0.01) + (e * 0.05)) * getSkinBonus(); if(activeBoosts.pepper > 0) b += 1; if(activeBoosts.energy > 0) b += 0.5; if(activeBoosts.crown > 0) b *= 8; return b;
 }
 
 function updateUI() {
-    honey = validateNum(honey);
-    const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 10);
-    clickCost = Math.floor(1200 * Math.pow(1.35, clickLvl - 1) * inflationFactor);
-    autoCost = Math.floor(5600 * Math.pow(1.45, autoLevel - 1) * inflationFactor);
-    luckCost = Math.floor(6400 * Math.pow(1.65, luckLvl - 1) * inflationFactor);
-
-    const honeyEl = document.getElementById("honey");
-    const mpsEl = document.getElementById("mps");
-    const lvlEl = document.getElementById("lvlDisplay");
-    const xpEl = document.getElementById("xpDisplay");
-    const xpFill = document.getElementById("xpFill");
-
-    if(honeyEl) honeyEl.textContent = formatNum(honey); 
-    if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus());
-    if(lvlEl) lvlEl.textContent = level; 
-    if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
-    if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
-    
-    const upgClickBtn = document.getElementById("btnUpgradeClick");
-    const upgAutoBtn = document.getElementById("btnAutoAction");
-    const upgLuckBtn = document.getElementById("btnUpgradeLuck");
-
-    if(upgClickBtn) {
-        upgClickBtn.disabled = (honey < clickCost); 
-        upgClickBtn.innerHTML = `<b>Recrutar Abelhas (${clickLvl} 🐝)</b><br>${formatNum(clickCost)} 🍯`;
-    }
-    if(upgAutoBtn) {
-        upgAutoBtn.disabled = (honey < autoCost); 
-        upgAutoBtn.innerHTML = !autoUnlocked ? `<b>Produção Interna</b><br>${formatNum(autoCost)} 🍯` : `<b>Produção Interna (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
-    }
-    if(upgLuckBtn) {
-        upgLuckBtn.disabled = (honey < luckCost); 
-        upgLuckBtn.innerHTML = `<b>Sorte Real (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
-    } buildShop(); renderActiveBoosts(); updateRecordsUI();
-
+    honey = validateNum(honey); const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 10);
+    clickCost = Math.floor(1200 * Math.pow(1.35, clickLvl - 1) * inflationFactor); autoCost = Math.floor(5600 * Math.pow(1.45, autoLevel - 1) * inflationFactor); luckCost = Math.floor(6400 * Math.pow(1.65, luckLvl - 1) * inflationFactor);
+    const honeyEl = document.getElementById("honey"); const mpsEl = document.getElementById("mps"); const lvlEl = document.getElementById("lvlDisplay"); const xpEl = document.getElementById("xpDisplay"); const xpFill = document.getElementById("xpFill");
+    if(honeyEl) honeyEl.textContent = formatNum(honey); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lvlEl) lvlEl.textContent = level; if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    const upgClickBtn = document.getElementById("btnUpgradeClick"); const upgAutoBtn = document.getElementById("btnAutoAction"); const upgLuckBtn = document.getElementById("btnUpgradeLuck");
+    if(upgClickBtn) { upgClickBtn.disabled = (honey < clickCost); upgClickBtn.innerHTML = `<b>Recrutar Abelhas (${clickLvl} 🐝)</b><br>${formatNum(clickCost)} 🍯`; }
+    if(upgAutoBtn) { upgAutoBtn.disabled = (honey < autoCost); upgAutoBtn.innerHTML = !autoUnlocked ? `<b>Produção Interna</b><br>${formatNum(autoCost)} 🍯` : `<b>Produção Interna (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`; }
+    if(upgLuckBtn) { upgLuckBtn.disabled = (honey < luckCost); upgLuckBtn.innerHTML = `<b>Sorte Real (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`; }
+    buildShop(); renderActiveBoosts(); updateRecordsUI();
     ['Bee', 'NoelBee', 'SkullBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
-        if(equippedCosmetic === id) { 
-            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; 
-            btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; 
-            const mainBee = document.getElementById("mainBeeSprite");
-            const headerBee = document.getElementById("miniBeeHeader");
-            if(mainBee) mainBee.src = `${id}.png`; 
-            if(headerBee) headerBee.src = `${id}.png`; 
-        } else { 
-            let label = (id === "NoelBee") ? "Noel (+10%)" : (id === "SkullBee") ? "Skull (+5% Crit)" : "Comum";
-            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; 
-            btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; 
-        }
+        if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; const mainBee = document.getElementById("mainBeeSprite"); const headerBee = document.getElementById("miniBeeHeader"); if(mainBee) mainBee.src = `${id}.png`; if(headerBee) headerBee.src = `${id}.png`; }
+        else { let label = (id === "NoelBee") ? "Noel (+10%)" : (id === "SkullBee") ? "Skull (+5% Crit)" : "Comum"; btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
-
     const clickZone = document.getElementById("clickZone");
     ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'].forEach(id => {
         const btn = document.getElementById(`btn_bg_${id}`); if(!btn) return;
-        if(equippedBackground === id) { 
-            btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; 
-            if(clickZone) clickZone.style.backgroundImage = `url('${id}.gif')`; 
-        } else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
+        if(equippedBackground === id) { btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; if(clickZone) clickZone.style.backgroundImage = `url('${id}.gif')`; }
+        else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
     checkUpdateStatus(); updateVersionDisplay(); updateExpeditionUI();
 }
 
-// ==========================================
-// SISTEMA DE EXPEDIÇÕES (v9.7.0)
-// ==========================================
-function selectBiome(id) {
-    if(expedition.active) return;
-    expedition.biome = id;
-    document.querySelectorAll('.biome-btn').forEach(b => b.classList.remove('selected'));
-    const btn = document.getElementById('biome_' + id);
-    if(btn) btn.classList.add('selected');
-}
+function selectBiome(id) { if(expedition.active || expedition.finished) return; expedition.biome = id; document.querySelectorAll('.biome-btn').forEach(b => b.classList.remove('selected')); const btn = document.getElementById('biome_' + id); if(btn) btn.classList.add('selected'); }
 
 function handleExpEvent() {
     if(!expedition.active || expedition.eventChance === 0) return;
-    const btn = document.getElementById("expEventBtn");
-    const msg = document.getElementById("expEventMsg");
-    if(expedition.eventChance === 1) { // Vespa
-        notify({n: "VESPAS AFASTADAS! 🛡️", d: "A missão continua segura!"});
-        expedition.eventChance = 0;
-    } else if(expedition.eventChance === 2) { // Vento
-        const now = Date.now();
-        expedition.startTime -= 30000; // Reduz 30s
-        notify({n: "VENTO FAVORÁVEL! 🌬️", d: "Redução de 30s aplicada"});
-        expedition.eventChance = 0;
-    }
-    const area = document.getElementById("expEventArea");
-    if(area) area.style.display = "none";
+    const btn = document.getElementById("expEventBtn"); const msg = document.getElementById("expEventMsg");
+    if(expedition.eventChance === 1) { notify({n: "VESPAS AFASTADAS! 🛡️", d: "A missão continua segura!"}); expedition.eventChance = 0; }
+    else if(expedition.eventChance === 2) { expedition.startTime -= 30000; notify({n: "VENTO FAVORÁVEL! 🌬️", d: "Redução de 30s aplicada"}); expedition.eventChance = 0; }
+    const area = document.getElementById("expEventArea"); if(area) area.style.display = "none";
 }
 
 function startExpedition() {
-    if(expedition.active) return;
-    const slider = document.getElementById("expSlider");
-    const durSelect = document.getElementById("expDurationSelect");
-    if(!slider || !durSelect) return;
-    const perc = parseInt(slider.value);
-    expedition.duration = parseInt(durSelect.value);
-    expedition.active = true;
-    expedition.reductionPerc = perc;
-    expedition.startTime = Date.now();
-    expedition.eventChance = 0;
-    
+    if(expedition.active || expedition.finished) return;
+    const slider = document.getElementById("expSlider"); const durSelect = document.getElementById("expDurationSelect"); if(!slider || !durSelect) return;
+    const perc = parseInt(slider.value); expedition.duration = parseInt(durSelect.value); expedition.active = true; expedition.reductionPerc = perc; expedition.startTime = Date.now(); expedition.eventChance = 0;
     let biomeName = expedition.biome === 'clover' ? 'Campos de Trevo' : (expedition.biome === 'pepper' ? 'Plantação de Pimentas' : 'Pomar Abandonado');
-    notify({n: "EXPEDIÇÃO LANÇADA!", d: biomeName});
-    updateUI();
-    executeSave();
+    notify({n: "EXPEDIÇÃO LANÇADA!", d: biomeName}); updateUI(); executeSave();
 }
 
 function updateExpeditionUI() {
-    const idleUI = document.getElementById("expIdleUI");
-    const activeUI = document.getElementById("expeditionActiveUI");
-    const reductionLabel = document.getElementById("expReductionLabel");
-    const activeTitle = document.getElementById("expActiveTitle");
-    if(!idleUI || !activeUI) return; 
+    const idleUI = document.getElementById("expIdleUI"); const activeUI = document.getElementById("expeditionActiveUI"); const inlineRes = document.getElementById("expResultInline"); const reductionLabel = document.getElementById("expReductionLabel"); const activeTitle = document.getElementById("expActiveTitle");
+    if(!idleUI || !activeUI || !inlineRes) return; 
 
-    if(expedition.active) {
-        idleUI.style.display = "none";
-        activeUI.style.display = "block";
+    if(expedition.finished) {
+        idleUI.style.display = "none"; activeUI.style.display = "none"; inlineRes.style.display = "block";
+        const resText = document.getElementById("expResultInlineText"); if(resText && expedition.pendingRewards) resText.innerHTML = expedition.pendingRewards.msg;
+    } else if(expedition.active) {
+        idleUI.style.display = "none"; inlineRes.style.display = "none"; activeUI.style.display = "block";
         if(reductionLabel) reductionLabel.textContent = expedition.reductionPerc;
-        if(activeTitle) {
-            let bName = expedition.biome === 'clover' ? 'CAMPOS DE TREVO 🍀' : (expedition.biome === 'pepper' ? 'PLANT. PIMENTAS 🌶️' : 'POMAR ABANDONADO 🍎');
-            activeTitle.textContent = bName;
-        }
+        if(activeTitle) { let bName = expedition.biome === 'clover' ? 'CAMPOS DE TREVO 🍀' : (expedition.biome === 'pepper' ? 'PLANT. PIMENTAS 🌶️' : 'POMAR ABANDONADO 🍎'); activeTitle.textContent = bName; }
     } else {
-        idleUI.style.display = "block";
-        activeUI.style.display = "none";
-        selectBiome(expedition.biome || 'clover');
+        inlineRes.style.display = "none"; activeUI.style.display = "none"; idleUI.style.display = "block"; selectBiome(expedition.biome || 'clover');
     }
 }
 
 function tickExpedition() {
-    if(!expedition.active) return;
-    const now = Date.now();
-    const elapsed = now - expedition.startTime;
-    const remaining = expedition.duration - elapsed;
-    
-    if(remaining <= 0) {
-        finishExpedition();
-    } else {
+    if(!expedition.active) return; const now = Date.now(); const elapsed = now - expedition.startTime; const remaining = expedition.duration - elapsed;
+    if(remaining <= 0) { finishExpedition(); }
+    else {
         const timerEl = document.getElementById("expTimer");
-        if(timerEl) {
-            const h = Math.floor(remaining / 3600000);
-            const m = Math.floor((remaining % 3600000) / 60000);
-            const s = Math.floor((remaining % 60000) / 1000);
-            timerEl.textContent = (h > 0 ? h + ":" : "") + m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
-        }
-
-        // TRIGGER DE EVENTOS ALEATÓRIOS (Baseado em 5 min de escala)
+        if(timerEl) { const h = Math.floor(remaining / 3600000); const m = Math.floor((remaining % 3600000) / 60000); const s = Math.floor((remaining % 60000) / 1000); timerEl.textContent = (h > 0 ? h + ":" : "") + m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0'); }
         if(Math.random() < 0.002 && expedition.eventChance === 0) {
-            const isVespa = Math.random() < 0.5;
-            expedition.eventChance = isVespa ? 1 : 2;
-            const area = document.getElementById("expEventArea");
-            const btn = document.getElementById("expEventBtn");
-            const msg = document.getElementById("expEventMsg");
-            if(area && btn && msg) {
-                area.style.display = "block";
-                if(isVespa) {
-                    msg.innerHTML = "⚠️ ATAQUE DE VESPAS!";
-                    msg.style.color = "#ff4757";
-                    btn.textContent = "DEFENDER AGORA!";
-                    btn.style.background = "#ff4757";
-                } else {
-                    msg.innerHTML = "🌬️ VENTOS DE CAUDA!";
-                    msg.style.color = "#2ecc71";
-                    btn.textContent = "PEGAR IMPULSO!";
-                    btn.style.background = "#2ecc71";
-                }
-            }
-            // Auto-cancelar vespa se não clicar em 8s
-            if(isVespa) {
-                setTimeout(() => {
-                    if(expedition.active && expedition.eventChance === 1) {
-                        expedition.active = false;
-                        notify({n: "MISSÃO FALHOU!", d: "As vespas dispersaram o enxame"});
-                        document.getElementById("expEventArea").style.display = "none";
-                        updateUI();
-                        executeSave();
-                    }
-                }, 8000);
-            } else {
-                // Sumir vento em 10s
-                setTimeout(() => { if(expedition.eventChance === 2) { document.getElementById("expEventArea").style.display = "none"; expedition.eventChance = 0; } }, 10000);
-            }
+            const isVespa = Math.random() < 0.5; expedition.eventChance = isVespa ? 1 : 2; const area = document.getElementById("expEventArea"); const btn = document.getElementById("expEventBtn"); const msg = document.getElementById("expEventMsg");
+            if(area && btn && msg) { area.style.display = "block"; if(isVespa) { msg.innerHTML = "⚠️ ATAQUE DE VESPAS!"; msg.style.color = "#ff4757"; btn.textContent = "DEFENDER AGORA!"; btn.style.background = "#ff4757"; } else { msg.innerHTML = "🌬️ VENTOS DE CAUDA!"; msg.style.color = "#2ecc71"; btn.textContent = "PEGAR IMPULSO!"; btn.style.background = "#2ecc71"; } }
+            if(isVespa) { setTimeout(() => { if(expedition.active && expedition.eventChance === 1) { expedition.active = false; notify({n: "MISSÃO FALHOU!", d: "As vespas dispersaram o enxame"}); document.getElementById("expEventArea").style.display = "none"; updateUI(); executeSave(); } }, 8000); }
+            else { setTimeout(() => { if(expedition.eventChance === 2) { document.getElementById("expEventArea").style.display = "none"; expedition.eventChance = 0; } }, 10000); }
         }
     }
 }
 
 function finishExpedition() {
-    expedition.active = false;
-    const durBonus = expedition.duration / 300000; // Multiplicador por tempo (5m = 1x, 24h = 288x)
-    const power = (hPerClick * expedition.reductionPerc * 250 * durBonus); 
-    const rng = Math.random();
-    let title = "MISSÃO CUMPRIDA", icon = "🎁", msg = "";
-    let hGain = power; let xGain = hGain * 0.15;
-    
-    if(expedition.biome === 'clover') {
-        hGain *= 0.6;
-        if(rng < 0.6) { activeBoosts.luck += 600 * Math.sqrt(durBonus); msg += "🍀 Buff Sorte Real obtido!<br>"; }
-    } else if(expedition.biome === 'pepper') {
-        hGain *= 1.4;
-        if(rng < 0.6) { activeBoosts.pepper += 600 * Math.sqrt(durBonus); msg += "🌶️ Buff Pimenta obtido!<br>"; }
-        if(rng > 0.98) { hGain = 0; msg = "As abelhas 'queimaram as asas' no calor escaldante."; icon = "🔥"; }
-    } else if(expedition.biome === 'orchard') {
-        xGain *= 3;
-        if(rng < 0.2) { activeBoosts.crown += 300; msg += "👑 Coroa Real encontrada!<br>"; }
-    }
-
-    if(hGain > 0) {
-        honey += hGain; addXP(xGain);
-        msg += `<br><b>RECURSOS RECOLHIDOS:</b><br>🍯 ${formatNum(hGain)} Mel<br>✨ ${formatNum(xGain)} XP`;
-    }
-
-    const resIcon = document.getElementById("expResultIcon");
-    const resTitle = document.getElementById("expResultTitle");
-    const resText = document.getElementById("expResultText");
-    if(resIcon) resIcon.textContent = icon;
-    if(resTitle) resTitle.textContent = title;
-    if(resText) resText.innerHTML = msg;
-    openModal("expResultModal"); updateUI(); executeSave();
+    expedition.active = false; expedition.finished = true; const durBonus = expedition.duration / 300000; const power = (hPerClick * expedition.reductionPerc * 250 * durBonus); const rng = Math.random();
+    let msg = ""; let hGain = power; let xGain = hGain * 0.15;
+    if(expedition.biome === 'clover') { hGain *= 0.6; if(rng < 0.6) { activeBoosts.luck += 600 * Math.sqrt(durBonus); msg += "🍀 Buff Sorte Real obtido!<br>"; } }
+    else if(expedition.biome === 'pepper') { hGain *= 1.4; if(rng < 0.6) { activeBoosts.pepper += 600 * Math.sqrt(durBonus); msg += "🌶️ Buff Pimenta obtido!<br>"; } if(rng > 0.98) { hGain = 0; msg = "As abelhas 'queimaram as asas'."; } }
+    else if(expedition.biome === 'orchard') { xGain *= 3; if(rng < 0.2) { activeBoosts.crown += 300; msg += "👑 Coroa Real encontrada!<br>"; } }
+    if(hGain > 0) msg += `<b>GANHOS:</b><br>🍯 ${formatNum(hGain)} Mel | ✨ ${formatNum(xGain)} XP`;
+    expedition.pendingRewards = {h: hGain, x: xGain, msg: msg}; updateUI(); executeSave();
 }
 
-function renderActiveBoosts() {
-    const container = document.getElementById("active-boosts"); 
-    if(!container) return;
-    container.innerHTML = "";
-    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑' };
-    for(let key in activeBoosts) if(activeBoosts[key] > 0) { const div = document.createElement("div"); div.className = "active-boost-timer"; div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`; container.appendChild(div); }
+function collectExpeditionRewards() {
+    if(expedition.pendingRewards) { honey += expedition.pendingRewards.h; addXP(expedition.pendingRewards.x); notify({n: "Recompensas Coletadas!"}); }
+    expedition.finished = false; expedition.pendingRewards = null; updateUI(); executeSave();
 }
 
-function spawnFloatingNumber(amount, isTarget, isSuperCritical) {
-    const bee = document.getElementById("mainBeeSprite");
-    if(!bee) return;
-    const rect = bee.getBoundingClientRect();
-    const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2);
-    const container = document.createElement("div"); container.className = "floating-num-container";
-    const numEl = document.createElement("div"); numEl.className = "floating-num"; numEl.textContent = `+${formatNum(amount)}`;
-    if(isSuperCritical) { numEl.style.color = "#ff4757"; numEl.style.fontSize = "38px"; const label = document.createElement("div"); label.className = "super-critical-label"; label.textContent = "SORTE REAL! (5x)"; container.appendChild(numEl); container.appendChild(label); }
-    else if(isTarget) { numEl.style.color = "#ffcc00"; numEl.style.fontSize = "32px"; container.appendChild(numEl); }
-    else container.appendChild(numEl);
-    container.style.left = `${centerX}px`; container.style.top = `${centerY}px`; document.body.appendChild(container); setTimeout(() => container.remove(), 800);
-}
+function renderActiveBoosts() { const container = document.getElementById("active-boosts"); if(!container) return; container.innerHTML = ""; const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑' }; for(let key in activeBoosts) if(activeBoosts[key] > 0) { const div = document.createElement("div"); div.className = "active-boost-timer"; div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`; container.appendChild(div); } }
 
-function spawnHoneyParticles(isSuperCritical) {
-    const bee = document.getElementById("mainBeeSprite");
-    if(!bee) return;
-    const rect = bee.getBoundingClientRect();
-    const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2);
-    const count = isSuperCritical ? 20 : 8;
-    for(let i=0; i<count; i++) {
-        const p = document.createElement("div"); p.className = "honey-particle"; if(isSuperCritical) p.style.background = "#ff4757";
-        p.style.left = `${centerX}px`; p.style.top = `${centerY}px`;
-        const tx = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180), ty = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180);
-        p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`); document.body.appendChild(p); setTimeout(() => p.remove(), 500);
-    }
-}
+function spawnFloatingNumber(amount, isTarget, isSuperCritical) { const bee = document.getElementById("mainBeeSprite"); if(!bee) return; const rect = bee.getBoundingClientRect(); const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2); const container = document.createElement("div"); container.className = "floating-num-container"; const numEl = document.createElement("div"); numEl.className = "floating-num"; numEl.textContent = `+${formatNum(amount)}`; if(isSuperCritical) { numEl.style.color = "#ff4757"; numEl.style.fontSize = "38px"; const label = document.createElement("div"); label.className = "super-critical-label"; label.textContent = "SORTE REAL! (5x)"; container.appendChild(numEl); container.appendChild(label); } else if(isTarget) { numEl.style.color = "#ffcc00"; numEl.style.fontSize = "32px"; container.appendChild(numEl); } else container.appendChild(numEl); container.style.left = `${centerX}px`; container.style.top = `${centerY}px`; document.body.appendChild(container); setTimeout(() => container.remove(), 800); }
 
-function triggerImpact(isTarget, isSuperCritical) {
-    const card = document.getElementById("clickCard"), stats = document.getElementById("statsCard");
-    if(!card || !stats) return;
-    let scaleC = isSuperCritical ? 0.90 : (isTarget ? 0.96 : 0.98);
-    card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`; stats.style.transform = `scale(${isSuperCritical ? 1.10 : 1.01})`;
-    setTimeout(() => { card.style.transform = "scale(1) rotate(0deg)"; stats.style.transform = "scale(1)"; }, isSuperCritical ? 150 : 50);
-}
+function spawnHoneyParticles(isSuperCritical) { const bee = document.getElementById("mainBeeSprite"); if(!bee) return; const rect = bee.getBoundingClientRect(); const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2); const count = isSuperCritical ? 20 : 8; for(let i=0; i<count; i++) { const p = document.createElement("div"); p.className = "honey-particle"; if(isSuperCritical) p.style.background = "#ff4757"; p.style.left = `${centerX}px`; p.style.top = `${centerY}px`; const tx = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180), ty = (Math.random() - 0.5) * (isSuperCritical ? 300 : 180); p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`); document.body.appendChild(p); setTimeout(() => p.remove(), 500); } }
 
-function doClick(event, isTarget = false) {
-    playClickSound(); 
-    let baseChance = 0.001 + ((luckLvl - 1) * 0.0002); 
-    if(equippedCosmetic === "SkullBee") baseChance += 0.05; 
-    if(activeBoosts.luck > 0) baseChance *= 2;
-    const superCriticalChance = Math.random() < baseChance; 
-    let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 5 : 1);
-    let expMult = 1; if(expedition.active) expMult = (100 - expedition.reductionPerc) / 100;
-    const g = hPerClick * getGlobalBonus() * multiplier * expMult; 
-    honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
-    updateMissionProgress('honey_gain', g);
-    if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
-    const bee = document.getElementById("beeContainer"); 
-    if(bee) { bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; setTimeout(() => bee.style.transform = "scale(1)", 50); }
-    spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance);
-    clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI();
-}
+function triggerImpact(isTarget, isSuperCritical) { const card = document.getElementById("clickCard"), stats = document.getElementById("statsCard"); if(!card || !stats) return; let scaleC = isSuperCritical ? 0.90 : (isTarget ? 0.96 : 0.98); card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`; stats.style.transform = `scale(${isSuperCritical ? 1.10 : 1.01})`; setTimeout(() => { card.style.transform = "scale(1) rotate(0deg)"; stats.style.transform = "scale(1)"; }, isSuperCritical ? 150 : 50); }
 
-function addXP(amt) {
-    let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); 
-    let xpGain = validateNum(amt * 0.15 * m); 
-    currentXP = validateNum(currentXP + xpGain); 
-    updateMissionProgress('xp_gain', xpGain);
-    while(currentXP >= nextLevelXP){ 
-        currentXP = validateNum(currentXP - nextLevelXP); 
-        level++; nextLevelXP = Math.floor(nextLevelXP * 1.35); 
-        triggerLevelUpCelebration(); 
-    }
-}
+function doClick(event, isTarget = false) { playClickSound(); let baseChance = 0.001 + ((luckLvl - 1) * 0.0002); if(equippedCosmetic === "SkullBee") baseChance += 0.05; if(activeBoosts.luck > 0) baseChance *= 2; const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 5 : 1); let expMult = 1; if(expedition.active) expMult = (100 - expedition.reductionPerc) / 100; const g = hPerClick * getGlobalBonus() * multiplier * expMult; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g); updateMissionProgress('honey_gain', g); if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1); const bee = document.getElementById("beeContainer"); if(bee) { bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; setTimeout(() => bee.style.transform = "scale(1)", 50); } spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance); clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI(); }
 
-function triggerLevelUpCelebration() {
-    soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {});
-    notify({n:`Nível Real ${level}!`});
-    const card = document.getElementById("statsCard");
-    if(card) { card.classList.add("lvl-up-flash"); setTimeout(() => card.classList.remove("lvl-up-flash"), 1000); }
-    spawnLevelUpFireworks();
-}
+function addXP(amt) { let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); let xpGain = validateNum(amt * 0.15 * m); currentXP = validateNum(currentXP + xpGain); updateMissionProgress('xp_gain', xpGain); while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; nextLevelXP = Math.floor(nextLevelXP * 1.35); triggerLevelUpCelebration(); } }
 
-function spawnLevelUpFireworks() {
-    const count = 30; const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200'];
-    for(let i=0; i<count; i++) {
-        const p = document.createElement("div"); p.className = "honey-particle";
-        p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        p.style.width = (Math.random() * 10 + 5) + "px"; p.style.height = p.style.width;
-        p.style.left = "50vw"; p.style.top = "50vh"; p.style.boxShadow = "0 0 10px gold";
-        const angle = Math.random() * Math.PI * 2; const velocity = Math.random() * 400 + 200;
-        const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity;
-        p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`);
-        document.body.appendChild(p); setTimeout(() => p.remove(), 1000);
-    }
-}
+function triggerLevelUpCelebration() { soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {}); notify({n:`Nível Real ${level}!`}); const card = document.getElementById("statsCard"); if(card) { card.classList.add("lvl-up-flash"); setTimeout(() => card.classList.remove("lvl-up-flash"), 1000); } spawnLevelUpFireworks(); }
 
-function buyBoostManual(type, ticks, cost, label) { 
-    cost = validateNum(cost);
-    if(honey >= cost) { honey = validateNum(honey - cost); activeBoosts[type] += ticks; notify({n: "Boost Ativado!", d: `+${label}`}); updateUI(); executeSave(); } 
-}
-function handleCosmetic(id) { equippedCosmetic = id; notify({n: "Skin Trocada!"}); updateUI(); executeSave(); }
-function handleBackground(id) { equippedBackground = id; notify({n: "Cenário Alterado!"}); updateUI(); executeSave(); }
+function spawnLevelUpFireworks() { const count = 30; const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200']; for(let i=0; i<count; i++) { const p = document.createElement("div"); p.className = "honey-particle"; p.style.background = colors[Math.floor(Math.random() * colors.length)]; p.style.width = (Math.random() * 10 + 5) + "px"; p.style.height = p.style.width; p.style.left = "50vw"; p.style.top = "50vh"; p.style.boxShadow = "0 0 10px gold"; const angle = Math.random() * Math.PI * 2; const velocity = Math.random() * 400 + 200; const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity; p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`); document.body.appendChild(p); setTimeout(() => p.remove(), 1000); } }
+
+function buyBoostManual(type, ticks, cost, label) { cost = validateNum(cost); if(honey >= cost) { honey = validateNum(honey - cost); activeBoosts[type] += ticks; notify({n: "Boost Ativado!", d: `+${label}`}); updateUI(); executeSave(); } }
 
 function startAutoProducing() { if(autoProduceInterval) clearInterval(autoProduceInterval); autoProduceInterval = setInterval(() => { if(autoUnlocked){ let gain = getMPSBase() * getGlobalBonus(); honey = validateNum(honey + gain); totalHoneyEver = validateNum(totalHoneyEver + gain); addXP(gain); updateMissionProgress('honey_gain', gain); } }, 1000); }
 
-function startGameTicks() {
-    if(gameTickInterval) clearInterval(gameTickInterval);
-    gameTickInterval = setInterval(() => {
-        if(!gameLoaded) return; const now = Date.now();
-        achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
-        for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
-        for(let b in activeBoosts) { const el = document.getElementById(`status_${b}`); if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; }
-        if(now % 1000 < 150) { updateUI(); checkMissionReset(); updateMissionProgress('play_time', 1); tickExpedition(); }
-    }, 100);
-}
+function startGameTicks() { if(gameTickInterval) clearInterval(gameTickInterval); gameTickInterval = setInterval(() => { if(!gameLoaded) return; const now = Date.now(); achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } }); for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--; for(let b in activeBoosts) { const el = document.getElementById(`status_${b}`); if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; } if(now % 1000 < 150) { updateUI(); checkMissionReset(); updateMissionProgress('play_time', 1); tickExpedition(); } }, 100); }
 
-function executeSave(){ 
-    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, expedition}; 
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
-    const missionData = {dailyMissions, lastMissionReset}; 
-    localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); 
-    localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
-    localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState));
-    const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); }
-}
+function executeSave(){ const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, expedition}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
 
-function checkOfflineGains(lastTimestamp) {
-    if (!autoUnlocked) return; const now = Date.now(); 
-    const diffInSeconds = Math.floor((now - lastTimestamp) / 1000);
-    if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; 
-    const offlineIconEl = document.getElementById("offlineIcon");
-    const offlineTitleEl = document.getElementById("offlineTitle");
-    const btnCollect = document.getElementById("btnCollectOffline");
-    const offlineText = document.getElementById("offlineText");
-    if (diffInSeconds > 604800) {
-        pendingOfflineHoney = 0; pendingOfflineXP = 0;
-        if(offlineIconEl) { offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)"; }
-        if(offlineTitleEl) { offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757"; }
-        if(offlineText) offlineText.innerHTML = `Enquanto você descansava, as abelhas ficaram tristes com sua ausência.`;
-        if(btnCollect) { btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f"; }
-        return;
-    }
-    if(offlineIconEl) { offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)"; }
-    if(offlineTitleEl) { offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit"; }
-    const mps = getMPSBase() * getGlobalBonus(); 
-    const calculatedHoney = Math.floor(mps * diffInSeconds * 0.7); 
-    const calculatedXP = Math.floor(calculatedHoney * 0.2);
-    pendingOfflineHoney += calculatedHoney; pendingOfflineXP += calculatedXP;
-    if (pendingOfflineHoney > 0 && offlineText) { offlineText.innerHTML = `Enquanto você descansava, as abelhas produziram mel para você.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`; }
-}
+function checkOfflineGains(lastTimestamp) { if (!autoUnlocked) return; const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; const offlineIconEl = document.getElementById("offlineIcon"); const offlineTitleEl = document.getElementById("offlineTitle"); const btnCollect = document.getElementById("btnCollectOffline"); const offlineText = document.getElementById("offlineText"); if (diffInSeconds > 604800) { pendingOfflineHoney = 0; pendingOfflineXP = 0; if(offlineIconEl) { offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)"; } if(offlineTitleEl) { offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757"; } if(offlineText) offlineText.innerHTML = `As abelhas ficaram tristes com sua ausência.`; if(btnCollect) { btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f"; } return; } if(offlineIconEl) { offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)"; } if(offlineTitleEl) { offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit"; } const mps = getMPSBase() * getGlobalBonus(); const calculatedHoney = Math.floor(mps * diffInSeconds * 0.7); const calculatedXP = Math.floor(calculatedHoney * 0.2); pendingOfflineHoney += calculatedHoney; pendingOfflineXP += calculatedXP; if (pendingOfflineHoney > 0 && offlineText) { offlineText.innerHTML = `As abelhas produziram mel enquanto você descansava.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`; } }
 
-function collectOfflineRewards() { 
-    honey = validateNum(honey + pendingOfflineHoney); totalHoneyEver = validateNum(totalHoneyEver + pendingOfflineHoney); 
-    addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; 
-    closeModal('offlineModal'); 
-    updateUI(); executeSave(); checkDailyLogic();
-}
+function collectOfflineRewards() { honey = validateNum(honey + pendingOfflineHoney); totalHoneyEver = validateNum(totalHoneyEver + pendingOfflineHoney); addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave(); checkDailyLogic(); }
 
-function checkDailyLogic() {
-    const now = new Date(); const todayStr = now.toDateString(); const lastStr = new Date(dailyState.lastClaim).toDateString();
-    if (todayStr !== lastStr) {
-        const diffTime = now.getTime() - dailyState.lastClaim; const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays > 1) dailyState.streak = 0; dailyState.claimedToday = false; renderDailyGrid(); openModal('dailyRewardModal');
-    }
-}
+function checkDailyLogic() { const now = new Date(); const todayStr = now.toDateString(); const lastStr = new Date(dailyState.lastClaim).toDateString(); if (todayStr !== lastStr) { const diffTime = now.getTime() - dailyState.lastClaim; const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); if (diffDays > 1) dailyState.streak = 0; dailyState.claimedToday = false; renderDailyGrid(); openModal('dailyRewardModal'); } }
 
-function renderDailyGrid() {
-    const grid = document.getElementById('dailyGrid'); if(!grid) return; grid.innerHTML = "";
-    dailyCycle.forEach((item, i) => {
-        let status = i < dailyState.streak ? 'claimed' : (i === dailyState.streak ? 'active' : '');
-        let valText = item.type === 'honey' ? formatNum(item.val) : (item.type === 'xp' ? formatNum(item.val) + 'xp' : item.label);
-        grid.innerHTML += `<div class="day-card ${status}"><span class="day-num">DIA ${i+1}</span><span class="day-icon">${item.icon}</span><span class="day-reward-val">${valText}</span></div>`;
-    });
-    const claimBtn = document.getElementById('btnClaimDaily'); if(claimBtn) { claimBtn.disabled = dailyState.claimedToday; claimBtn.textContent = dailyState.claimedToday ? "COLETADO HOJE" : "RESGATAR HOJE"; }
-}
+function renderDailyGrid() { const grid = document.getElementById('dailyGrid'); if(!grid) return; grid.innerHTML = ""; dailyCycle.forEach((item, i) => { let status = i < dailyState.streak ? 'claimed' : (i === dailyState.streak ? 'active' : ''); let valText = item.type === 'honey' ? formatNum(item.val) : (item.type === 'xp' ? formatNum(item.val) + 'xp' : item.label); grid.innerHTML += `<div class="day-card ${status}"><span class="day-num">DIA ${i+1}</span><span class="day-icon">${item.icon}</span><span class="day-reward-val">${valText}</span></div>`; }); const claimBtn = document.getElementById('btnClaimDaily'); if(claimBtn) { claimBtn.disabled = dailyState.claimedToday; claimBtn.textContent = dailyState.claimedToday ? "COLETADO HOJE" : "RESGATAR HOJE"; } }
 
-function claimDailyReward() {
-    if (dailyState.claimedToday) return;
-    const reward = dailyCycle[dailyState.streak];
-    if (reward.type === 'honey') honey += reward.val; else if (reward.type === 'xp') addXP(reward.val); else if (reward.type === 'boost' || reward.type === 'super') { if (reward.val) honey += reward.val; activeBoosts[reward.boost] += reward.ticks; }
-    dailyState.lastClaim = Date.now(); dailyState.streak = (dailyState.streak + 1) % 7; dailyState.claimedToday = true;
-    notify({n: "Recompensa Diária!", d: "Prêmio resgatado com sucesso"}); updateUI(); executeSave(); renderDailyGrid(); setTimeout(() => closeModal('dailyRewardModal'), 800);
-}
+function claimDailyReward() { if (dailyState.claimedToday) return; const reward = dailyCycle[dailyState.streak]; if (reward.type === 'honey') honey += reward.val; else if (reward.type === 'xp') addXP(reward.val); else if (reward.type === 'boost' || reward.type === 'super') { if (reward.val) honey += reward.val; activeBoosts[reward.boost] += reward.ticks; } dailyState.lastClaim = Date.now(); dailyState.streak = (dailyState.streak + 1) % 7; dailyState.claimedToday = true; notify({n: "Recompensa Diária!", d: "Prêmio resgatado"}); updateUI(); executeSave(); renderDailyGrid(); setTimeout(() => closeModal('dailyRewardModal'), 800); }
 
-function load(){
-    initAchievements(); 
-    const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings();
-    const savedTheme = localStorage.getItem(THEME_KEY); 
-    if(savedTheme) { themeSettings = JSON.parse(savedTheme); const colIn = document.getElementById('uiMainColor'); const opaIn = document.getElementById('uiOpacity'); if(colIn) colIn.value = themeSettings.mainColor; if(opaIn) opaIn.value = themeSettings.opacity * 100; applyTheme(); }
-    const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords);
-    const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); if(savedDaily) dailyState = JSON.parse(savedDaily);
-    const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; }
-    const raw = localStorage.getItem(SAVE_KEY);
-    if(raw){
-        try {
-            const d = JSON.parse(raw);
-            honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 0.2; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400;
-            if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; });
-            if(d.defenderProgress) defenderProgress = d.defenderProgress; if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney; if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; if(d.expedition) expedition = d.expedition; if(d.timestamp) checkOfflineGains(d.timestamp);
-        } catch(e) { console.error(e); }
-    }
-    checkMissionReset(); updateMissionAlertStatus(); 
-    document.addEventListener('DOMContentLoaded', () => { updateUI(); updateVersionDisplay(); checkUpdateStatus(); });
-}
+function load(){ initAchievements(); const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings(); const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); const colIn = document.getElementById('uiMainColor'); const opaIn = document.getElementById('uiOpacity'); if(colIn) colIn.value = themeSettings.mainColor; if(opaIn) opaIn.value = themeSettings.opacity * 100; applyTheme(); } const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords); const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); if(savedDaily) dailyState = JSON.parse(savedDaily); const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; } const raw = localStorage.getItem(SAVE_KEY); if(raw){ try { const d = JSON.parse(raw); honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 0.2; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400; if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); if(d.defenderProgress) defenderProgress = d.defenderProgress; if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney; if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; if(d.expedition) expedition = d.expedition; if(d.timestamp) checkOfflineGains(d.timestamp); } catch(e) { console.error(e); } } checkMissionReset(); updateMissionAlertStatus(); document.addEventListener('DOMContentLoaded', () => { updateUI(); updateVersionDisplay(); checkUpdateStatus(); }); }
 
-function enterGame() {
-    load(); tryPlayMusic(); requestFullscreen();
-    const loadingScreen = document.getElementById("loadingScreen");
-    const bar = document.getElementById("loadingBarFill");
-    const bee = document.getElementById("loadingBeeImg");
-    const text = document.getElementById("loadingTextMsg");
-    if(loadingScreen) loadingScreen.style.display = "flex";
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 5; if(progress > 100) progress = 100; if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%";
-        if(progress === 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                if(loadingScreen) loadingScreen.style.display = "none";
-                const startScreen = document.getElementById('startScreen'); const gameUI = document.getElementById('gameUI');
-                if(startScreen) startScreen.style.display = 'none'; if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; }
-                gameLoaded = true; if(pendingOfflineHoney > 0) openModal('offlineModal'); else checkDailyLogic();
-                startGameTicks(); if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
-            }, 300);
-        }
-    }, 50);
-}
+function enterGame() { load(); tryPlayMusic(); requestFullscreen(); const loadingScreen = document.getElementById("loadingScreen"); const bar = document.getElementById("loadingBarFill"); const bee = document.getElementById("loadingBeeImg"); const text = document.getElementById("loadingTextMsg"); if(loadingScreen) loadingScreen.style.display = "flex"; let progress = 0; const interval = setInterval(() => { progress += Math.random() * 5; if(progress > 100) progress = 100; if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%"; if(progress === 100) { clearInterval(interval); setTimeout(() => { if(loadingScreen) loadingScreen.style.display = "none"; const startScreen = document.getElementById('startScreen'); const gameUI = document.getElementById('gameUI'); if(startScreen) startScreen.style.display = 'none'; if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; } gameLoaded = true; if(pendingOfflineHoney > 0) openModal('offlineModal'); else checkDailyLogic(); startGameTicks(); if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications(); }, 300); } }, 50); }
 
-function openModal(id) { 
-    const modal = document.getElementById(id); if(!modal) return; modal.style.display = 'flex'; 
-    if(id === 'settingsModal') { const btnExit = document.getElementById("btnExitToMain"); const gameUI = document.getElementById('gameUI'); if(gameLoaded && gameUI && gameUI.style.display === 'flex') { if(btnExit) btnExit.style.display = "block"; } else { if(btnExit) btnExit.style.display = "none"; } }
-    if(id === 'missionsModal') { renderMissions(); const alertBtn = document.getElementById("btnMissionAlert"); if(alertBtn) alertBtn.classList.remove("mission-alert"); }
-    if(id === 'dailyRewardModal') renderDailyGrid();
-}
+function openModal(id) { const modal = document.getElementById(id); if(!modal) return; modal.style.display = 'flex'; if(id === 'settingsModal') { const btnExit = document.getElementById("btnExitToMain"); const gameUI = document.getElementById('gameUI'); if(gameLoaded && gameUI && gameUI.style.display === 'flex') { if(btnExit) btnExit.style.display = "block"; } else { if(btnExit) btnExit.style.display = "none"; } } if(id === 'missionsModal') { renderMissions(); const alertBtn = document.getElementById("btnMissionAlert"); if(alertBtn) alertBtn.classList.remove("mission-alert"); } if(id === 'dailyRewardModal') renderDailyGrid(); }
 
 function closeModal(id) { const modal = document.getElementById(id); if(modal) modal.style.display = 'none'; }
 
@@ -3256,21 +2875,9 @@ function openSubShop(id, btn) { document.querySelectorAll('.sub-shop-pane').forE
 
 function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); renderAchs(); }
 
-function buildShop() {
-    const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); 
-    ['pepper', 'energy', 'flower', 'luck'].forEach(type => {
-        const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
-        durations.forEach(d => {
-            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor));
-            const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn);
-        });
-    });
-}
+function buildShop() { const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); ['pepper', 'energy', 'flower', 'luck'].forEach(type => { const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = ""; durations.forEach(d => { const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor)); const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn); }); }); }
 
-function renderAchs() {
-    const l = document.getElementById("achList"); if(!l) return; l.innerHTML = "";
-    achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => { l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`; });
-}
+function renderAchs() { const l = document.getElementById("achList"); if(!l) return; l.innerHTML = ""; achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => { l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`; }); }
 
 const upgClickBtn = document.getElementById("btnUpgradeClick"); if(upgClickBtn) { upgClickBtn.onclick = () => { if(honey >= clickCost){ honey = validateNum(honey - clickCost); clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.1) + (Math.log2(clickLvl)))); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
 const upgAutoBtn = document.getElementById("btnAutoAction"); if(upgAutoBtn) { upgAutoBtn.onclick = () => { if(honey >= autoCost){ honey = validateNum(honey - autoCost); if(!autoUnlocked){ autoUnlocked = true; startAutoProducing(); } else { autoLevel++; } updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
