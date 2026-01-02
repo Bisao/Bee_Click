@@ -202,6 +202,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .btn-chromatic-pulse {
     position: relative;
     overflow: visible !important;
+    z-index: 10;
 }
 
 .btn-chromatic-pulse::before {
@@ -220,7 +221,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 
 @keyframes chromaticRotate { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-@keyframes glowPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+@keyframes glowPulse { 0%, 100% { opacity: 0.6; filter: blur(2px); } 50% { opacity: 1; filter: blur(5px); } }
 
 .letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: inherit; }
 .tree-overlay {
@@ -1471,46 +1472,46 @@ async function handlePwaClick() {
 }
 
 // ==========================================
-// SISTEMA DINÂMICO DE CHANGELOG
+// SISTEMA DINÂMICO DE CHANGELOG (OTIMIZADO)
 // ==========================================
 let updateHistory = [
     {
         version: "10.1.0",
         title: "🖥️ SISTEMA DE IMERSÃO",
         changes: [
-            { type: "add", text: "Fullscreen Inteligente: O jogo monitora o estado da tela e restaura o modo imersivo ao tocar na zona de jogo." },
-            { type: "fix", text: "Estabilidade de UI: Ajustado o redimensionamento dos painéis para evitar cortes em telas ultra-longas." }
+            { type: "add", text: "Fullscreen Inteligente: O jogo restaura o modo imersivo ao tocar na zona de jogo." },
+            { type: "fix", text: "Estabilidade de UI: Ajustado o redimensionamento dos painéis para telas ultra-longas." }
         ]
     },
     {
         version: "10.0.0",
         title: "🧪 REVOLUÇÃO DOS BOOSTS",
         changes: [
-            { type: "add", text: "Geleia Real: Consumível ultra-raro que dobra o poder de upgrades ativos por tempo limitado." },
-            { type: "add", text: "Ímã de Pólen: Novo boost de utilidade que atrai alvos 🎯 para facilitar o clique." }
+            { type: "add", text: "Geleia Real: Consumível ultra-raro que dobra o poder de upgrades ativos." },
+            { type: "add", text: "Ímã de Pólen: Novo boost que atrai alvos 🎯 para facilitar o clique." }
         ]
     },
     {
         version: "9.9.0",
         title: "🛡️ REVISÃO DE MISSÕES",
         changes: [
-            { type: "mod", text: "Robustez: Sincronização de progresso refatorada para evitar perdas em minigames." },
-            { type: "fix", text: "Interface: Botão de missões agora possui alerta pulsante quando há recompensas." }
+            { type: "mod", text: "Robustez: Sincronização de progresso refatorada para evitar perdas." },
+            { type: "fix", text: "Interface: Botão de missões com alerta pulsante para recompensas." }
         ]
     },
     {
         version: "9.8.0",
         title: "🛸 EXPEDIÇÕES 2.0",
         changes: [
-            { type: "mod", text: "Interface Limpa: Resultados agora aparecem diretamente na aba de expedições." },
-            { type: "add", text: "Eventos Dinâmicos: Enfrente ataques de Vespas ou aproveite Ventos Favoráveis." }
+            { type: "mod", text: "Interface Limpa: Resultados aparecem direto na aba de expedições." },
+            { type: "add", text: "Eventos Dinâmicos: Enfrente ataques de Vespas ou Ventos Favoráveis." }
         ]
     },
     {
         version: "9.7.0",
         title: "🌍 BIOMAS DE EXPEDIÇÃO",
         changes: [
-            { type: "add", text: "Destinos Especializados: Escolha entre Campos de Trevo, Plantação de Pimentas ou Pomar." }
+            { type: "add", text: "Destinos Especializados: Campos de Trevo, Pimentas ou Pomares." }
         ]
     }
 ];
@@ -1526,6 +1527,7 @@ function renderChangelog() {
     const container = document.getElementById("changelogContent");
     if(!container) return;
     container.innerHTML = "";
+    // MOSTRAR APENAS AS ÚLTIMAS 5 ATUALIZAÇÕES
     const recentUpdates = updateHistory.slice(0, 5);
     recentUpdates.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
@@ -1543,10 +1545,11 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V41"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V42"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
+    // SÓ FICA VISÍVEL SE O PLAYER AINDA NÃO ACESSOU O PAINEL NESSA VERSÃO
     if(!lastSeen || lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
@@ -1556,7 +1559,8 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V41", currentVersion);
+    // SALVAR QUE O PLAYER VIU ESTA VERSÃO
+    localStorage.setItem("BeeKind_LastVersionSeen_V42", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -2502,7 +2506,6 @@ document.addEventListener('MSFullscreenChange', handleFSChange);
 
 function handleFSChange() {
     if(!checkFullscreenState() && gameLoaded) {
-        // Se saiu do FS e o jogo está rodando, podemos notificar ou preparar o próximo click
         console.log("Saiu do modo imersivo.");
     }
 }
@@ -2765,11 +2768,10 @@ function formatNum(n) {
 
 function formatTime(t) { let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h"; }
 
-// MPS COM SUPORTE À GELEIA REAL
 function getMPSBase() { 
     if(!autoUnlocked) return 0; 
     let base = (autoLevel * (2 + (autoLevel * 0.1))) + (level * 2.5);
-    if(activeBoosts.jelly > 0) base *= 2; // GELEIA REAL DOBRA MPS
+    if(activeBoosts.jelly > 0) base *= 2; 
     return base; 
 }
 
@@ -2892,7 +2894,6 @@ function spawnHoneyParticles(isSuperCritical) { const bee = document.getElementB
 function triggerImpact(isTarget, isSuperCritical) { const card = document.getElementById("clickCard"), stats = document.getElementById("statsCard"); if(!card || !stats) return; let scaleC = isSuperCritical ? 0.90 : (isTarget ? 0.96 : 0.98); card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`; stats.style.transform = `scale(${isSuperCritical ? 1.10 : 1.01})`; setTimeout(() => { card.style.transform = "scale(1) rotate(0deg)"; stats.style.transform = "scale(1)"; }, isSuperCritical ? 150 : 50); }
 
 function doClick(event, isTarget = false) { 
-    // FORÇAR FULLSCREEN AO CLICAR NA TELA DE JOGO (v10.1.0)
     if (gameLoaded && !checkFullscreenState()) {
         requestFullscreen();
     }
@@ -2993,7 +2994,65 @@ function renderDailyGrid() { const grid = document.getElementById('dailyGrid'); 
 
 function claimDailyReward() { if (dailyState.claimedToday) return; const reward = dailyCycle[dailyState.streak]; if (reward.type === 'honey') honey += reward.val; else if (reward.type === 'xp') addXP(reward.val); else if (reward.type === 'boost' || reward.type === 'super') { if (reward.val) honey += reward.val; activeBoosts[reward.boost] += reward.ticks; } dailyState.lastClaim = Date.now(); dailyState.streak = (dailyState.streak + 1) % 7; dailyState.claimedToday = true; notify({n: "Recompensa Diária!", d: "Prêmio resgatado"}); updateUI(); executeSave(); renderDailyGrid(); setTimeout(() => closeModal('dailyRewardModal'), 800); }
 
-function load(){ initAchievements(); const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings(); const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); const colIn = document.getElementById('uiMainColor'); const opaIn = document.getElementById('uiOpacity'); if(colIn) colIn.value = themeSettings.mainColor; if(opaIn) opaIn.value = themeSettings.opacity * 100; applyTheme(); } const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords); const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); if(savedDaily) dailyState = JSON.parse(savedDaily); const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; } const raw = localStorage.getItem(SAVE_KEY); if(raw){ try { const d = JSON.parse(raw); honey = validateNum(d.honey); totalHoneyEver = validateNum(d.totalHoneyEver); hPerClick = validateNum(d.hPerClick) || 0.2; clickCost = validateNum(d.clickCost) || 1200; level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; autoUnlocked = d.autoUnlocked || false; autoLevel = d.autoLevel || 1; autoCost = validateNum(d.autoCost) || 5600; clickLvl = d.clickLvl || 1; autoLvlLvl = d.autoLvlLvl || 1; luckLvl = d.luckLvl || 1; luckCost = d.luckCost || 6400; if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); if(d.defenderProgress) defenderProgress = d.defenderProgress; if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney; if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; if(d.expedition) expedition = d.expedition; if(d.timestamp) checkOfflineGains(d.timestamp); } catch(e) { console.error(e); } } checkMissionReset(); updateMissionAlertStatus(); document.addEventListener('DOMContentLoaded', () => { updateUI(); updateVersionDisplay(); checkUpdateStatus(); }); }
+function load(){ 
+    initAchievements(); 
+    const savedAudio = localStorage.getItem(AUDIO_KEY); 
+    if(savedAudio) audioSettings = JSON.parse(savedAudio); 
+    applyAudioSettings(); 
+    const savedTheme = localStorage.getItem(THEME_KEY); 
+    if(savedTheme) { 
+        themeSettings = JSON.parse(savedTheme); 
+        const colIn = document.getElementById('uiMainColor'); 
+        const opaIn = document.getElementById('uiOpacity'); 
+        if(colIn) colIn.value = themeSettings.mainColor; 
+        if(opaIn) opaIn.value = themeSettings.opacity * 100; 
+        applyTheme(); 
+    } 
+    const savedRecords = localStorage.getItem(RECORDS_KEY); 
+    if(savedRecords) records = JSON.parse(savedRecords); 
+    const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); 
+    if(savedDaily) dailyState = JSON.parse(savedDaily); 
+    const rawMissions = localStorage.getItem(MISSION_KEY); 
+    if(rawMissions) { 
+        const md = JSON.parse(rawMissions); 
+        dailyMissions = md.dailyMissions || []; 
+        lastMissionReset = md.lastMissionReset || 0; 
+    } 
+    const raw = localStorage.getItem(SAVE_KEY); 
+    if(raw){ 
+        try { 
+            const d = JSON.parse(raw); 
+            honey = validateNum(d.honey); 
+            totalHoneyEver = validateNum(d.totalHoneyEver); 
+            hPerClick = validateNum(d.hPerClick) || 0.2; 
+            clickCost = validateNum(d.clickCost) || 1200; 
+            level = d.level || 1; 
+            currentXP = validateNum(d.currentXP); 
+            nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
+            autoUnlocked = d.autoUnlocked || false; 
+            autoLevel = d.autoLevel || 1; 
+            autoCost = validateNum(d.autoCost) || 5600; 
+            clickLvl = d.clickLvl || 1; 
+            autoLvlLvl = d.autoLvlLvl || 1; 
+            luckLvl = d.luckLvl || 1; 
+            luckCost = d.luckCost || 6400; 
+            if(d.activeBoosts) activeBoosts = d.activeBoosts; 
+            if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; 
+            if(d.equippedBackground) equippedBackground = d.equippedBackground; 
+            if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); 
+            if(d.defenderProgress) defenderProgress = d.defenderProgress; 
+            if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney; 
+            if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; 
+            if(d.expedition) expedition = d.expedition; 
+            if(d.timestamp) checkOfflineGains(d.timestamp); 
+        } catch(e) { console.error(e); } 
+    } 
+    checkMissionReset(); 
+    updateMissionAlertStatus(); 
+    updateUI(); 
+    updateVersionDisplay(); 
+    checkUpdateStatus(); 
+}
 
 function enterGame() { load(); tryPlayMusic(); requestFullscreen(); const loadingScreen = document.getElementById("loadingScreen"); const bar = document.getElementById("loadingBarFill"); const bee = document.getElementById("loadingBeeImg"); const text = document.getElementById("loadingTextMsg"); if(loadingScreen) loadingScreen.style.display = "flex"; let progress = 0; const interval = setInterval(() => { progress += Math.random() * 5; if(progress > 100) progress = 100; if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%"; if(progress === 100) { clearInterval(interval); setTimeout(() => { if(loadingScreen) loadingScreen.style.display = "none"; const startScreen = document.getElementById('startScreen'); const gameUI = document.getElementById('gameUI'); if(startScreen) startScreen.style.display = 'none'; if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; } gameLoaded = true; if(pendingOfflineHoney > 0) openModal('offlineModal'); else checkDailyLogic(); startGameTicks(); if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications(); }, 300); } }, 50); }
 
