@@ -685,6 +685,12 @@ input[type=range]::-webkit-slider-thumb {
 .day-num { font-size: 9px; font-weight: 900; opacity: 0.6; display: block; margin-bottom: 5px; }
 .day-icon { font-size: 20px; display: block; }
 .day-reward-val { font-size: 9px; font-weight: 800; color: var(--accent); }
+
+/* EXPEDITION UI */
+.expedition-card { background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 15px; margin-bottom: 12px; }
+.expedition-timer { font-size: 22px; font-weight: 900; color: var(--accent); display: block; margin: 10px 0; }
+.expedition-slider-box { margin-top: 15px; text-align: left; }
+.expedition-slider-box label { font-size: 12px; font-weight: 800; opacity: 0.7; }
 </style>
 </head>
 
@@ -782,9 +788,9 @@ input[type=range]::-webkit-slider-thumb {
               <div class="scroll-area">
                 <div class="section-title">MELHORIAS PERMANENTES</div>
                 <div class="upgrade-card-list">
-                    <button id="btnUpgradeClick">Upgrade Clique – 1200 🍯</button>
-                    <button id="btnAutoAction">Desbloquear Auto – 5600 🍯</button>
-                    <button id="btnUpgradeLuck" style="background: #e17055; color: white; box-shadow: 0 4px 0 #b33939;">Upgrade Sorte (Lvl 1)<br>6400 🍯</button>
+                    <button id="btnUpgradeClick">Recrutar Abelhas – 1200 🍯</button>
+                    <button id="btnAutoAction">Produção Interna – 5600 🍯</button>
+                    <button id="btnUpgradeLuck" style="background: #e17055; color: white; box-shadow: 0 4px 0 #b33939;">Sorte Real (Lvl 1)<br>6400 🍯</button>
                 </div>
               </div>
           </div>
@@ -861,6 +867,28 @@ input[type=range]::-webkit-slider-thumb {
 
           <div id="events" class="tab-pane">
               <div class="scroll-area">
+                  <div class="section-title">EXPEDIÇÃO REAL (INVESTIMENTO)</div>
+                  <div class="expedition-card">
+                      <div id="expeditionActiveUI" style="display: none; text-align: center;">
+                          <div style="font-size: 30px;">🛰️</div>
+                          <b>ENXAME EM EXPEDIÇÃO</b>
+                          <span id="expTimer" class="expedition-timer">05:00</span>
+                          <small style="opacity: 0.6; font-size: 10px;">SEU PODER DE CLIQUE ESTÁ REDUZIDO EM <span id="expReductionLabel">0</span>%</small>
+                      </div>
+                      <div id="expIdleUI">
+                          <div style="font-size: 24px;">🧭</div>
+                          <p style="font-size: 11px; opacity: 0.8; margin: 8px 0;">Escolha a quantidade de abelhas para enviar ao Bosque Distante por 5 minutos.</p>
+                          <div class="expedition-slider-box">
+                              <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+                                  <label>Tamanho da Tropa</label>
+                                  <b id="expPercLabel" style="color:var(--accent)">50%</b>
+                              </div>
+                              <input type="range" id="expSlider" min="10" max="100" value="50" step="10" oninput="const label = document.getElementById('expPercLabel'); if(label) label.textContent = this.value + '%'">
+                          </div>
+                          <button onclick="startExpedition()" style="background:var(--xp-bar); color:white; margin-top: 15px;">LANÇAR EXPEDIÇÃO 🚀</button>
+                      </div>
+                  </div>
+
                   <div class="section-title">CENTRAL DE JOGOS</div>
 
                   <div class="game-card">
@@ -932,6 +960,20 @@ input[type=range]::-webkit-slider-thumb {
           </div>
       </div>
   </div>
+</div>
+
+<div class="modal" id="expResultModal">
+    <div class="modal-box">
+        <div class="modal-header">O Enxame Retornou! 🛰️</div>
+        <div class="modal-content-scroll" style="text-align: center;">
+            <div id="expResultIcon" style="font-size: 50px; margin-bottom: 20px;">📦</div>
+            <h2 id="expResultTitle" style="margin: 0; color: var(--accent);">MISSÃO CUMPRIDA</h2>
+            <p id="expResultText" style="font-size: 14px; opacity: 0.9; line-height: 1.4; margin-top: 10px;"></p>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('expResultModal')" style="background: var(--xp-bar); color: white;">REIVINDICAR</button>
+        </div>
+    </div>
 </div>
 
 <div id="downloadOverlay">
@@ -1257,7 +1299,8 @@ let deferredPrompt;
 let newWorker;
 let pwaState = 'install';
 
-if ('serviceWorker' in navigator) {
+// Service Worker (Com proteção para protocolo null/file)
+if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
   navigator.serviceWorker.register('./sw.js').then(reg => {
     reg.addEventListener('updatefound', () => {
       newWorker = reg.installing;
@@ -1267,7 +1310,7 @@ if ('serviceWorker' in navigator) {
         }
       });
     });
-  });
+  }).catch(e => console.warn("Modo Local: SW não registrado."));
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -1325,11 +1368,13 @@ async function handlePwaClick() {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             if (outcome === 'accepted') {
-                document.getElementById('pwaMainActionBtn').style.display = 'none';
+                const btn = document.getElementById('pwaMainActionBtn');
+                if(btn) btn.style.display = 'none';
             }
             deferredPrompt = null;
         } else {
-            document.getElementById('downloadOverlay').style.display = 'flex';
+            const overlay = document.getElementById('downloadOverlay');
+            if(overlay) overlay.style.display = 'flex';
         }
     } else if (pwaState === 'update') {
         if (newWorker) newWorker.postMessage({ action: 'skipWaiting' });
@@ -1341,6 +1386,31 @@ async function handlePwaClick() {
 // SISTEMA DINÂMICO DE CHANGELOG
 // ==========================================
 let updateHistory = [
+    {
+        version: "9.6.0",
+        title: "🛰️ EXPEDIÇÕES REAIS",
+        changes: [
+            { type: "add", text: "Novo Sistema: Lance expedições de 5 minutos para coletar recompensas massivas." },
+            { type: "mod", text: "Estratégia: Ao enviar abelhas, seu poder de clique diminui temporariamente até o retorno da tropa." },
+            { type: "add", text: "Sincronização Offline: As expedições continuam rodando mesmo com o jogo fechado." }
+        ]
+    },
+    {
+        version: "9.5.0",
+        title: "🐝 EXPANSÃO DO ENXAME",
+        changes: [
+            { type: "mod", text: "Narrativa: O upgrade de cliques agora é o 'Recrutamento de Abelhas' para maior imersão na colmeia." },
+            { type: "add", text: "Feedback Visual: Agora é exibido o tamanho do enxame recrutado no painel de melhorias." }
+        ]
+    },
+    {
+        version: "9.4.0",
+        title: "⚙️ CORREÇÃO DE MÉTRICAS",
+        changes: [
+            { type: "fix", text: "Progresso de Missões: Agora missões de coleta de mel consideram upgrades e multiplicadores." },
+            { type: "mod", text: "Estabilidade de UI: Pequenos ajustes na renderização das notificações flutuantes." }
+        ]
+    },
     {
         version: "9.3.0",
         title: "📲 ICONIZAÇÃO REAL",
@@ -1355,29 +1425,6 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Ícone Unificado: O arquivo Bee.ico agora é o ícone oficial do navegador e aplicativo." },
             { type: "add", text: "Notificação de Update: Novo sistema visual para destacar atualizações pendentes." }
-        ]
-    },
-    {
-        version: "9.1.0",
-        title: "🎁 RECOMPENSA DIÁRIA v2",
-        changes: [
-            { type: "add", text: "Login 7 Dias: Novo sistema de fidelidade progressiva. Entre todos os dias para ganhar!" },
-            { type: "add", text: "Botão de Acesso: Adicionado ícone de presente no painel superior para conferir prêmios." },
-            { type: "mod", text: "Fluxo Melhorado: O painel de prêmios diários agora aparece logo após coletar o mel de descanso." }
-        ]
-    },
-    {
-        version: "8.9.1",
-        title: "✨ REFINAMENTO VISUAL",
-        changes: [
-            { type: "fix", text: "Botão Novidades: O contorno cromático foi ajustado para ser apenas uma borda fina e pulsante." }
-        ]
-    },
-    {
-        version: "8.8.0",
-        title: "🛡️ COLETA GARANTIDA",
-        changes: [
-            { type: "add", text: "Missões Esquecidas: Agora recompensas não coletadas aparecem no Painel de Descanso." }
         ]
     }
 ];
@@ -1410,8 +1457,9 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V33"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V36"); 
     const btn = document.getElementById("btnChangelog");
+    if(!btn) return;
 
     if(!lastSeen || lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
@@ -1422,7 +1470,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V33", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V36", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1434,6 +1482,7 @@ const MISSION_KEY = "BeeRoyal_Missions_V2";
 const THEME_KEY = "BeeRoyal_Theme_V1";
 const RECORDS_KEY = "BeeRoyal_Records_V1";
 const DAILY_REWARD_KEY = "BeeRoyal_Daily_V2";
+const EXP_KEY = "BeeRoyal_Expedition_V1";
 
 function validateNum(n) {
     if (isNaN(n) || n === undefined || n === null || n < 0) return 0;
@@ -1444,6 +1493,9 @@ let honey = 0, totalHoneyEver = 0, hPerClick = 0.2, clickCost = 1200, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 5600;
 let clickLvl = 1, autoLvlLvl = 1; 
 let luckLvl = 1, luckCost = 6400;
+
+// EXPEDITION STATE
+let expedition = { active: false, startTime: 0, duration: 300000, reductionPerc: 0 };
 
 let ownedCosmetics = ["Bee", "NoelBee", "SkullBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0, crown: 0 }; 
@@ -1487,7 +1539,7 @@ let snakeBoost = null;
 let snakeBoostTimer = 0; 
 let snakeBoostLife = 0; 
 const snakeCanvas = document.getElementById("snakeCanvas");
-const snakeCtx = snakeCanvas.getContext("2d");
+const snakeCtx = snakeCanvas ? snakeCanvas.getContext("2d") : null;
 
 // BEE FLIGHT CONFIG
 let fBeeY = 150, fVelocity = 0, fGravity = 0.5, fJump = -7;
@@ -1495,12 +1547,12 @@ let fPipes = [];
 let fBoosts = []; 
 let fCollectedBoosts = []; 
 const flightCanvas = document.getElementById("flightCanvas");
-const flightCtx = flightCanvas.getContext("2d");
+const flightCtx = flightCanvas ? flightCanvas.getContext("2d") : null;
 const beeSprite = new Image();
 beeSprite.src = 'Bee.png';
 
 const rainCanvas = document.getElementById("rainCanvas");
-const rainCtx = rainCanvas.getContext("2d");
+const rainCtx = rainCanvas ? rainCanvas.getContext("2d") : null;
 const rainBeeSprite = new Image();
 rainBeeSprite.src = 'Bee.png';
 
@@ -1516,7 +1568,7 @@ let rBeeYOffset = 0;
 
 // HIVE DEFENDER CONFIG
 const defenderCanvas = document.getElementById("defenderCanvas");
-const defenderCtx = defenderCanvas.getContext("2d");
+const defenderCtx = defenderCanvas ? defenderCanvas.getContext("2d") : null;
 const defenderBeeSprite = new Image();
 defenderBeeSprite.src = 'BeeUp.png';
 
@@ -1557,11 +1609,16 @@ window.addEventListener('keyup', (e) => {
 });
 
 function updateTheme() {
-    const color = document.getElementById('uiMainColor').value;
-    const opacity = document.getElementById('uiOpacity').value;
+    const colorEl = document.getElementById('uiMainColor');
+    const opacityEl = document.getElementById('uiOpacity');
+    if(!colorEl || !opacityEl) return;
+
+    const color = colorEl.value;
+    const opacity = opacityEl.value;
     themeSettings.mainColor = color;
     themeSettings.opacity = parseFloat(opacity) / 100;
-    document.getElementById('uiOpacityLabel').textContent = opacity + '%';
+    const label = document.getElementById('uiOpacityLabel');
+    if(label) label.textContent = opacity + '%';
     applyTheme();
     localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings));
 }
@@ -1592,7 +1649,8 @@ function applyTheme() {
     root.style.setProperty('--accent', accentColor);
     root.style.setProperty('--card', `linear-gradient(145deg, rgba(${r}, ${g}, ${b}, ${opacity}), rgba(${rD}, ${gD}, ${bD}, 0.9))`);
     root.style.setProperty('--bg-gradient', `linear-gradient(180deg, ${color}, rgb(${rD}, ${gD}, ${bD}))`);
-    if(document.getElementById('startScreen')) document.getElementById('startScreen').style.background = `linear-gradient(180deg, ${color}, rgb(${rD}, ${gD}, ${bD}))`;
+    const startScreen = document.getElementById('startScreen');
+    if(startScreen) startScreen.style.background = `linear-gradient(180deg, ${color}, rgb(${rD}, ${gD}, ${bD}))`;
 }
 
 function prepareMinigame(type) {
@@ -1617,56 +1675,67 @@ function prepareMinigame(type) {
 
 function startMinigameActual(type) {
     activeMG = type;
-    document.getElementById("minigameOverlay").style.display = "flex";
-    document.getElementById("mgResultScreen").style.display = "none";
-    document.getElementById("snakeCanvas").style.display = "none";
-    document.getElementById("flightCanvas").style.display = "none";
-    document.getElementById("rainCanvas").style.display = "none";
-    document.getElementById("defenderCanvas").style.display = "none";
-    document.getElementById("snakeControls").style.display = "none";
-    document.getElementById("flightControls").style.display = "none";
-    document.getElementById("defenderControls").style.display = "none";
-    document.getElementById("rainHearts").style.display = "none";
-    document.getElementById("defenderHearts").style.display = "none";
-    document.getElementById("flightHint").style.display = "none";
-    document.getElementById("mgLiveBoosts").innerHTML = ""; 
+    const overlay = document.getElementById("minigameOverlay");
+    if(overlay) overlay.style.display = "flex";
+    
+    document.querySelectorAll('#mgResultScreen, #snakeCanvas, #flightCanvas, #rainCanvas, #defenderCanvas, #snakeControls, #flightControls, #defenderControls, #rainHearts, #defenderHearts, #flightHint').forEach(el => {
+        if(el) el.style.display = "none";
+    });
+
     const countdownEl = document.getElementById("mgCountdown");
-    countdownEl.style.display = "block";
-    let count = 3; countdownEl.textContent = count;
-    const countTimer = setInterval(() => {
-        count--;
-        if(count > 0) countdownEl.textContent = count;
-        else if(count === 0) countdownEl.textContent = "GO!";
-        else { clearInterval(countTimer); countdownEl.style.display = "none"; startMG(); }
-    }, 800);
+    if(countdownEl) {
+        countdownEl.style.display = "block";
+        let count = 3; countdownEl.textContent = count;
+        const countTimer = setInterval(() => {
+            count--;
+            if(count > 0) countdownEl.textContent = count;
+            else if(count === 0) countdownEl.textContent = "GO!";
+            else { clearInterval(countTimer); countdownEl.style.display = "none"; startMG(); }
+        }, 800);
+    }
 }
 
 function startMG() {
-    mgScore = 0; document.getElementById("mgCurrentScore").textContent = "0"; mgRunning = true;
+    mgScore = 0; 
+    const scoreVal = document.getElementById("mgCurrentScore");
+    if(scoreVal) scoreVal.textContent = "0"; 
+    mgRunning = true;
+
     if(activeMG === 'snake') {
-        document.getElementById("snakeCanvas").style.display = "block";
-        document.getElementById("snakeControls").style.display = "grid";
+        const canv = document.getElementById("snakeCanvas");
+        const cont = document.getElementById("snakeControls");
+        if(canv) canv.style.display = "block";
+        if(cont) cont.style.display = "grid";
         mgSpeed = 320; 
         initSnake();
     } else if(activeMG === 'flight') {
-        document.getElementById("flightCanvas").style.display = "block";
-        document.getElementById("flightControls").style.display = "block";
-        document.getElementById("flightHint").style.display = "block";
+        const canv = document.getElementById("flightCanvas");
+        const cont = document.getElementById("flightControls");
+        const hint = document.getElementById("flightHint");
+        if(canv) canv.style.display = "block";
+        if(cont) cont.style.display = "block";
+        if(hint) hint.style.display = "block";
         initFlight();
     } else if(activeMG === 'rain') {
-        document.getElementById("rainCanvas").style.display = "block";
-        document.getElementById("rainHearts").style.display = "block";
+        const canv = document.getElementById("rainCanvas");
+        const hearts = document.getElementById("rainHearts");
+        if(canv) canv.style.display = "block";
+        if(hearts) hearts.style.display = "block";
         initRain();
     } else if(activeMG === 'defender') {
-        document.getElementById("defenderCanvas").style.display = "block";
-        document.getElementById("defenderControls").style.display = "flex";
-        document.getElementById("defenderHearts").style.display = "block";
+        const canv = document.getElementById("defenderCanvas");
+        const cont = document.getElementById("defenderControls");
+        const hearts = document.getElementById("defenderHearts");
+        if(canv) canv.style.display = "block";
+        if(cont) cont.style.display = "flex";
+        if(hearts) hearts.style.display = "block";
         initDefender();
     }
 }
 
 function updateMgLiveBoostsVisual() {
     const container = document.getElementById("mgLiveBoosts");
+    if(!container) return;
     container.innerHTML = "";
     fCollectedBoosts.forEach(b => {
         const span = document.createElement("span");
@@ -1684,6 +1753,7 @@ function updateMgLiveBoostsVisual() {
 
 // HIVE DEFENDER LOGIC (v8.1.0)
 function initDefender() {
+    if(!defenderCanvas) return;
     defenderCanvas.width = 300; defenderCanvas.height = 300;
     dPlayerX = 135; dBullets = []; dEnemies = []; dEnemyBullets = []; dModDrops = []; dEnemyDir = 1; dEnemyTimer = 40; dMoving = 0; fCollectedBoosts = [];
     dHearts = 3; dFireCooldown = 0; dHasDoubleShot = false;
@@ -1720,14 +1790,16 @@ function initDefender() {
     dGameTimer = setInterval(() => {
         if(mgRunning && activeMG === 'defender') {
             dEnemyTimer--;
-            document.getElementById("mgCurrentScore").textContent = dEnemyTimer + "s";
+            const scoreVal = document.getElementById("mgCurrentScore");
+            if(scoreVal) scoreVal.textContent = dEnemyTimer + "s";
             if(dEnemyTimer <= 0) finishMG();
         }
     }, 1000);
 }
 
 function updateDefenderHearts() {
-    document.getElementById("defenderHearts").textContent = "🐝".repeat(Math.max(0, dHearts));
+    const el = document.getElementById("defenderHearts");
+    if(el) el.textContent = "🐝".repeat(Math.max(0, dHearts));
 }
 
 function moveDefender(dir) { dMoving = (dir === 'LEFT' ? -1 : 1); }
@@ -1747,6 +1819,7 @@ function defenderFire() {
 }
 
 function drawDefender() {
+    if(!defenderCtx) return;
     defenderCtx.fillStyle = "#000"; defenderCtx.fillRect(0, 0, 300, 300);
     
     if(dFireCooldown > 0) dFireCooldown--;
@@ -1889,6 +1962,7 @@ function drawDefender() {
 }
 
 function initRain() {
+    if(!rainCanvas) return;
     rainCanvas.width = 300; rainCanvas.height = 300;
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
     rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0; rBeeYOffset = 0;
@@ -1919,7 +1993,8 @@ function initRain() {
                     rDrops.splice(i, 1);
                     mgScore++;
                     updateMissionProgress('mg_item_collect', 1);
-                    document.getElementById("mgCurrentScore").textContent = mgScore;
+                    const scoreVal = document.getElementById("mgCurrentScore");
+                    if(scoreVal) scoreVal.textContent = mgScore;
                     createRainParticles(d.x, d.y, "#ffcc00", 12); 
                     playClickSound();
                 }
@@ -1947,10 +2022,12 @@ function createRainParticles(x, y, color, count) {
 }
 
 function updateRainHearts() {
-    document.getElementById("rainHearts").textContent = "❤️".repeat(Math.max(0, rHearts));
+    const el = document.getElementById("rainHearts");
+    if(el) el.textContent = "❤️".repeat(Math.max(0, rHearts));
 }
 
 function drawRain() {
+    if(!rainCtx) return;
     rainCtx.fillStyle = "#000"; rainCtx.fillRect(0, 0, 300, 300);
     rBeeDirChangeTimer--;
     if(rBeeDirChangeTimer <= 0) {
@@ -2014,6 +2091,7 @@ function drawRain() {
 }
 
 function initSnake() {
+    if(!snakeCanvas) return;
     snakeCanvas.width = 300; snakeCanvas.height = 300;
     snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
     sdx = 20; sdy = 0; snextDx = 20; snextDy = 0;
@@ -2025,11 +2103,13 @@ function initSnake() {
 function startSnakeLoop() { if(mgInterval) clearInterval(mgInterval); mgInterval = setInterval(drawSnake, mgSpeed); }
 
 function createSnakeFood() {
+    if(!snakeCanvas) return;
     snakeFood.x = Math.floor(Math.random() * (snakeCanvas.width / 20)) * 20;
     snakeFood.y = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20;
 }
 
 function spawnSnakeBoost() {
+    if(!snakeCanvas) return;
     if(Math.random() > 0.7) return;
     const types = ['pepper', 'energy', 'flower', 'luck'];
     const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
@@ -2046,6 +2126,7 @@ function spawnSnakeBoost() {
 }
 
 function drawSnake() {
+    if(!snakeCtx || !snakeCanvas) return;
     snakeBoostTimer += mgSpeed;
     if(snakeBoostTimer >= 40000) { 
         spawnSnakeBoost();
@@ -2060,7 +2141,9 @@ function drawSnake() {
     if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height || snake.some(s => s.x === head.x && s.y === head.y)) { finishMG(); return; }
     snake.unshift(head);
     if(head.x === snakeFood.x && head.y === snakeFood.y) {
-        mgScore++; document.getElementById("mgCurrentScore").textContent = mgScore;
+        mgScore++; 
+        const scoreVal = document.getElementById("mgCurrentScore");
+        if(scoreVal) scoreVal.textContent = mgScore;
         updateMissionProgress('mg_item_collect', 1);
         createSnakeFood(); 
         if(mgScore % 2 === 0 && mgSpeed > 60) { mgSpeed *= 0.97; startSnakeLoop(); }
@@ -2097,6 +2180,7 @@ function changeSnakeDir(dir) {
 }
 
 function initFlight() {
+    if(!flightCanvas) return;
     flightCanvas.width = 300; flightCanvas.height = 300;
     fBeeY = 150; fVelocity = 0; fPipes = []; fBoosts = []; fCollectedBoosts = [];
     if(mgInterval) clearInterval(mgInterval); mgInterval = setInterval(drawFlight, 30);
@@ -2118,6 +2202,7 @@ function spawnFlightBoost(x, gapY, gapH) {
 }
 
 function drawFlight() {
+    if(!flightCtx) return;
     fVelocity += fGravity; fBeeY += fVelocity;
     if(fBeeY < 0 || fBeeY > 285) { finishMG(); return; }
     if(fPipes.length === 0 || fPipes[fPipes.length-1].x < 150) {
@@ -2137,7 +2222,12 @@ function drawFlight() {
         p.x -= 3; flightCtx.fillStyle = "rgba(255,255,255,0.2)";
         flightCtx.fillRect(p.x, 0, 40, p.topH); flightCtx.fillRect(p.x, p.topH + p.gap, 40, 300);
         if(p.x < 65 && p.x + 40 > 40) if(fBeeY < p.topH || fBeeY + 20 > p.topH + p.gap) { finishMG(); return; }
-        if(!p.passed && p.x < 40) { p.passed = true; mgScore++; updateMissionProgress('mg_item_collect', 1); document.getElementById("mgCurrentScore").textContent = mgScore; }
+        if(!p.passed && p.x < 40) { 
+            p.passed = true; mgScore++; 
+            updateMissionProgress('mg_item_collect', 1); 
+            const scoreVal = document.getElementById("mgCurrentScore");
+            if(scoreVal) scoreVal.textContent = mgScore; 
+        }
     });
     fBoosts.forEach((b, i) => {
         b.x -= 3;
@@ -2180,18 +2270,23 @@ function finishMG() {
     let hGain = mgScore * multiplier * (1 + level * 0.1);
     let xGain = hGain * 0.20; 
     
-    document.getElementById("mgResultScore").textContent = mgScore;
-    document.getElementById("mgResultReward").innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
+    const scoreVal = document.getElementById("mgResultScore");
+    if(scoreVal) scoreVal.textContent = mgScore;
+    const rewardVal = document.getElementById("mgResultReward");
+    if(rewardVal) rewardVal.innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
     
     const boostDisplay = document.getElementById("mgResultBoosts");
-    if(fCollectedBoosts.length > 0) {
-        let icons = fCollectedBoosts.map(b => b.icon).join(' ');
-        boostDisplay.innerHTML = `BOOSTS COLETADOS: ${icons} (30s cada)`;
-    } else {
-        boostDisplay.innerHTML = "";
+    if(boostDisplay) {
+        if(fCollectedBoosts.length > 0) {
+            let icons = fCollectedBoosts.map(b => b.icon).join(' ');
+            boostDisplay.innerHTML = `BOOSTS COLETADOS: ${icons} (30s cada)`;
+        } else {
+            boostDisplay.innerHTML = "";
+        }
     }
 
-    document.getElementById("mgResultScreen").style.display = "flex";
+    const resScreen = document.getElementById("mgResultScreen");
+    if(resScreen) resScreen.style.display = "flex";
     activeMGData = { hGain, xGain, boosts: [...fCollectedBoosts] };
 }
 
@@ -2208,65 +2303,92 @@ function closeMgResult() {
         executeSave();
         activeMGData = null;
     }
-    document.getElementById("minigameOverlay").style.display = "none"; 
+    const overlay = document.getElementById("minigameOverlay");
+    if(overlay) overlay.style.display = "none"; 
 }
 
 function updateRecordsUI() {
-    document.getElementById("rainRecordDisplay").textContent = records.rain || 0;
-    document.getElementById("snakeRecordDisplay").textContent = records.snake || 0;
-    document.getElementById("flightRecordDisplay").textContent = records.flight || 0;
-    document.getElementById("defenderLevelDisplay").textContent = defenderProgress.level || 1;
+    const rainR = document.getElementById("rainRecordDisplay");
+    const snakeR = document.getElementById("snakeRecordDisplay");
+    const flightR = document.getElementById("flightRecordDisplay");
+    const defL = document.getElementById("defenderLevelDisplay");
+    if(rainR) rainR.textContent = records.rain || 0;
+    if(snakeR) snakeR.textContent = records.snake || 0;
+    if(flightR) flightR.textContent = records.flight || 0;
+    if(defL) defL.textContent = defenderProgress.level || 1;
 }
 
 function exitMinigame() { 
     clearInterval(mgInterval); mgRunning = false; 
     if(dGameTimer) clearInterval(dGameTimer);
-    document.getElementById("minigameOverlay").style.display = "none"; 
+    const overlay = document.getElementById("minigameOverlay");
+    if(overlay) overlay.style.display = "none"; 
 }
 
 function updateVolume(type) {
     tryPlayMusic();
     if(type === 'music') { 
-        audioSettings.music = document.getElementById('musicVol').value; 
-        document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; 
-        soundMusic.volume = audioSettings.music / 100; 
+        const musicIn = document.getElementById('musicVol');
+        if(musicIn) {
+            audioSettings.music = musicIn.value; 
+            const label = document.getElementById('musicVolLabel');
+            if(label) label.textContent = audioSettings.music + '%'; 
+            soundMusic.volume = audioSettings.music / 100; 
+        }
     } else if(type === 'click') { 
-        audioSettings.click = document.getElementById('clickVol').value; 
-        document.getElementById('clickVolLabel').textContent = audioSettings.click + '%'; 
-        soundClick.volume = audioSettings.click / 100; 
+        const clickIn = document.getElementById('clickVol');
+        if(clickIn) {
+            audioSettings.click = clickIn.value; 
+            const label = document.getElementById('clickVolLabel');
+            if(label) label.textContent = audioSettings.click + '%'; 
+            soundClick.volume = audioSettings.click / 100; 
+        }
     } else if(type === 'lvlUp') {
-        audioSettings.lvlUp = document.getElementById('lvlUpVol').value;
-        document.getElementById('lvlUpVolLabel').textContent = audioSettings.lvlUp + '%';
-        soundLvlUp.volume = audioSettings.lvlUp / 100;
+        const lvlIn = document.getElementById('lvlUpVol');
+        if(lvlIn) {
+            audioSettings.lvlUp = lvlIn.value;
+            const label = document.getElementById('lvlUpVolLabel');
+            if(label) label.textContent = audioSettings.lvlUp + '%';
+            soundLvlUp.volume = audioSettings.lvlUp / 100;
+        }
     }
     localStorage.setItem(AUDIO_KEY, JSON.stringify(audioSettings));
 }
 
 function applyAudioSettings() {
-    soundMusic.volume = audioSettings.music / 100; 
-    soundClick.volume = audioSettings.click / 100; 
+    soundMusic.volume = (audioSettings.music || 50) / 100; 
+    soundClick.volume = (audioSettings.click || 80) / 100; 
     soundLvlUp.volume = (audioSettings.lvlUp || 100) / 100;
-    if(document.getElementById('musicVol')) { 
-        document.getElementById('musicVol').value = audioSettings.music; 
-        document.getElementById('musicVolLabel').textContent = audioSettings.music + '%'; 
-    }
-    if(document.getElementById('clickVol')) { 
-        document.getElementById('clickVol').value = audioSettings.click; 
-        document.getElementById('clickVolLabel').textContent = audioSettings.click + '%'; 
-    }
-    if(document.getElementById('lvlUpVol')) {
-        document.getElementById('lvlUpVol').value = audioSettings.lvlUp || 100;
-        document.getElementById('lvlUpVolLabel').textContent = (audioSettings.lvlUp || 100) + '%';
-    }
+    
+    const musicIn = document.getElementById('musicVol');
+    const musicLab = document.getElementById('musicVolLabel');
+    if(musicIn) musicIn.value = audioSettings.music; 
+    if(musicLab) musicLab.textContent = audioSettings.music + '%'; 
+    
+    const clickIn = document.getElementById('clickVol');
+    const clickLab = document.getElementById('clickVolLabel');
+    if(clickIn) clickIn.value = audioSettings.click; 
+    if(clickLab) clickLab.textContent = audioSettings.click + '%'; 
+    
+    const lvlIn = document.getElementById('lvlUpVol');
+    const lvlLab = document.getElementById('lvlUpVolLabel');
+    if(lvlIn) lvlIn.value = audioSettings.lvlUp || 100;
+    if(lvlLab) lvlLab.textContent = (audioSettings.lvlUp || 100) + '%';
 }
 
 function tryPlayMusic() {
-    if(soundMusic.paused) soundMusic.play().then(() => { window.removeEventListener('click', tryPlayMusic); window.removeEventListener('touchstart', tryPlayMusic); }).catch(() => {});
+    if(soundMusic.paused) soundMusic.play().then(() => { 
+        window.removeEventListener('click', tryPlayMusic); 
+        window.removeEventListener('touchstart', tryPlayMusic); 
+    }).catch(() => {});
 }
 
 window.addEventListener('click', tryPlayMusic); window.addEventListener('touchstart', tryPlayMusic);
 
-function playClickSound() { soundClick.currentTime = 0; soundClick.play().catch(() => {}); }
+function playClickSound() { 
+    soundClick.currentTime = 0; 
+    soundClick.play().catch(() => {}); 
+}
 
 function requestFullscreen() {
     const doc = window.document, docEl = doc.documentElement;
@@ -2283,24 +2405,30 @@ function returnToMain() {
     const bar = document.getElementById("loadingBarFill");
     const bee = document.getElementById("loadingBeeImg");
     const text = document.getElementById("loadingTextMsg");
-    loadingScreen.style.display = "flex";
+    if(loadingScreen) loadingScreen.style.display = "flex";
     let progress = 0;
     const interval = setInterval(() => {
         progress += Math.random() * 8;
         if(progress > 100) progress = 100;
-        bar.style.width = progress + "%";
-        bee.style.left = progress + "%";
-        if(progress < 50) text.textContent = "FECHANDO COLMEIA...";
-        else text.textContent = "SALVANDO MEL...";
+        if(bar) bar.style.width = progress + "%";
+        if(bee) bee.style.left = progress + "%";
+        if(text) {
+            if(progress < 50) text.textContent = "FECHANDO COLMEIA...";
+            else text.textContent = "SALVANDO MEL...";
+        }
         if(progress === 100) {
             clearInterval(interval);
             setTimeout(() => {
-                loadingScreen.style.display = "none";
-                document.getElementById('gameUI').style.opacity = '0';
+                if(loadingScreen) loadingScreen.style.display = "none";
+                const gameUI = document.getElementById('gameUI');
+                const startScreen = document.getElementById('startScreen');
+                if(gameUI) gameUI.style.opacity = '0';
                 setTimeout(() => { 
-                    document.getElementById('gameUI').style.display = 'none'; 
-                    document.getElementById('startScreen').style.display = 'flex'; 
-                    document.getElementById('startScreen').style.opacity = '1'; 
+                    if(gameUI) gameUI.style.display = 'none'; 
+                    if(startScreen) {
+                        startScreen.style.display = 'flex'; 
+                        startScreen.style.opacity = '1'; 
+                    }
                     gameLoaded = false; 
                 }, 500);
             }, 300);
@@ -2336,6 +2464,7 @@ function processNextNotification() {
     isProcessingNotifs = true;
     const currentNotif = notificationQueue.shift();
     const container = document.getElementById("notifContainer");
+    if(!container) return;
     container.innerHTML = "";
     const div = document.createElement("div");
     div.className = "popup";
@@ -2350,7 +2479,8 @@ function processNextNotification() {
 
 function startDynamicNotifications() {
     setInterval(() => {
-        if (!gameLoaded || document.getElementById('gameUI').style.opacity !== '1') return;
+        const gameUI = document.getElementById('gameUI');
+        if (!gameLoaded || !gameUI || gameUI.style.opacity !== '1') return;
         let msg = lastNotifType === "fact" ? gameTips[Math.floor(Math.random() * gameTips.length)] : "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)];
         lastNotifType = lastNotifType === "fact" ? "tip" : "fact";
         notify({n: msg});
@@ -2366,11 +2496,11 @@ const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de A
 // SISTEMA DE MISSÕES ADAPTATIVO (v8.4.0)
 // ==========================================
 const missionTemplates = [
-    { id: 'm_click', type: 'clicks', title: "Ginástica de Asas", desc: "Clique na abelha {target} vezes", baseGoal: 100, rewardMult: 2.2 },
+    { id: 'm_click', type: 'clicks', title: "Ginástica de Asas", desc: "Coletas manuais {target} vezes", baseGoal: 100, rewardMult: 2.2 },
     { id: 'm_honey', type: 'honey_gain', title: "Reserva de Inverno", desc: "Colete {target} de Mel total", baseGoal: 500, rewardMult: 2.5 },
     { id: 'm_target', type: 'target_clicks', title: "Foco Absoluto", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 3.5 },
     { id: 'm_time', type: 'play_time', title: "Voo de Reconhecimento", desc: "Fique no jogo por {target} segundos", baseGoal: 300, rewardMult: 3.0 },
-    { id: 'm_upg', type: 'buy_upgrade', title: "Evolução Necessária", desc: "Compre ou melhore {target} Upgrades", baseGoal: 3, rewardMult: 4.0 },
+    { id: 'm_upg', type: 'buy_upgrade', title: "Evolução Necessária", desc: "Recrute ou evolua {target} vezes", baseGoal: 3, rewardMult: 4.0 },
     { id: 'm_mg_item', type: 'mg_item_collect', title: "Explorador de Games", desc: "Colete {target} itens em minigames", baseGoal: 15, rewardMult: 3.8 },
     { id: 'm_mg_boost', type: 'mg_boost_collect', title: "Caçador de Boosts", desc: "Pegue {target} itens de Boost em minigames", baseGoal: 2, rewardMult: 5.0 },
     { id: 'm_mg_kill', type: 'mg_kills', title: "Exterminador de Insetos", desc: "Abata {target} invasores no Hive Defender", baseGoal: 20, rewardMult: 4.5 },
@@ -2479,7 +2609,8 @@ function updateMissionProgress(type, amt = 1) {
         } 
     });
     if (changed) {
-        if (document.getElementById('missionsModal').style.display === 'flex') renderMissions();
+        const modal = document.getElementById('missionsModal');
+        if (modal && modal.style.display === 'flex') renderMissions();
         updateMissionAlertStatus();
     }
 }
@@ -2487,6 +2618,7 @@ function updateMissionProgress(type, amt = 1) {
 function updateMissionAlertStatus() {
     const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected);
     const alertBtn = document.getElementById("btnMissionAlert");
+    if(!alertBtn) return;
     if (hasRewardsToClaim) alertBtn.classList.add("mission-alert");
     else alertBtn.classList.remove("mission-alert");
 }
@@ -2496,23 +2628,26 @@ function openRerollConfirmation(id) {
     openModal('rerollModal');
 }
 
-document.getElementById('btnConfirmReroll').onclick = () => {
-    if (pendingRerollId) {
-        const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
-        if (index !== -1) {
-            const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-            const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
-            const clickLevelScale = 1 + (clickLvl * 0.15); 
-            const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
-            dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, powerScale);
-            renderMissions();
-            updateMissionAlertStatus();
-            executeSave();
-            closeModal('rerollModal');
-            pendingRerollId = null;
+const confirmRerollBtn = document.getElementById('btnConfirmReroll');
+if(confirmRerollBtn) {
+    confirmRerollBtn.onclick = () => {
+        if (pendingRerollId) {
+            const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
+            if (index !== -1) {
+                const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
+                const powerScale = Math.max(1, Math.log10(hPerClick * 5)); 
+                const clickLevelScale = 1 + (clickLvl * 0.15); 
+                const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
+                dailyMissions[index] = createSingleMission(randomTmp, scaleFactor, powerScale);
+                renderMissions();
+                updateMissionAlertStatus();
+                executeSave();
+                closeModal('rerollModal');
+                pendingRerollId = null;
+            }
         }
-    }
-};
+    };
+}
 
 function collectMissionReward(id) {
     const m = dailyMissions.find(x => x.id === id);
@@ -2552,7 +2687,9 @@ function getMissionIcon(type) {
 }
 
 function renderMissions() {
-    const list = document.getElementById("missionsList"); list.innerHTML = "";
+    const list = document.getElementById("missionsList"); 
+    if(!list) return;
+    list.innerHTML = "";
     const sortedMissions = [...dailyMissions].sort((a, b) => {
         const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2);
         const scoreB = (b.completed && !b.collected) ? 0 : (!b.completed ? 1 : 2);
@@ -2617,45 +2754,174 @@ function updateUI() {
     autoCost = Math.floor(5600 * Math.pow(1.45, autoLevel - 1) * inflationFactor);
     luckCost = Math.floor(6400 * Math.pow(1.65, luckLvl - 1) * inflationFactor);
 
-    document.getElementById("honey").textContent = formatNum(honey); 
-    document.getElementById("mps").textContent = formatNum(getMPSBase() * getGlobalBonus());
-    document.getElementById("lvlDisplay").textContent = level; document.getElementById("xpDisplay").textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
-    document.getElementById("xpFill").style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
-    document.getElementById("btnUpgradeClick").disabled = (honey < clickCost); document.getElementById("btnUpgradeClick").innerHTML = `<b>Upgrade Clique (Lvl ${clickLvl})</b><br>${formatNum(clickCost)} 🍯`;
-    document.getElementById("btnAutoAction").disabled = (honey < autoCost); document.getElementById("btnAutoAction").innerHTML = !autoUnlocked ? `<b>Desbloquear Auto</b><br>${formatNum(autoCost)} 🍯` : `<b>Upgrade Auto (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
-    document.getElementById("btnUpgradeLuck").disabled = (honey < luckCost); document.getElementById("btnUpgradeLuck").innerHTML = `<b>Upgrade Sorte (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
+    const honeyEl = document.getElementById("honey");
+    const mpsEl = document.getElementById("mps");
+    const lvlEl = document.getElementById("lvlDisplay");
+    const xpEl = document.getElementById("xpDisplay");
+    const xpFill = document.getElementById("xpFill");
+
+    if(honeyEl) honeyEl.textContent = formatNum(honey); 
+    if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus());
+    if(lvlEl) lvlEl.textContent = level; 
+    if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`;
+    if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    
+    const upgClickBtn = document.getElementById("btnUpgradeClick");
+    const upgAutoBtn = document.getElementById("btnAutoAction");
+    const upgLuckBtn = document.getElementById("btnUpgradeLuck");
+
+    if(upgClickBtn) {
+        upgClickBtn.disabled = (honey < clickCost); 
+        upgClickBtn.innerHTML = `<b>Recrutar Abelhas (${clickLvl} 🐝)</b><br>${formatNum(clickCost)} 🍯`;
+    }
+    
+    if(upgAutoBtn) {
+        upgAutoBtn.disabled = (honey < autoCost); 
+        upgAutoBtn.innerHTML = !autoUnlocked ? `<b>Produção Interna</b><br>${formatNum(autoCost)} 🍯` : `<b>Produção Interna (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`;
+    }
+    
+    if(upgLuckBtn) {
+        upgLuckBtn.disabled = (honey < luckCost); 
+        upgLuckBtn.innerHTML = `<b>Sorte Real (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`;
+    }
     
     const crown = document.getElementById("beeCrown");
-    if(activeBoosts.crown > 0) crown.style.display = "block"; else crown.style.display = "none";
+    if(crown) crown.style.display = (activeBoosts.crown > 0) ? "block" : "none";
+
     buildShop(); renderActiveBoosts(); updateRecordsUI();
+
     ['Bee', 'NoelBee', 'SkullBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
-        if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; document.getElementById("mainBeeSprite").src = `${id}.png`; document.getElementById("miniBeeHeader").src = `${id}.png`; }
+        if(equippedCosmetic === id) { 
+            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; 
+            btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; 
+            const mainBee = document.getElementById("mainBeeSprite");
+            const headerBee = document.getElementById("miniBeeHeader");
+            if(mainBee) mainBee.src = `${id}.png`; 
+            if(headerBee) headerBee.src = `${id}.png`; 
+        }
         else { 
-            let label = "Comum";
-            if(id === "NoelBee") label = "Noel (+10%)";
-            if(id === "SkullBee") label = "Skull (+5% Crit)";
-            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; 
+            let label = (id === "NoelBee") ? "Noel (+10%)" : (id === "SkullBee") ? "Skull (+5% Crit)" : "Comum";
+            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; 
+            btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; 
         }
     });
-    const bgs = ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'], clickZone = document.getElementById("clickZone");
-    bgs.forEach(id => {
+
+    const clickZone = document.getElementById("clickZone");
+    ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'].forEach(id => {
         const btn = document.getElementById(`btn_bg_${id}`); if(!btn) return;
-        if(equippedBackground === id) { btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; clickZone.style.backgroundImage = `url('${id}.gif')`; }
+        if(equippedBackground === id) { 
+            btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; 
+            if(clickZone) clickZone.style.backgroundImage = `url('${id}.gif')`; 
+        }
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
+
     checkUpdateStatus();
     updateVersionDisplay();
+    updateExpeditionUI();
+}
+
+// ==========================================
+// SISTEMA DE EXPEDIÇÕES (v9.6.0)
+// ==========================================
+function startExpedition() {
+    if(expedition.active) return;
+    const slider = document.getElementById("expSlider");
+    if(!slider) return;
+    const perc = parseInt(slider.value);
+    expedition.active = true;
+    expedition.reductionPerc = perc;
+    expedition.startTime = Date.now();
+    expedition.duration = 300000; // 5 minutos em ms
+    notify({n: "EXPEDIÇÃO LANÇADA!", d: "Retorno em 5 minutos"});
+    updateUI();
+    executeSave();
+}
+
+function updateExpeditionUI() {
+    const idleUI = document.getElementById("expIdleUI");
+    const activeUI = document.getElementById("expeditionActiveUI");
+    const reductionLabel = document.getElementById("expReductionLabel");
+
+    if(!idleUI || !activeUI) return; // Proteção contra erro de null
+
+    if(expedition.active) {
+        idleUI.style.display = "none";
+        activeUI.style.display = "block";
+        if(reductionLabel) reductionLabel.textContent = expedition.reductionPerc;
+    } else {
+        idleUI.style.display = "block";
+        activeUI.style.display = "none";
+    }
+}
+
+function tickExpedition() {
+    if(!expedition.active) return;
+    const now = Date.now();
+    const elapsed = now - expedition.startTime;
+    const remaining = expedition.duration - elapsed;
+    
+    if(remaining <= 0) {
+        finishExpedition();
+    } else {
+        const timerEl = document.getElementById("expTimer");
+        if(timerEl) {
+            const mins = Math.floor(remaining / 60000);
+            const secs = Math.floor((remaining % 60000) / 1000);
+            timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+    }
+}
+
+function finishExpedition() {
+    expedition.active = false;
+    const power = (hPerClick * expedition.reductionPerc * 250); // Escala baseada na tropa enviada
+    const rng = Math.random();
+    let title = "MISSÃO CUMPRIDA", icon = "🎁", msg = "";
+    
+    if(rng < 0.1) { // Sucesso Crítico
+        const hGain = power * 5;
+        const xGain = hGain * 0.3;
+        honey += hGain;
+        addXP(xGain);
+        title = "SUCESSO CRÍTICO!"; icon = "👑";
+        msg = `As abelhas encontraram um jardim secreto!<br><br><b>GANHOS EXTRAS:</b><br>🍯 ${formatNum(hGain)} Mel<br>✨ ${formatNum(xGain)} XP`;
+    } else if(rng < 0.95) { // Sucesso Normal
+        const hGain = power;
+        const xGain = hGain * 0.15;
+        honey += hGain;
+        addXP(xGain);
+        msg = `A expedição retornou com sucesso do Bosque Distante.<br><br><b>GANHOS:</b><br>🍯 ${formatNum(hGain)} Mel<br>✨ ${formatNum(xGain)} XP`;
+    } else { // Incidente
+        msg = "Um bando de pássaros afugentou o enxame. Elas voltaram seguras, mas sem recursos.";
+        icon = "🐦"; title = "INCIDENTE NO VOO";
+    }
+
+    const resIcon = document.getElementById("expResultIcon");
+    const resTitle = document.getElementById("expResultTitle");
+    const resText = document.getElementById("expResultText");
+    if(resIcon) resIcon.textContent = icon;
+    if(resTitle) resTitle.textContent = title;
+    if(resText) resText.innerHTML = msg;
+    
+    openModal("expResultModal");
+    updateUI();
+    executeSave();
 }
 
 function renderActiveBoosts() {
-    const container = document.getElementById("active-boosts"); container.innerHTML = "";
+    const container = document.getElementById("active-boosts"); 
+    if(!container) return;
+    container.innerHTML = "";
     const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑' };
     for(let key in activeBoosts) if(activeBoosts[key] > 0) { const div = document.createElement("div"); div.className = "active-boost-timer"; div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`; container.appendChild(div); }
 }
 
 function spawnFloatingNumber(amount, isTarget, isSuperCritical) {
-    const bee = document.getElementById("mainBeeSprite"), rect = bee.getBoundingClientRect();
+    const bee = document.getElementById("mainBeeSprite");
+    if(!bee) return;
+    const rect = bee.getBoundingClientRect();
     const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2);
     const container = document.createElement("div"); container.className = "floating-num-container";
     const numEl = document.createElement("div"); numEl.className = "floating-num"; numEl.textContent = `+${formatNum(amount)}`;
@@ -2666,7 +2932,9 @@ function spawnFloatingNumber(amount, isTarget, isSuperCritical) {
 }
 
 function spawnHoneyParticles(isSuperCritical) {
-    const bee = document.getElementById("mainBeeSprite"), rect = bee.getBoundingClientRect();
+    const bee = document.getElementById("mainBeeSprite");
+    if(!bee) return;
+    const rect = bee.getBoundingClientRect();
     const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2);
     const count = isSuperCritical ? 20 : 8;
     for(let i=0; i<count; i++) {
@@ -2679,6 +2947,7 @@ function spawnHoneyParticles(isSuperCritical) {
 
 function triggerImpact(isTarget, isSuperCritical) {
     const card = document.getElementById("clickCard"), stats = document.getElementById("statsCard");
+    if(!card || !stats) return;
     let scaleC = isSuperCritical ? 0.90 : (isTarget ? 0.96 : 0.98);
     card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`; stats.style.transform = `scale(${isSuperCritical ? 1.10 : 1.01})`;
     setTimeout(() => { card.style.transform = "scale(1) rotate(0deg)"; stats.style.transform = "scale(1)"; }, isSuperCritical ? 150 : 50);
@@ -2692,11 +2961,24 @@ function doClick(event, isTarget = false) {
     
     const superCriticalChance = Math.random() < baseChance; 
     let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 5 : 1);
-    const g = hPerClick * getGlobalBonus() * multiplier; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g);
-    if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
+    
+    // REDUÇÃO POR EXPEDIÇÃO
+    let expMult = 1;
+    if(expedition.active) expMult = (100 - expedition.reductionPerc) / 100;
+    
+    const g = hPerClick * getGlobalBonus() * multiplier * expMult; 
+    honey = validateNum(honey + g); 
+    totalHoneyEver = validateNum(totalHoneyEver + g); 
+    addXP(g);
+    
     updateMissionProgress('honey_gain', g);
-    const bee = document.getElementById("beeContainer"); bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
-    setTimeout(() => bee.style.transform = "scale(1)", 50);
+    if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
+    
+    const bee = document.getElementById("beeContainer"); 
+    if(bee) {
+        bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
+        setTimeout(() => bee.style.transform = "scale(1)", 50);
+    }
     spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance);
     clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI();
 }
@@ -2717,8 +2999,10 @@ function triggerLevelUpCelebration() {
     soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {});
     notify({n:`Nível Real ${level}!`});
     const card = document.getElementById("statsCard");
-    card.classList.add("lvl-up-flash");
-    setTimeout(() => card.classList.remove("lvl-up-flash"), 1000);
+    if(card) {
+        card.classList.add("lvl-up-flash");
+        setTimeout(() => card.classList.remove("lvl-up-flash"), 1000);
+    }
     spawnLevelUpFireworks();
 }
 
@@ -2752,12 +3036,12 @@ function startGameTicks() {
         achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } });
         for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--;
         for(let b in activeBoosts) { const el = document.getElementById(`status_${b}`); if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; }
-        if(now % 1000 < 150) { updateUI(); checkMissionReset(); updateMissionProgress('play_time', 1); }
+        if(now % 1000 < 150) { updateUI(); checkMissionReset(); updateMissionProgress('play_time', 1); tickExpedition(); }
     }, 100);
 }
 
 function executeSave(){ 
-    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP}; 
+    const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, expedition}; 
     localStorage.setItem(SAVE_KEY, JSON.stringify(data)); 
     const missionData = {dailyMissions, lastMissionReset}; 
     localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); 
@@ -2774,19 +3058,20 @@ function checkOfflineGains(lastTimestamp) {
     const offlineIconEl = document.getElementById("offlineIcon");
     const offlineTitleEl = document.getElementById("offlineTitle");
     const btnCollect = document.getElementById("btnCollectOffline");
+    const offlineText = document.getElementById("offlineText");
     
     if (diffInSeconds > 604800) {
         pendingOfflineHoney = 0; pendingOfflineXP = 0;
-        offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)";
-        offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757";
-        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas do velho Dudu ficaram tristes com sua longa ausência, foram embora e não deixaram mel para você.`;
-        btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f";
+        if(offlineIconEl) { offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)"; }
+        if(offlineTitleEl) { offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757"; }
+        if(offlineText) offlineText.innerHTML = `Enquanto você descansava, as abelhas do velho Dudu ficaram tristes com sua longa ausência, foram embora e não deixaram mel para você.`;
+        if(btnCollect) { btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f"; }
         return;
     }
     
-    offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)";
-    offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit";
-    btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)";
+    if(offlineIconEl) { offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)"; }
+    if(offlineTitleEl) { offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit"; }
+    if(btnCollect) { btnCollect.textContent = "REIVINDICAR RECOMPENSAS"; btnCollect.style.background = "var(--xp-bar)"; }
     
     const mps = getMPSBase() * getGlobalBonus(); 
     const calculatedHoney = Math.floor(mps * diffInSeconds * 0.7); 
@@ -2795,8 +3080,8 @@ function checkOfflineGains(lastTimestamp) {
     pendingOfflineHoney += calculatedHoney;
     pendingOfflineXP += calculatedXP;
 
-    if (pendingOfflineHoney > 0) {
-        document.getElementById("offlineText").innerHTML = `Enquanto você descansava, as abelhas produziram mel e coletaram prêmios de missões antigas para você.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
+    if (pendingOfflineHoney > 0 && offlineText) {
+        offlineText.innerHTML = `Enquanto você descansava, as abelhas produziram mel e coletaram prêmios de missões antigas para você.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`;
     }
 }
 
@@ -2826,6 +3111,7 @@ function checkDailyLogic() {
 
 function renderDailyGrid() {
     const grid = document.getElementById('dailyGrid');
+    if(!grid) return;
     grid.innerHTML = "";
     dailyCycle.forEach((item, i) => {
         let status = i < dailyState.streak ? 'claimed' : (i === dailyState.streak ? 'active' : '');
@@ -2839,8 +3125,11 @@ function renderDailyGrid() {
         `;
     });
     
-    document.getElementById('btnClaimDaily').disabled = dailyState.claimedToday;
-    document.getElementById('btnClaimDaily').textContent = dailyState.claimedToday ? "COLETADO HOJE" : "RESGATAR HOJE";
+    const claimBtn = document.getElementById('btnClaimDaily');
+    if(claimBtn) {
+        claimBtn.disabled = dailyState.claimedToday;
+        claimBtn.textContent = dailyState.claimedToday ? "COLETADO HOJE" : "RESGATAR HOJE";
+    }
 }
 
 function claimDailyReward() {
@@ -2868,9 +3157,19 @@ function claimDailyReward() {
 }
 
 function load(){
-    initAchievements(); updateVersionDisplay(); checkUpdateStatus();
+    initAchievements(); 
     const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings();
-    const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); document.getElementById('uiMainColor').value = themeSettings.mainColor; document.getElementById('uiOpacity').value = themeSettings.opacity * 100; document.getElementById('uiOpacityLabel').textContent = (themeSettings.opacity * 100) + '%'; applyTheme(); }
+    const savedTheme = localStorage.getItem(THEME_KEY); 
+    if(savedTheme) { 
+        themeSettings = JSON.parse(savedTheme); 
+        const colIn = document.getElementById('uiMainColor');
+        const opaIn = document.getElementById('uiOpacity');
+        const opaLab = document.getElementById('uiOpacityLabel');
+        if(colIn) colIn.value = themeSettings.mainColor; 
+        if(opaIn) opaIn.value = themeSettings.opacity * 100; 
+        if(opaLab) opaLab.textContent = (themeSettings.opacity * 100) + '%'; 
+        applyTheme(); 
+    }
     const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords);
     const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); if(savedDaily) dailyState = JSON.parse(savedDaily);
     const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; }
@@ -2883,10 +3182,17 @@ function load(){
             if(d.defenderProgress) defenderProgress = d.defenderProgress;
             if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney;
             if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP;
+            if(d.expedition) expedition = d.expedition;
             if(d.timestamp) checkOfflineGains(d.timestamp);
         } catch(e) { console.error(e); }
     }
-    checkMissionReset(); updateMissionAlertStatus(); updateUI(); 
+    checkMissionReset(); updateMissionAlertStatus(); 
+    // Garante que a UI só atualize se o DOM estiver minimamente pronto
+    document.addEventListener('DOMContentLoaded', () => {
+        updateUI();
+        updateVersionDisplay(); 
+        checkUpdateStatus();
+    });
 }
 
 function enterGame() {
@@ -2895,62 +3201,94 @@ function enterGame() {
     const bar = document.getElementById("loadingBarFill");
     const bee = document.getElementById("loadingBeeImg");
     const text = document.getElementById("loadingTextMsg");
-    loadingScreen.style.display = "flex";
+    if(loadingScreen) loadingScreen.style.display = "flex";
     let progress = 0;
     const interval = setInterval(() => {
         progress += Math.random() * 5;
         if(progress > 100) progress = 100;
-        bar.style.width = progress + "%";
-        bee.style.left = progress + "%";
-        if(progress < 40) text.textContent = "COLETANDO PÓLEN...";
-        else if(progress < 70) text.textContent = "SINTETIZANDO MEL...";
-        else if(progress < 100) text.textContent = "PREPARANDO RAINHA...";
-        else {
+        if(bar) bar.style.width = progress + "%";
+        if(bee) bee.style.left = progress + "%";
+        if(text) {
+            if(progress < 40) text.textContent = "COLETANDO PÓLEN...";
+            else if(progress < 70) text.textContent = "SINTETIZANDO MEL...";
+            else if(progress < 100) text.textContent = "PREPARANDO RAINHA...";
+        }
+        if(progress === 100) {
             clearInterval(interval);
             setTimeout(() => {
-                loadingScreen.style.display = "none";
-                document.getElementById('startScreen').style.display = 'none';
-                const gameUI = document.getElementById('gameUI'); 
-                gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; 
+                if(loadingScreen) loadingScreen.style.display = "none";
+                const startScreen = document.getElementById('startScreen');
+                const gameUI = document.getElementById('gameUI');
+                if(startScreen) startScreen.style.display = 'none';
+                if(gameUI) {
+                    gameUI.style.display = 'flex'; 
+                    gameUI.style.opacity = '1'; 
+                }
                 gameLoaded = true;
-                if(pendingOfflineHoney > 0 || (document.getElementById("offlineTitle") && document.getElementById("offlineTitle").textContent.includes("abandonada"))) {
+                const offlineTitle = document.getElementById("offlineTitle");
+                if(pendingOfflineHoney > 0 || (offlineTitle && offlineTitle.textContent.includes("abandonada"))) {
                     openModal('offlineModal');
                 } else {
                     checkDailyLogic();
                 }
                 startGameTicks(); 
-                if(autoUnlocked) startAutoProducing(); updateUI(); startDynamicNotifications();
+                if(autoUnlocked) startAutoProducing(); 
+                updateUI(); 
+                startDynamicNotifications();
             }, 300);
         }
     }, 50);
 }
 
 function openModal(id) { 
-    const modal = document.getElementById(id); modal.style.display = 'flex'; 
+    const modal = document.getElementById(id); 
+    if(!modal) return;
+    modal.style.display = 'flex'; 
     if(id === 'settingsModal') {
         const btnExit = document.getElementById("btnExitToMain");
-        if(gameLoaded && document.getElementById('gameUI').style.display === 'flex') btnExit.style.display = "block"; else btnExit.style.display = "none";
+        const gameUI = document.getElementById('gameUI');
+        if(gameLoaded && gameUI && gameUI.style.display === 'flex') {
+            if(btnExit) btnExit.style.display = "block"; 
+        } else {
+            if(btnExit) btnExit.style.display = "none";
+        }
     }
     if(id === 'missionsModal') {
         renderMissions();
-        document.getElementById("btnMissionAlert").classList.remove("mission-alert");
+        const alertBtn = document.getElementById("btnMissionAlert");
+        if(alertBtn) alertBtn.classList.remove("mission-alert");
     }
     if(id === 'dailyRewardModal') renderDailyGrid();
 }
 
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function closeModal(id) { 
+    const modal = document.getElementById(id);
+    if(modal) modal.style.display = 'none'; 
+}
 
 function openTab(id, btn) {
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active'); btn.classList.add('active'); if(id === 'achievements') renderAchs();
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); 
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const pane = document.getElementById(id);
+    if(pane) pane.classList.add('active'); 
+    if(btn) btn.classList.add('active'); 
+    if(id === 'achievements') renderAchs();
 }
 
 function openSubShop(id, btn) {
-    document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none'); document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('shop_'+id).style.display = 'block'; btn.classList.add('active');
+    document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none'); 
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+    const pane = document.getElementById('shop_'+id);
+    if(pane) pane.style.display = 'block'; 
+    if(btn) btn.classList.add('active');
 }
 
-function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderAchs(); }
+function setAchFilter(rarity, btn) { 
+    currentAchFilter = rarity; 
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+    if(btn) btn.classList.add('active'); 
+    renderAchs(); 
+}
 
 function buildShop() {
     const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); 
@@ -2965,42 +3303,62 @@ function buildShop() {
 }
 
 function renderAchs() {
-    const l = document.getElementById("achList"); l.innerHTML = "";
+    const l = document.getElementById("achList"); 
+    if(!l) return;
+    l.innerHTML = "";
     achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => {
         l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`;
     });
 }
 
-document.getElementById("btnUpgradeClick").onclick = () => { 
-    if(honey >= clickCost){ 
-        honey = validateNum(honey - clickCost); 
-        clickLvl++; 
-        hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.1) + (Math.log2(clickLvl)))); 
-        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
-    } 
-};
-document.getElementById("btnAutoAction").onclick = () => { 
-    if(honey >= autoCost){ 
-        honey = validateNum(honey - autoCost); 
-        if(!autoUnlocked){ autoUnlocked = true; startAutoProducing(); } 
-        else { autoLevel++; } 
-        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
-    } 
-};
-document.getElementById("btnUpgradeLuck").onclick = () => { 
-    if(honey >= luckCost) { 
-        honey = validateNum(honey - luckCost); 
-        luckLvl++; 
-        updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
-    } 
-};
+const upgClickBtn = document.getElementById("btnUpgradeClick");
+if(upgClickBtn) {
+    upgClickBtn.onclick = () => { 
+        if(honey >= clickCost){ 
+            honey = validateNum(honey - clickCost); 
+            clickLvl++; 
+            hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.1) + (Math.log2(clickLvl)))); 
+            updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
+        } 
+    };
+}
+const upgAutoBtn = document.getElementById("btnAutoAction");
+if(upgAutoBtn) {
+    upgAutoBtn.onclick = () => { 
+        if(honey >= autoCost){ 
+            honey = validateNum(honey - autoCost); 
+            if(!autoUnlocked){ autoUnlocked = true; startAutoProducing(); } 
+            else { autoLevel++; } 
+            updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
+        } 
+    };
+}
+const upgLuckBtn = document.getElementById("btnUpgradeLuck");
+if(upgLuckBtn) {
+    upgLuckBtn.onclick = () => { 
+        if(honey >= luckCost) { 
+            honey = validateNum(honey - luckCost); 
+            luckLvl++; 
+            updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); 
+        } 
+    };
+}
 
-document.getElementById("beeContainer").addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
-document.getElementById("beeContainer").addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false});
-document.getElementById("leftTarget").addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
-document.getElementById("leftTarget").addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
-document.getElementById("rightTarget").addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
-document.getElementById("rightTarget").addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
+const beeCont = document.getElementById("beeContainer");
+if(beeCont) {
+    beeCont.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); });
+    beeCont.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false});
+}
+const leftT = document.getElementById("leftTarget");
+if(leftT) {
+    leftT.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
+    leftT.addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
+}
+const rightT = document.getElementById("rightTarget");
+if(rightT) {
+    rightT.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); });
+    rightT.addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false});
+}
 
 function spawnFlake(containerId) {
     const container = document.getElementById(containerId); if(!container) return; const flake = document.createElement('div');
@@ -3008,7 +3366,10 @@ function spawnFlake(containerId) {
     container.appendChild(flake); setTimeout(() => flake.remove(), 6000);
 }
 setInterval(() => spawnFlake('snowContainer'), 300);
-setInterval(() => { if(gameLoaded && document.getElementById('gameUI').style.opacity == '1') spawnFlake('gameSnowContainer'); }, 400);
+setInterval(() => { 
+    const gameUI = document.getElementById('gameUI');
+    if(gameLoaded && gameUI && gameUI.style.opacity == '1') spawnFlake('gameSnowContainer'); 
+}, 400);
 
 function initAchievements() {
     achievements.length = 0;
