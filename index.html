@@ -170,7 +170,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     z-index: 2;
 }
 
-/* BOTÃO JOGAR PREMIUM */
 .btn-play-premium {
     width: 100%;
     padding: 20px !important;
@@ -184,7 +183,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 }
 .btn-play-premium:active { transform: scale(0.96) translateY(4px) !important; box-shadow: 0 5px 10px rgba(255, 204, 0, 0.2) !important; }
 
-/* GLASSMORPHISM BOTÕES SECUNDÁRIOS */
 .btn-secondary-glass {
     background: rgba(255, 255, 255, 0.08) !important;
     backdrop-filter: blur(10px);
@@ -198,7 +196,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     border-radius: 18px !important;
 }
 
-/* CONTORNO CROMÁTICO PULSANTE */
 .btn-chromatic-pulse {
     position: relative;
     overflow: visible !important;
@@ -317,7 +314,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .settings-gear { right: 18px; font-size: 24px; }
 .daily-mission-btn { right: 55px; font-size: 24px; border-radius: 50%; padding: 2px; }
 
-/* ALERT PULSANTE NAS MISSÕES */
 .mission-alert {
     animation: alertPulse 1.5s infinite;
     background: var(--xp-bar) !important;
@@ -409,7 +405,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     font-weight: 800; 
     color: rgba(255,255,255,0.4); 
     cursor: pointer; 
-    font-size: 22px; 
+    font-size: 20px; 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
@@ -418,13 +414,12 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     position: relative;
 }
 
-/* CIRCULO COLORIDO PULSANTE NO BOTAO JOGOS */
 .tab-btn-games-highlight::after {
     content: '';
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 60px; height: 60px;
+    width: 50px; height: 50px;
     border: 3px solid transparent;
     border-radius: 50%;
     background: linear-gradient(var(--card), var(--card)) padding-box,
@@ -435,7 +430,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 
 @keyframes gamesPulse { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
 
-.tab-btn span { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
+.tab-btn span { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 .tab-btn.active { color: var(--accent); border-bottom: 4px solid var(--accent); }
 .tab-btn.active span { color: var(--text-color); }
 
@@ -709,7 +704,6 @@ input[type=range]::-webkit-slider-thumb {
 .dl-step { margin-bottom: 20px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; max-width: 300px; }
 .dl-icon { width: 45px; height: 45px; background: var(--accent); color: var(--main-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; flex-shrink: 0; }
 
-/* RECOMPENSA DIARIA CSS */
 .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
 .day-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 5px; text-align: center; position: relative; }
 .day-card.active { border-color: var(--accent); background: rgba(255,204,0,0.1); box-shadow: 0 0 10px rgba(255,204,0,0.3); }
@@ -718,8 +712,30 @@ input[type=range]::-webkit-slider-thumb {
 .day-icon { font-size: 20px; display: block; }
 .day-reward-val { font-size: 9px; font-weight: 800; color: var(--accent); }
 
-/* EXPEDITION UI */
-.expedition-card { background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 15px; margin-bottom: 12px; }
+.hangar-box {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 15px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+}
+.hangar-title {
+    font-weight: 900;
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.hangar-lock {
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 .expedition-timer { font-size: 22px; font-weight: 900; color: var(--accent); display: block; margin: 10px 0; }
 .expedition-slider-box { margin-top: 15px; text-align: left; }
 .expedition-slider-box label { font-size: 12px; font-weight: 800; opacity: 0.7; }
@@ -733,7 +749,6 @@ input[type=range]::-webkit-slider-thumb {
 .biome-btn.selected { border-color: var(--accent); background: rgba(255,204,0,0.15); transform: translateY(-3px); }
 .biome-icon { font-size: 20px; }
 
-/* ESTILOS DE EVENTOS DE EXPEDIÇÃO */
 .exp-event-btn {
     width: 100%; padding: 12px; border-radius: 14px; margin-top: 10px; 
     font-weight: 900; font-size: 12px; text-transform: uppercase;
@@ -741,13 +756,44 @@ input[type=range]::-webkit-slider-thumb {
 }
 @keyframes btnGlow { from { box-shadow: 0 0 5px rgba(255,255,255,0.2); } to { box-shadow: 0 0 15px var(--accent); } }
 
-#expEventArea { 
+.exp-event-area { 
     background: rgba(0,0,0,0.3); border: 1.5px dashed var(--accent); 
     border-radius: 18px; padding: 12px; margin-top: 12px; display: none;
 }
 
-#expResultInline {
+.exp-result-inline {
     padding: 15px; background: rgba(76, 175, 80, 0.1); border: 2px solid var(--xp-bar); border-radius: 18px; display: none;
+}
+
+.exp-synergy-tag {
+    font-size: 9px;
+    background: var(--accent);
+    color: var(--main-blue);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-weight: 900;
+    margin-top: 5px;
+}
+
+.hive-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.hive-stat-label { font-size: 13px; font-weight: 700; color: inherit; display: flex; align-items: center; gap: 8px; }
+.hive-stat-val { font-size: 14px; font-weight: 900; color: var(--accent); }
+.hive-bonus-badge {
+    padding: 2px 8px;
+    background: var(--xp-bar);
+    color: white;
+    font-size: 10px;
+    border-radius: 6px;
+    font-weight: 900;
 }
 </style>
 </head>
@@ -837,6 +883,8 @@ input[type=range]::-webkit-slider-thumb {
       <div class="tabs-header">
           <button class="tab-btn active" onclick="openTab('upgrades', this)">🚀<span>Upgrades</span></button>
           <button class="tab-btn" onclick="openTab('shop', this)">🛒<span>Loja</span></button>
+          <button class="tab-btn" onclick="openTab('expedition-tab', this)">🧭<span>Expedição</span></button>
+          <button class="tab-btn" onclick="openTab('hive-stats', this)">🏠<span>Colmeia</span></button>
           <button id="btnTabGames" class="tab-btn tab-btn-games-highlight" onclick="openTab('events', this)">🎮<span>Jogos</span></button>
           <button class="tab-btn" onclick="openTab('achievements', this)">🎖️<span>Conquistas</span></button>
       </div>
@@ -935,67 +983,21 @@ input[type=range]::-webkit-slider-thumb {
               </div>
           </div>
 
+          <div id="expedition-tab" class="tab-pane">
+              <div class="scroll-area" id="expeditionScroll">
+                  <div class="section-title">CENTRO DE HANGAR (EXPEDIÇÕES)</div>
+                  <div id="synergyDisplay" style="margin-bottom: 10px;"></div>
+                  <div id="hangarList"></div>
+              </div>
+          </div>
+
+          <div id="hive-stats" class="tab-pane">
+              <div class="scroll-area" id="hiveStatsContent">
+              </div>
+          </div>
+
           <div id="events" class="tab-pane">
               <div class="scroll-area">
-                  <div class="section-title">EXPEDIÇÃO REAL (INVESTIMENTO)</div>
-                  <div class="expedition-card">
-                      <div id="expResultInline">
-                          <div style="font-size: 30px; text-align: center;">📦</div>
-                          <h3 style="margin: 5px 0; color: var(--accent); text-align: center;">O ENXAME VOLTOU!</h3>
-                          <div id="expResultInlineText" style="font-size: 13px; text-align: center; margin-bottom: 10px;"></div>
-                          <button onclick="collectExpeditionRewards()" style="background: var(--xp-bar); color: white; margin-top:0;">REIVINDICAR</button>
-                      </div>
-
-                      <div id="expeditionActiveUI" style="display: none; text-align: center;">
-                          <div style="font-size: 30px;">🛰️</div>
-                          <b id="expActiveTitle">ENXAME EM EXPEDIÇÃO</b>
-                          <span id="expTimer" class="expedition-timer">05:00</span>
-                          <small style="opacity: 0.6; font-size: 10px;">SEU PODER DE CLIQUE ESTÁ REDUZIDO EM <span id="expReductionLabel">0</span>%</small>
-
-                          <div id="expEventArea">
-                             <div id="expEventMsg" style="font-size: 11px; font-weight: 800; margin-bottom: 5px;"></div>
-                             <button id="expEventBtn" class="exp-event-btn" onclick="handleExpEvent()"></button>
-                          </div>
-                      </div>
-                      <div id="expIdleUI">
-                          <div style="font-size: 24px; text-align: center;">🧭</div>
-                          <p style="font-size: 11px; opacity: 0.8; margin: 8px 0; text-align: center;">Escolha o tempo, o destino e a quantidade de abelhas para a missão.</p>
-                          
-                          <div class="biome-selector">
-                            <div class="biome-btn selected" id="biome_clover" onclick="selectBiome('clover')">
-                                <span class="biome-icon">🍀</span>
-                                <span>Trevo</span>
-                            </div>
-                            <div class="biome-btn" id="biome_pepper" onclick="selectBiome('pepper')">
-                                <span class="biome-icon">🌶️</span>
-                                <span>Pimenta</span>
-                            </div>
-                            <div class="biome-btn" id="biome_orchard" onclick="selectBiome('orchard')">
-                                <span class="biome-icon">🍎</span>
-                                <span>Pomar</span>
-                            </div>
-                          </div>
-
-                          <div style="display: flex; gap: 8px; margin-top: 10px;">
-                            <select id="expDurationSelect" style="flex: 1; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1);">
-                                <option value="300000">5 Minutos</option>
-                                <option value="1800000">30 Minutos</option>
-                                <option value="3600000">1 Hora</option>
-                                <option value="86400000">24 Horas</option>
-                            </select>
-                          </div>
-
-                          <div class="expedition-slider-box" style="margin-top: 15px;">
-                              <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
-                                  <label>Tamanho da Tropa (Máx 90%)</label>
-                                  <b id="expPercLabel" style="color:var(--accent)">50%</b>
-                              </div>
-                              <input type="range" id="expSlider" min="10" max="90" value="50" step="10" oninput="const label = document.getElementById('expPercLabel'); if(label) label.textContent = this.value + '%'">
-                          </div>
-                          <button onclick="startExpedition()" style="background:var(--xp-bar); color:white; margin-top: 15px;">LANÇAR EXPEDIÇÃO 🚀</button>
-                      </div>
-                  </div>
-
                   <div class="section-title">CENTRAL DE JOGOS</div>
 
                   <div class="game-card">
@@ -1368,7 +1370,6 @@ input[type=range]::-webkit-slider-thumb {
 </div>
 
 <script>
-/* BLOQUEIO DE ZOOM PARA MOBILE */
 document.addEventListener('touchstart', function (event) {
   if (event.touches.length > 1) {
     event.preventDefault();
@@ -1474,48 +1475,47 @@ async function handlePwaClick() {
     }
 }
 
-// ==========================================
-// SISTEMA DINÂMICO DE CHANGELOG
-// ==========================================
 let updateHistory = [
     {
-        version: "10.3.0",
-        title: "💎 INTERFACE DE BÔNUS PASSIVOS",
+        version: "10.9.0",
+        title: "🛡️ SEGURANÇA E COLMEIA",
         changes: [
-            { type: "add", text: "Visualização Dinâmica: Bônus de skins (Noel, Skull, Fairy) agora aparecem junto aos boosts temporários." },
-            { type: "mod", text: "Layout Minimalista: Bônus de skin exibem apenas o ícone correspondente e a porcentagem." }
+            { type: "fix", text: "Estabilidade: O clique na abelha principal não interfere mais no cronômetro das expedições." },
+            { type: "add", text: "Status da Colmeia: Boosts ativos agora são exibidos diretamente no painel de estatísticas." },
+            { type: "mod", text: "Regra de Enxame: Limite máximo de expedição ajustado para 95% para preservar a colmeia." }
         ]
     },
     {
-        version: "10.2.0",
-        title: "✨ REINO DAS FADAS",
+        version: "10.8.0",
+        title: "🏠 PAINEL DA COLMEIA",
         changes: [
-            { type: "add", text: "Nova Skin: FairyBee disponível na loja com bônus passivo de 6% de Sorte Real." },
-            { type: "mod", text: "Sistema de Alerta: Botão de atualizações agora pulsa até ser acessado." }
+            { type: "add", text: "Nova Aba 'Colmeia': Centraliza todas as estatísticas, bônus e níveis em uma interface limpa." },
+            { type: "mod", text: "Monitoramento de Enxame: Agora você vê exatamente quantas abelhas estão ocupadas em expedições." }
         ]
     },
     {
-        version: "10.1.0",
-        title: "🖥️ SISTEMA DE IMERSÃO",
+        version: "10.7.0",
+        title: "🐝 LOGÍSTICA DE ENXAME",
         changes: [
-            { type: "add", text: "Fullscreen Inteligente: O jogo restaura o modo imersivo ao tocar na zona de jogo." },
-            { type: "fix", text: "UI: Corrigido redimensionamento de painéis em telas ultra-longas." }
+            { type: "fix", text: "Sliders Inteligentes: Agora os sliders de abelhas se ajustam automaticamente para nunca ultrapassar o limite de 90% da colmeia." },
+            { type: "add", text: "Estoque em Tempo Real: Ao mover uma barra, todas as outras janelas de hangar recalculam as abelhas disponíveis." }
         ]
     },
     {
-        version: "10.0.0",
-        title: "🧪 REVOLUÇÃO DOS BOOSTS",
+        version: "10.6.0",
+        title: "🛸 EXPEDIÇÕES ROBUSTAS",
         changes: [
-            { type: "add", text: "Geleia Real: Item raro que dobra o poder de upgrades ativos." },
-            { type: "add", text: "Ímã de Pólen: Facilita o acerto de alvos atraindo-os para o centro." }
+            { type: "add", text: "Sinergia Real: Ganhe +15% de Mel global ao usar hangares em biomas diferentes!" },
+            { type: "add", text: "Baús de Hangar: Pequena chance de encontrar Boosts raros em qualquer expedição." },
+            { type: "mod", text: "Experiência de Hangar: Hangares agora ganham 'proficiência', reduzindo o tempo de voo com o uso." }
         ]
     },
     {
-        version: "9.9.0",
-        title: "🛡️ REVISÃO DE MISSÕES",
+        version: "10.5.0",
+        title: "🛸 SISTEMA DE HANGAR REAL",
         changes: [
-            { type: "mod", text: "Sincronização: Melhorado o rastreio de progresso em minigames." },
-            { type: "fix", text: "Alertas: Ícone de missões pulsa quando há itens para coletar." }
+            { type: "add", text: "Expedições Simultâneas: Agora você pode comprar novos hangares e lançar até 4 expedições ao mesmo tempo!" },
+            { type: "mod", text: "Gerenciamento de Enxame: O sistema verifica automaticamente as abelhas disponíveis para novas missões." }
         ]
     }
 ];
@@ -1548,7 +1548,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V44"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V46"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
@@ -1561,7 +1561,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V44", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V46", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1573,7 +1573,6 @@ const MISSION_KEY = "BeeRoyal_Missions_V2";
 const THEME_KEY = "BeeRoyal_Theme_V1";
 const RECORDS_KEY = "BeeRoyal_Records_V1";
 const DAILY_REWARD_KEY = "BeeRoyal_Daily_V2";
-const EXP_KEY = "BeeRoyal_Expedition_V1";
 
 function validateNum(n) {
     if (isNaN(n) || n === undefined || n === null || n < 0) return 0;
@@ -1585,7 +1584,14 @@ let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, auto
 let clickLvl = 1, autoLvlLvl = 1; 
 let luckLvl = 1, luckCost = 6400;
 
-let expedition = { active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0, finished: false, pendingRewards: null };
+let hangarsCount = 1;
+let expeditions = [
+    { id: 0, active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0, finished: false, pendingRewards: null, uses: 0, selectedPerc: 50 },
+    { id: 1, active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0, finished: false, pendingRewards: null, uses: 0, selectedPerc: 50 },
+    { id: 2, active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0, finished: false, pendingRewards: null, uses: 0, selectedPerc: 50 },
+    { id: 3, active: false, startTime: 0, duration: 300000, reductionPerc: 0, biome: 'clover', eventChance: 0, finished: false, pendingRewards: null, uses: 0, selectedPerc: 50 }
+];
+const HANGAR_COSTS = [0, 50000, 250000, 1000000];
 
 let ownedCosmetics = ["Bee", "NoelBee", "SkullBee", "FairyBee"], equippedCosmetic = "NoelBee", equippedBackground = "BgPadrao", pendingOfflineHoney = 0, pendingOfflineXP = 0;
 let activeBoosts = { pepper: 0, energy: 0, flower: 0, luck: 0, crown: 0, jelly: 0, magnet: 0 }; 
@@ -2773,6 +2779,9 @@ function getGlobalBonus() {
     if(activeBoosts.pepper > 0) b += 1; 
     if(activeBoosts.energy > 0) b += 0.5; 
     if(activeBoosts.crown > 0) b *= 8; 
+    let biomesActive = new Set();
+    expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
+    if(biomesActive.size >= 2) b += (biomesActive.size * 0.05); 
     return b;
 }
 
@@ -2804,71 +2813,309 @@ function updateUI() {
         if(equippedBackground === id) { btn.style.background = "var(--accent)"; btn.style.color = "var(--main-blue)"; if(clickZone) clickZone.style.backgroundImage = `url('${id}.gif')`; }
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
-    checkUpdateStatus(); updateVersionDisplay(); updateExpeditionUI();
+    checkUpdateStatus(); updateVersionDisplay(); renderHangars();
+    const hivePane = document.getElementById("hive-stats");
+    if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
 }
 
-function selectBiome(id) { if(expedition.active || expedition.finished) return; expedition.biome = id; document.querySelectorAll('.biome-btn').forEach(b => b.classList.remove('selected')); const btn = document.getElementById('biome_' + id); if(btn) btn.classList.add('selected'); }
-
-function handleExpEvent() {
-    if(!expedition.active || expedition.eventChance === 0) return;
-    const btn = document.getElementById("expEventBtn"); const msg = document.getElementById("expEventMsg");
-    if(expedition.eventChance === 1) { notify({n: "VESPAS AFASTADAS! 🛡️", d: "A missão continua segura!"}); expedition.eventChance = 0; }
-    else if(expedition.eventChance === 2) { expedition.startTime -= 30000; notify({n: "VENTO FAVORÁVEL! 🌬️", d: "Redução de 30s aplicada"}); expedition.eventChance = 0; }
-    const area = document.getElementById("expEventArea"); if(area) area.style.display = "none";
-}
-
-function startExpedition() {
-    if(expedition.active || expedition.finished) return;
-    const slider = document.getElementById("expSlider"); const durSelect = document.getElementById("expDurationSelect"); if(!slider || !durSelect) return;
-    const perc = parseInt(slider.value); expedition.duration = parseInt(durSelect.value); expedition.active = true; expedition.reductionPerc = perc; expedition.startTime = Date.now(); expedition.eventChance = 0;
-    let biomeName = expedition.biome === 'clover' ? 'Campos de Trevo' : (expedition.biome === 'pepper' ? 'Plantação de Pimentas' : 'Pomar Abandonado');
-    notify({n: "EXPEDIÇÃO LANÇADA!", d: biomeName}); updateUI(); executeSave();
-}
-
-function updateExpeditionUI() {
-    const idleUI = document.getElementById("expIdleUI"); const activeUI = document.getElementById("expeditionActiveUI"); const inlineRes = document.getElementById("expResultInline"); const reductionLabel = document.getElementById("expReductionLabel"); const activeTitle = document.getElementById("expActiveTitle");
-    if(!idleUI || !activeUI || !inlineRes) return; 
-
-    if(expedition.finished) {
-        idleUI.style.display = "none"; activeUI.style.display = "none"; inlineRes.style.display = "block";
-        const resText = document.getElementById("expResultInlineText"); if(resText && expedition.pendingRewards) resText.innerHTML = expedition.pendingRewards.msg;
-    } else if(expedition.active) {
-        idleUI.style.display = "none"; inlineRes.style.display = "none"; activeUI.style.display = "block";
-        if(reductionLabel) reductionLabel.textContent = expedition.reductionPerc;
-        if(activeTitle) { let bName = expedition.biome === 'clover' ? 'CAMPOS DE TREVO 🍀' : (expedition.biome === 'pepper' ? 'PLANT. PIMENTAS 🌶️' : 'POMAR ABANDONADO 🍎'); activeTitle.textContent = bName; }
-    } else {
-        inlineRes.style.display = "none"; activeUI.style.display = "none"; idleUI.style.display = "block"; selectBiome(expedition.biome || 'clover');
+function buyHangar(id) {
+    const cost = HANGAR_COSTS[id];
+    if(honey >= cost) {
+        honey -= cost;
+        hangarsCount = id + 1;
+        notify({n: "HANGAR ADQUIRIDO! 🛸", d: `Espaço #${id+1} liberado.`});
+        updateUI();
+        executeSave();
     }
 }
 
-function tickExpedition() {
-    if(!expedition.active) return; const now = Date.now(); const elapsed = now - expedition.startTime; const remaining = expedition.duration - elapsed;
-    if(remaining <= 0) { finishExpedition(); }
-    else {
-        const timerEl = document.getElementById("expTimer");
-        if(timerEl) { const h = Math.floor(remaining / 3600000); const m = Math.floor((remaining % 3600000) / 60000); const s = Math.floor((remaining % 60000) / 1000); timerEl.textContent = (h > 0 ? h + ":" : "") + m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0'); }
-        if(Math.random() < 0.002 && expedition.eventChance === 0) {
-            const isVespa = Math.random() < 0.5; expedition.eventChance = isVespa ? 1 : 2; const area = document.getElementById("expEventArea"); const btn = document.getElementById("expEventBtn"); const msg = document.getElementById("expEventMsg");
-            if(area && btn && msg) { area.style.display = "block"; if(isVespa) { msg.innerHTML = "⚠️ ATAQUE DE VESPAS!"; msg.style.color = "#ff4757"; btn.textContent = "DEFENDER AGORA!"; btn.style.background = "#ff4757"; } else { msg.innerHTML = "🌬️ VENTOS DE CAUDA!"; msg.style.color = "#2ecc71"; btn.textContent = "PEGAR IMPULSO!"; btn.style.background = "#2ecc71"; } }
-            if(isVespa) { setTimeout(() => { if(expedition.active && expedition.eventChance === 1) { expedition.active = false; notify({n: "MISSÃO FALHOU!", d: "As vespas dispersaram o enxame"}); document.getElementById("expEventArea").style.display = "none"; updateUI(); executeSave(); } }, 8000); }
-            else { setTimeout(() => { if(expedition.eventChance === 2) { document.getElementById("expEventArea").style.display = "none"; expedition.eventChance = 0; } }, 10000); }
+function selectBiome(hangarId, biomeId) { 
+    if(expeditions[hangarId].active || expeditions[hangarId].finished) return; 
+    expeditions[hangarId].biome = biomeId;
+    renderHangars();
+}
+
+function handleExpEvent(hangarId) {
+    const exp = expeditions[hangarId];
+    if(!exp.active || exp.eventChance === 0) return;
+    if(exp.eventChance === 1) { notify({n: "VESPAS AFASTADAS! 🛡️", d: "A missão continua segura!"}); exp.eventChance = 0; }
+    else if(exp.eventChance === 2) { exp.startTime -= 30000; notify({n: "VENTO FAVORÁVEL! 🌬️", d: "Redução de 30s aplicada"}); exp.eventChance = 0; }
+    renderHangars();
+}
+
+function onSliderChange(hangarId, newVal) {
+    expeditions[hangarId].selectedPerc = parseInt(newVal);
+    const label = document.getElementById(`expPercLabel_${hangarId}`);
+    if(label) label.textContent = newVal + '%';
+    recalculateHangarConstraints();
+}
+
+function recalculateHangarConstraints() {
+    let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
+    const LIMIT = 95;
+
+    for(let i=0; i<4; i++) {
+        const exp = expeditions[i];
+        if(!exp.active && !exp.finished && i < hangarsCount) {
+            const slider = document.getElementById(`expSlider_${i}`);
+            if(slider) {
+                let availableForThis = Math.max(0, LIMIT - currentOccupiedTotal);
+                slider.max = availableForThis;
+                if(parseInt(slider.value) > availableForThis) {
+                    slider.value = availableForThis;
+                    exp.selectedPerc = availableForThis;
+                    const label = document.getElementById(`expPercLabel_${i}`);
+                    if(label) label.textContent = availableForThis + '%';
+                }
+            }
         }
     }
 }
 
-function finishExpedition() {
-    expedition.active = false; expedition.finished = true; const durBonus = expedition.duration / 300000; const power = (hPerClick * expedition.reductionPerc * 250 * durBonus); const rng = Math.random();
-    let msg = ""; let hGain = power; let xGain = hGain * 0.15;
-    if(expedition.biome === 'clover') { hGain *= 0.6; if(rng < 0.6) { activeBoosts.luck += 600 * Math.sqrt(durBonus); msg += "🍀 Buff Sorte Real obtido!<br>"; } }
-    else if(expedition.biome === 'pepper') { hGain *= 1.4; if(rng < 0.6) { activeBoosts.pepper += 600 * Math.sqrt(durBonus); msg += "🌶️ Buff Pimenta obtido!<br>"; } if(rng > 0.98) { hGain = 0; msg = "As abelhas 'queimaram as asas'."; } }
-    else if(expedition.biome === 'orchard') { xGain *= 3; if(rng < 0.2) { activeBoosts.crown += 300; msg += "👑 Coroa Real encontrada!<br>"; } }
-    if(hGain > 0) msg += `<b>GANHOS:</b><br>🍯 ${formatNum(hGain)} Mel | ✨ ${formatNum(xGain)} XP`;
-    expedition.pendingRewards = {h: hGain, x: xGain, msg: msg}; updateUI(); executeSave();
+function startExpedition(hangarId) {
+    const exp = expeditions[hangarId];
+    if(exp.active || exp.finished) return;
+    
+    const slider = document.getElementById(`expSlider_${hangarId}`);
+    const durSelect = document.getElementById(`expDuration_${hangarId}`);
+    if(!slider || !durSelect) return;
+
+    const perc = parseInt(slider.value);
+    
+    let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
+    if(currentOccupiedTotal + perc > 95) {
+        notify({n: "LIMITE DE ABELHAS! ⚠️", d: "Você não pode enviar mais de 95% do enxame."});
+        return;
+    }
+
+    const baseDuration = parseInt(durSelect.value);
+    const proficiencyBonus = Math.min(0.20, (exp.uses || 0) * 0.005); 
+    exp.duration = baseDuration * (1 - proficiencyBonus);
+    
+    exp.active = true;
+    exp.reductionPerc = perc;
+    exp.startTime = Date.now();
+    exp.eventChance = 0;
+    exp.uses = (exp.uses || 0) + 1;
+
+    notify({n: "DECOLAGEM REAL!", d: `Hangar #${hangarId+1} em missão.`});
+    updateUI();
+    executeSave();
 }
 
-function collectExpeditionRewards() {
-    if(expedition.pendingRewards) { honey += expedition.pendingRewards.h; addXP(expedition.pendingRewards.x); notify({n: "Recompensas Coletadas!"}); }
-    expedition.finished = false; expedition.pendingRewards = null; updateUI(); executeSave();
+function renderHangars() {
+    const container = document.getElementById("hangarList");
+    const synergyContainer = document.getElementById("synergyDisplay");
+    if(!container) return;
+    container.innerHTML = "";
+
+    let biomesActive = new Set();
+    expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
+    if(synergyContainer) {
+        if(biomesActive.size >= 2) synergyContainer.innerHTML = `<div class="exp-synergy-tag">✨ SINERGIA DE BIOMAS: +${(biomesActive.size * 5)}% MEL GLOBAL ATIVO</div>`;
+        else synergyContainer.innerHTML = "";
+    }
+
+    for(let i=0; i<4; i++) {
+        const exp = expeditions[i];
+        const isLocked = i >= hangarsCount;
+        const hangarBox = document.createElement("div");
+        hangarBox.className = "hangar-box";
+        
+        const profLevel = Math.floor((exp.uses || 0) / 10);
+        let content = `<div class="hangar-title">HANGAR #${i+1} [Nív. ${profLevel}] ${isLocked ? '🔒' : ''}</div>`;
+        
+        if(isLocked) {
+            const cost = HANGAR_COSTS[i];
+            content += `<div class="hangar-lock">
+                <button onclick="buyHangar(${i})" ${honey < cost ? 'disabled' : ''} style="font-size:12px; height:auto; padding:10px;">LIBERAR: ${formatNum(cost)} 🍯</button>
+            </div>`;
+        } else if(exp.finished) {
+            content += `<div class="exp-result-inline" style="display:block;">
+                <div style="font-size: 11px; text-align: center; margin-bottom: 8px;">${exp.pendingRewards.msg}</div>
+                <button onclick="collectExpeditionRewards(${i})" style="background: var(--xp-bar); color: white; margin-top:0; height:auto; padding:8px;">COLETAR</button>
+            </div>`;
+        } else if(exp.active) {
+            content += `<div style="text-align:center;">
+                <span class="expedition-timer" id="expTimer_${i}">--:--</span>
+                <div class="exp-event-area" id="expEventArea_${i}">
+                    <button class="exp-event-btn" onclick="handleExpEvent(${i})" id="expEventBtn_${i}"></button>
+                </div>
+            </div>`;
+        } else {
+            let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
+            let availableForThis = Math.max(0, 95 - currentOccupiedTotal);
+            let safeSelectedPerc = Math.min(exp.selectedPerc || 50, availableForThis);
+
+            content += `
+                <div class="biome-selector">
+                    <div class="biome-btn ${exp.biome==='clover'?'selected':''}" onclick="selectBiome(${i}, 'clover')"><span class="biome-icon">🍀</span><small>Trevo</small></div>
+                    <div class="biome-btn ${exp.biome==='pepper'?'selected':''}" onclick="selectBiome(${i}, 'pepper')"><span class="biome-icon">🌶️</span><small>Pimenta</small></div>
+                    <div class="biome-btn ${exp.biome==='orchard'?'selected':''}" onclick="selectBiome(${i}, 'orchard')"><span class="biome-icon">🍎</span><small>Pomar</small></div>
+                </div>
+                <select id="expDuration_${i}" style="width:100%; margin-top:8px; padding:8px; border-radius:10px; background:rgba(0,0,0,0.2); color:white; border:none; font-size:11px;">
+                    <option value="300000">5 Minutos</option>
+                    <option value="1800000">30 Minutos</option>
+                    <option value="3600000">1 Hora</option>
+                </select>
+                <input type="range" id="expSlider_${i}" min="10" max="${availableForThis}" value="${safeSelectedPerc}" step="10" 
+                    oninput="onSliderChange(${i}, this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:5px;">
+                    <span>Enxame:</span> <b id="expPercLabel_${i}">${safeSelectedPerc}%</b>
+                </div>
+                <button onclick="startExpedition(${i})" style="background:var(--xp-bar); color:white; padding:10px; font-size:12px;">INICIAR 🚀</button>
+            `;
+        }
+        
+        hangarBox.innerHTML = content;
+        container.appendChild(hangarBox);
+    }
+}
+
+function renderHiveStats() {
+    const container = document.getElementById("hiveStatsContent");
+    if(!container) return;
+
+    let totalOccupied = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
+    let rareAchs = achievements.filter(a => a.u && a.r === 'rare').length;
+    let epicAchs = achievements.filter(a => a.u && a.r === 'epic').length;
+    let skinBonus = Math.round((getSkinBonus() - 1) * 100);
+    let biomesActive = new Set();
+    expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
+    let synergyBonus = biomesActive.size >= 2 ? (biomesActive.size * 5) : 0;
+    let totalGlobalMult = (getGlobalBonus()).toFixed(2);
+
+    let boostsHtml = "";
+    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑', jelly: '🧪', magnet: '🧲' };
+    const names = { pepper: 'Mel 2x', energy: 'Vel 1.5x', flower: 'XP 3x', luck: 'Sorte 2x', crown: 'Rei 8x', jelly: 'Geleia 2x', magnet: 'Ímã Alvos' };
+    
+    for(let b in activeBoosts) {
+        if(activeBoosts[b] > 0) {
+            boostsHtml += `
+                <div class="hive-stat-row">
+                    <div class="hive-stat-label">${icons[b]} ${names[b]}</div>
+                    <div class="hive-stat-val" style="color:#fff;">${formatTime(activeBoosts[b])}</div>
+                </div>
+            `;
+        }
+    }
+
+    container.innerHTML = `
+        <div class="section-title">OCUPAÇÃO DO ENXAME 🐝</div>
+        <div class="card" style="margin-bottom: 20px;">
+            <div style="font-size: 32px; font-weight: 900; color: var(--accent);">${totalOccupied}%</div>
+            <div style="font-size: 11px; opacity: 0.6; margin-top: 5px;">Abelhas atualmente fora da colmeia</div>
+            <div class="xp-bg" style="margin-top: 15px;">
+                <div class="xp-fill" style="width: ${(totalOccupied / 95) * 100}%; background: ${totalOccupied > 80 ? '#e74c3c' : 'var(--accent)'};"></div>
+            </div>
+        </div>
+
+        <div class="section-title">BOOSTS ATIVOS ⚡</div>
+        <div id="hiveBoostsList">
+            ${boostsHtml || '<div class="hive-stat-row"><div class="hive-stat-label">Nenhum boost ativo</div></div>'}
+        </div>
+
+        <div class="section-title">EFICIÊNCIA REAL ✨</div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">🧬 Nível de Upgrades</div>
+            <div class="hive-stat-val">Lvl. ${clickLvl + autoLevel}</div>
+        </div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">🛡️ Sorte Real Base</div>
+            <div class="hive-stat-val">${(0.1 + (luckLvl-1)*0.02).toFixed(2)}%</div>
+        </div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">👔 Bônus de Visual</div>
+            <div class="hive-bonus-badge">+${skinBonus}%</div>
+        </div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">🎖️ Glória das Conquistas</div>
+            <div class="hive-bonus-badge">+${(rareAchs * 1) + (epicAchs * 5)}%</div>
+        </div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">🧭 Sinergia de Biomas</div>
+            <div class="hive-bonus-badge">+${synergyBonus}%</div>
+        </div>
+
+        <div class="section-title">RESERVAS TOTAIS 🍯</div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">💰 Mel Histórico</div>
+            <div class="hive-stat-val">${formatNum(totalHoneyEver)}</div>
+        </div>
+        <div class="hive-stat-row">
+            <div class="hive-stat-label">📊 Multiplicador Global</div>
+            <div class="hive-stat-val" style="color: var(--xp-bar);">${totalGlobalMult}x</div>
+        </div>
+        
+        <div class="version-tag" style="margin-top: 30px;">DADOS SINCRONIZADOS COM A RAINHA ✅</div>
+    `;
+}
+
+function tickExpedition() {
+    expeditions.forEach((exp, i) => {
+        if(!exp.active) return;
+        const now = Date.now();
+        const elapsed = now - exp.startTime;
+        const remaining = exp.duration - elapsed;
+        
+        if(remaining <= 0) finishExpedition(i);
+        else {
+            const timerEl = document.getElementById(`expTimer_${i}`);
+            if(timerEl) {
+                const m = Math.floor(remaining / 60000);
+                const s = Math.floor((remaining % 60000) / 1000);
+                timerEl.textContent = m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
+            }
+            if(Math.random() < 0.002 && exp.eventChance === 0) {
+                exp.eventChance = Math.random() < 0.5 ? 1 : 2;
+                const area = document.getElementById(`expEventArea_${i}`);
+                const btn = document.getElementById(`expEventBtn_${i}`);
+                if(area && btn) {
+                    area.style.display = "block";
+                    btn.textContent = exp.eventChance === 1 ? "DEFENDER VESPAS!" : "IMPULSO DE VENTO!";
+                }
+            }
+        }
+    });
+}
+
+function finishExpedition(hangarId) {
+    const exp = expeditions[hangarId];
+    exp.active = false;
+    exp.finished = true;
+    
+    const power = (hPerClick * exp.reductionPerc * 300);
+    let hGain = power;
+    let xGain = hGain * 0.15;
+    let msg = "";
+
+    if(Math.random() < 0.05) {
+        const type = Math.random() < 0.5 ? 'jelly' : 'magnet';
+        activeBoosts[type] += 1200;
+        msg += "🎁 ENCONTROU UM BAÚ REAL!<br>";
+    }
+
+    if(exp.biome === 'clover') hGain *= 0.8;
+    else if(exp.biome === 'pepper') hGain *= 1.5;
+    else if(exp.biome === 'orchard') xGain *= 2;
+
+    msg += `<b>RECOMPENSAS:</b><br>🍯 ${formatNum(hGain)} | ✨ ${formatNum(xGain)}`;
+    exp.pendingRewards = {h: hGain, x: xGain, msg: msg};
+    updateUI();
+    executeSave();
+}
+
+function collectExpeditionRewards(hangarId) {
+    const exp = expeditions[hangarId];
+    if(exp.pendingRewards) {
+        honey += exp.pendingRewards.h;
+        addXP(exp.pendingRewards.x);
+        notify({n: "Carga Coletada!", d: `Hangar livre.`});
+    }
+    exp.finished = false;
+    exp.pendingRewards = null;
+    updateUI();
+    executeSave();
 }
 
 function renderActiveBoosts() { 
@@ -2911,10 +3158,7 @@ function spawnHoneyParticles(isSuperCritical) { const bee = document.getElementB
 function triggerImpact(isTarget, isSuperCritical) { const card = document.getElementById("clickCard"), stats = document.getElementById("statsCard"); if(!card || !stats) return; let scaleC = isSuperCritical ? 0.90 : (isTarget ? 0.96 : 0.98); card.style.transform = isTarget ? `scale(${scaleC}) rotate(2deg)` : `scale(${scaleC}) translateY(2px)`; stats.style.transform = `scale(${isSuperCritical ? 1.10 : 1.01})`; setTimeout(() => { card.style.transform = "scale(1) rotate(0deg)"; stats.style.transform = "scale(1)"; }, isSuperCritical ? 150 : 50); }
 
 function doClick(event, isTarget = false) { 
-    if (gameLoaded && !checkFullscreenState()) {
-        requestFullscreen();
-    }
-
+    if (gameLoaded && !checkFullscreenState()) requestFullscreen();
     playClickSound(); 
     let baseChance = 0.001 + ((luckLvl - 1) * 0.0002); 
     if(equippedCosmetic === "SkullBee") baseChance += 0.05; 
@@ -2923,8 +3167,9 @@ function doClick(event, isTarget = false) {
 
     const superCriticalChance = Math.random() < baseChance; 
     let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 5 : 1); 
-    let expMult = 1; 
-    if(expedition.active) expMult = (100 - expedition.reductionPerc) / 100; 
+    
+    let totalReduction = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
+    let expMult = (100 - Math.min(95, totalReduction)) / 100; 
 
     let clickVal = hPerClick;
     if(activeBoosts.jelly > 0) clickVal *= 2;
@@ -3000,7 +3245,7 @@ function handleMagnetEffect() {
     }
 }
 
-function executeSave(){ const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, expedition, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
+function executeSave(){ const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
 
 function checkOfflineGains(lastTimestamp) { if (!autoUnlocked) return; const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; const offlineIconEl = document.getElementById("offlineIcon"); const offlineTitleEl = document.getElementById("offlineTitle"); const btnCollect = document.getElementById("btnCollectOffline"); const offlineText = document.getElementById("offlineText"); if (diffInSeconds > 604800) { pendingOfflineHoney = 0; pendingOfflineXP = 0; if(offlineIconEl) { offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)"; } if(offlineTitleEl) { offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757"; } if(offlineText) offlineText.innerHTML = `As abelhas ficaram tristes com sua ausência.`; if(btnCollect) { btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f"; } return; } if(offlineIconEl) { offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)"; } if(offlineTitleEl) { offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit"; } const mps = getMPSBase() * getGlobalBonus(); const calculatedHoney = Math.floor(mps * diffInSeconds * 0.7); const calculatedXP = Math.floor(calculatedHoney * 0.2); pendingOfflineHoney += calculatedHoney; pendingOfflineXP += calculatedXP; if (pendingOfflineHoney > 0 && offlineText) { offlineText.innerHTML = `As abelhas produziram mel enquanto você descansava.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`; } }
 
@@ -3077,6 +3322,8 @@ function load(){
             autoLvlLvl = d.autoLvlLvl || 1; 
             luckLvl = d.luckLvl || 1; 
             luckCost = d.luckCost || 6400; 
+            if(d.hangarsCount) hangarsCount = d.hangarsCount;
+            if(d.expeditions) expeditions = d.expeditions;
             if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics;
             if(d.activeBoosts) activeBoosts = d.activeBoosts; 
             if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; 
@@ -3085,7 +3332,6 @@ function load(){
             if(d.defenderProgress) defenderProgress = d.defenderProgress; 
             if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney; 
             if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; 
-            if(d.expedition) expedition = d.expedition; 
             if(d.timestamp) checkOfflineGains(d.timestamp); 
         } catch(e) { console.error(e); } 
     } 
@@ -3157,6 +3403,7 @@ function openTab(id, btn) {
     if(pane) pane.classList.add('active'); 
     if(btn) btn.classList.add('active'); 
     if(id === 'achievements') renderAchs(); 
+    if(id === 'hive-stats') renderHiveStats();
 }
 
 function openSubShop(id, btn) { 
@@ -3207,7 +3454,19 @@ const upgClickBtn = document.getElementById("btnUpgradeClick"); if(upgClickBtn) 
 const upgAutoBtn = document.getElementById("btnAutoAction"); if(upgAutoBtn) { upgAutoBtn.onclick = () => { if(honey >= autoCost){ honey = validateNum(honey - autoCost); if(!autoUnlocked){ autoUnlocked = true; startAutoProducing(); } else { autoLevel++; } updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
 const upgLuckBtn = document.getElementById("btnUpgradeLuck"); if(upgLuckBtn) { upgLuckBtn.onclick = () => { if(honey >= luckCost) { honey = validateNum(honey - luckCost); luckLvl++; updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
 
-const beeCont = document.getElementById("beeContainer"); if(beeCont) { beeCont.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); }); beeCont.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false}); }
+const beeCont = document.getElementById("beeContainer"); 
+if(beeCont) { 
+    beeCont.addEventListener("mousedown", (e) => { 
+        e.preventDefault(); 
+        e.stopImmediatePropagation(); 
+        doClick(e, false); 
+    }); 
+    beeCont.addEventListener("touchstart", (e) => { 
+        e.preventDefault(); 
+        e.stopImmediatePropagation(); 
+        doClick(e, false); 
+    }, {passive: false}); 
+}
 const leftT = document.getElementById("leftTarget"); if(leftT) { leftT.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }); leftT.addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false}); }
 const rightT = document.getElementById("rightTarget"); if(rightT) { rightT.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }); rightT.addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false}); }
 
