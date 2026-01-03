@@ -795,6 +795,34 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 6px;
     font-weight: 900;
 }
+
+/* TREE CSS */
+.talent-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 12px;
+    margin-bottom: 12px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.talent-icon {
+    width: 45px; height: 45px;
+    background: var(--card);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+}
+.talent-info { flex: 1; }
+.talent-name { font-weight: 900; font-size: 13px; color: inherit; }
+.talent-desc { font-size: 10px; opacity: 0.6; }
+.talent-points { font-size: 11px; font-weight: 800; color: var(--accent); }
+.talent-btn {
+    width: 36px; height: 36px; padding: 0; margin: 0;
+    border-radius: 50%; font-size: 18px;
+}
 </style>
 </head>
 
@@ -881,7 +909,7 @@ input[type=range]::-webkit-slider-thumb {
 
   <div class="main-panel">
       <div class="tabs-header">
-          <button class="tab-btn active" onclick="openTab('upgrades', this)">🚀<span>Upgrades</span></button>
+          <button class="tab-btn active" onclick="openTab('talents', this)">🌳<span>Talentos</span></button>
           <button class="tab-btn" onclick="openTab('shop', this)">🛒<span>Loja</span></button>
           <button class="tab-btn" onclick="openTab('expedition-tab', this)">🧭<span>Expedição</span></button>
           <button class="tab-btn" onclick="openTab('hive-stats', this)">🏠<span>Colmeia</span></button>
@@ -890,14 +918,21 @@ input[type=range]::-webkit-slider-thumb {
       </div>
       
       <div class="tabs-content" id="mainScrollArea">
-          <div id="upgrades" class="tab-pane active">
+          <div id="talents" class="tab-pane active">
               <div class="scroll-area">
-                <div class="section-title">MELHORIAS PERMANENTES</div>
-                <div class="upgrade-card-list">
-                    <button id="btnUpgradeClick">Recrutar Abelhas – 1200 🍯</button>
-                    <button id="btnAutoAction">Produção Interna – 5600 🍯</button>
-                    <button id="btnUpgradeLuck" style="background: #e17055; color: white; box-shadow: 0 4px 0 #b33939;">Sorte Real (Lvl 1)<br>6400 🍯</button>
-                </div>
+                <div class="section-title">ÁRVORE DE TALENTOS REAIS</div>
+                <div id="talentPointsDisplay" style="background: var(--accent); color: var(--main-blue); padding: 10px; border-radius: 12px; font-weight: 900; font-size: 14px; margin-bottom: 20px; text-align: center;">PONTOS DISPONÍVEIS: 0</div>
+                
+                <div class="section-title">OPERÁRIO (CLIQUES) 🐝</div>
+                <div id="tree_clicks"></div>
+
+                <div class="section-title">ARQUITETO (AUTOMAÇÃO) 🏠</div>
+                <div id="tree_auto"></div>
+
+                <div class="section-title">ALQUIMISTA (SORTE) 🧪</div>
+                <div id="tree_luck"></div>
+                
+                <button onclick="resetTalents()" style="background: #e74c3c; color: white; margin-top: 30px; font-size: 12px; height: auto; padding: 10px;">RESETAR TALENTOS (10% Mel Total)</button>
               </div>
           </div>
 
@@ -1477,6 +1512,25 @@ async function handlePwaClick() {
 
 let updateHistory = [
     {
+        version: "11.5.0",
+        title: "🌳 ÁRVORE DE TALENTOS REAIS",
+        changes: [
+            { type: "add", text: "Novo Sistema: Substituímos upgrades lineares por uma Árvore de Talentos (3 caminhos)." },
+            { type: "add", text: "Pontos de Talento: Ganhe 1 ponto a cada nível alcançado para gastar como quiser." },
+            { type: "add", text: "Caminhos: Escolha entre Operário (Clicks), Arquiteto (Auto) ou Alquimista (Sorte)." },
+            { type: "mod", text: "Reset de Árvore: Possibilidade de redistribuir pontos em troca de 10% do Mel total." }
+        ]
+    },
+    {
+        version: "11.0.0",
+        title: "🐝 EQUILÍBRIO DA AGENDA REAL",
+        changes: [
+            { type: "mod", text: "Missões Diárias: Meta de cliques manuais reduzida para o intervalo de 8k a 11k." },
+            { type: "mod", text: "Missões Diárias: Meta de coleta de mel reduzida para o intervalo de 30k a 40k." },
+            { type: "fix", text: "Ajuste de Recompensa: Prêmios das missões foram balanceados para as novas metas." }
+        ]
+    },
+    {
         version: "10.9.0",
         title: "🛡️ SEGURANÇA E COLMEIA",
         changes: [
@@ -1499,23 +1553,6 @@ let updateHistory = [
         changes: [
             { type: "fix", text: "Sliders Inteligentes: Agora os sliders de abelhas se ajustam automaticamente para nunca ultrapassar o limite de 90% da colmeia." },
             { type: "add", text: "Estoque em Tempo Real: Ao mover uma barra, todas as outras janelas de hangar recalculam as abelhas disponíveis." }
-        ]
-    },
-    {
-        version: "10.6.0",
-        title: "🛸 EXPEDIÇÕES ROBUSTAS",
-        changes: [
-            { type: "add", text: "Sinergia Real: Ganhe +15% de Mel global ao usar hangares em biomas diferentes!" },
-            { type: "add", text: "Baús de Hangar: Pequena chance de encontrar Boosts raros em qualquer expedição." },
-            { type: "mod", text: "Experiência de Hangar: Hangares agora ganham 'proficiência', reduzindo o tempo de voo com o uso." }
-        ]
-    },
-    {
-        version: "10.5.0",
-        title: "🛸 SISTEMA DE HANGAR REAL",
-        changes: [
-            { type: "add", text: "Expedições Simultâneas: Agora você pode comprar novos hangares e lançar até 4 expedições ao mesmo tempo!" },
-            { type: "mod", text: "Gerenciamento de Enxame: O sistema verifica automaticamente as abelhas disponíveis para novas missões." }
         ]
     }
 ];
@@ -1579,10 +1616,19 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-let honey = 0, totalHoneyEver = 0, hPerClick = 0.2, clickCost = 1200, level = 1;
-let currentXP = 0, nextLevelXP = 1000, autoUnlocked = false, autoLevel = 1, autoCost = 5600;
-let clickLvl = 1, autoLvlLvl = 1; 
-let luckLvl = 1, luckCost = 6400;
+let honey = 0, totalHoneyEver = 0, hPerClick = 0.2, level = 1;
+let currentXP = 0, nextLevelXP = 1000, autoUnlocked = true;
+
+// NOVOS TALENTOS
+let talentPoints = 0;
+let talents = {
+    operario_forca: 0, // +0.5 hPerClick por ponto
+    operario_critico: 0, // +2% chance Alvo Crítico
+    arquiteto_mps: 0, // +1.0 mps base por ponto
+    arquiteto_offline: 0, // +5% ganho offline
+    alquimista_sorte: 0, // +1% Sorte Real
+    alquimista_boost: 0 // +10% duração boosts
+};
 
 let hangarsCount = 1;
 let expeditions = [
@@ -2546,7 +2592,7 @@ function returnToMain() {
 }
 
 const beeFacts = ["Abelhas polinizam 70% das culturas agrícolas do mundo.", "Uma abelha produz 1/12 de colher de chá de mel na vida.", "Uma colmeia pode ter até 60.000 abelhas no verão."];
-const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+10%) é aplicado no final!", "💡 DICA: Complete as 10 missões para um crescimento explosivo!"];
+const gameTips = ["💡 DICA: O bônus da Skin NoelBee (+10%) é aplicado no final!", "💡 DICA: Escolha o caminho Alquimista se gosta de Boosts longos!"];
 let lastNotifType = "fact"; 
 
 let notificationQueue = [];
@@ -2605,7 +2651,7 @@ const missionTemplates = [
     { id: 'm_honey', type: 'honey_gain', title: "Reserva de Inverno", desc: "Colete {target} de Mel total", baseGoal: 500, rewardMult: 2.5 },
     { id: 'm_target', type: 'target_clicks', title: "Foco Absoluto", desc: "Acerte os alvos 🎯 {target} vezes", baseGoal: 30, rewardMult: 3.5 },
     { id: 'm_time', type: 'play_time', title: "Voo de Reconhecimento", desc: "Fique no jogo por {target} segundos", baseGoal: 300, rewardMult: 3.0 },
-    { id: 'm_upg', type: 'buy_upgrade', title: "Evolução Necessária", desc: "Recrute ou evolua {target} vezes", baseGoal: 3, rewardMult: 4.0 },
+    { id: 'm_upg', type: 'buy_upgrade', title: "Evolução Necessária", desc: "Aplique talentos {target} vezes", baseGoal: 3, rewardMult: 4.0 },
     { id: 'm_mg_item', type: 'mg_item_collect', title: "Explorador de Games", desc: "Colete {target} itens em minigames", baseGoal: 15, rewardMult: 3.8 },
     { id: 'm_mg_boost', type: 'mg_boost_collect', title: "Caçador de Boosts", desc: "Pegue {target} itens de Boost em minigames", baseGoal: 2, rewardMult: 5.0 },
     { id: 'm_mg_kill', type: 'mg_kills', title: "Exterminador de Insetos", desc: "Abata {target} invasores no Hive Defender", baseGoal: 20, rewardMult: 4.5 },
@@ -2630,8 +2676,7 @@ function checkMissionReset() {
 
 function generateDailyMissions() {
     dailyMissions = []; 
-    const clickLevelScale = 1 + (clickLvl * 0.15); 
-    const scaleFactor = Math.pow(level, 1.2) * clickLevelScale;
+    const scaleFactor = Math.pow(level, 1.2);
     const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
     for(let i=0; i<10; i++) { 
         const tmp = shuffled[i % shuffled.length]; 
@@ -2642,11 +2687,11 @@ function generateDailyMissions() {
 function createSingleMission(tmp, scaleFactor) {
     let target = 0;
     switch(tmp.type) {
-        case 'clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.5)) * (level * 0.5)); break;
-        case 'target_clicks': target = Math.ceil(tmp.baseGoal * (1 + (clickLvl * 0.2))); break;
-        case 'honey_gain': target = Math.ceil(tmp.baseGoal * hPerClick * scaleFactor * 10); break;
+        case 'clicks': target = Math.floor(Math.random() * (11000 - 8000 + 1)) + 8000; break;
+        case 'target_clicks': target = 40 + (level * 2); break;
+        case 'honey_gain': target = Math.floor(Math.random() * (40000 - 30000 + 1)) + 30000; break;
         case 'xp_gain': target = Math.ceil(tmp.baseGoal * scaleFactor * 3); break;
-        case 'buy_upgrade': target = Math.ceil(tmp.baseGoal + Math.floor(level/15)); break;
+        case 'buy_upgrade': target = 3; break;
         case 'play_time': target = Math.ceil(tmp.baseGoal * (1 + level * 0.1)); break;
         case 'mg_item_collect': target = Math.ceil(tmp.baseGoal * (1 + level * 0.05)); break;
         case 'mg_kills': target = Math.ceil(tmp.baseGoal * (1 + level * 0.15)); break;
@@ -2710,7 +2755,7 @@ if(confirmRerollBtn) {
             const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
             if (index !== -1) {
                 const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-                const scaleFactor = Math.pow(level, 1.2) * (1 + (clickLvl * 0.15));
+                const scaleFactor = Math.pow(level, 1.2);
                 dailyMissions[index] = createSingleMission(randomTmp, scaleFactor);
                 renderMissions(); updateMissionAlertStatus(); executeSave(); closeModal('rerollModal'); pendingRerollId = null;
             }
@@ -2760,9 +2805,10 @@ function formatNum(n) {
 
 function formatTime(t) { let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h"; }
 
+// CALCULO BASEADO EM TALENTOS
 function getMPSBase() { 
     if(!autoUnlocked) return 0; 
-    let base = (autoLevel * (2 + (autoLevel * 0.1))) + (level * 2.5);
+    let base = (talents.arquiteto_mps * 2.5) + (level * 1.5);
     if(activeBoosts.jelly > 0) base *= 2; 
     return base; 
 }
@@ -2786,15 +2832,14 @@ function getGlobalBonus() {
 }
 
 function updateUI() {
-    honey = validateNum(honey); const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 10);
-    clickCost = Math.floor(1200 * Math.pow(1.35, clickLvl - 1) * inflationFactor); autoCost = Math.floor(5600 * Math.pow(1.45, autoLevel - 1) * inflationFactor); luckCost = Math.floor(6400 * Math.pow(1.65, luckLvl - 1) * inflationFactor);
+    honey = validateNum(honey); 
     const honeyEl = document.getElementById("honey"); const mpsEl = document.getElementById("mps"); const lvlEl = document.getElementById("lvlDisplay"); const xpEl = document.getElementById("xpDisplay"); const xpFill = document.getElementById("xpFill");
     if(honeyEl) honeyEl.textContent = formatNum(honey); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lvlEl) lvlEl.textContent = level; if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
-    const upgClickBtn = document.getElementById("btnUpgradeClick"); const upgAutoBtn = document.getElementById("btnAutoAction"); const upgLuckBtn = document.getElementById("btnUpgradeLuck");
-    if(upgClickBtn) { upgClickBtn.disabled = (honey < clickCost); upgClickBtn.innerHTML = `<b>Recrutar Abelhas (${clickLvl} 🐝)</b><br>${formatNum(clickCost)} 🍯`; }
-    if(upgAutoBtn) { upgAutoBtn.disabled = (honey < autoCost); upgAutoBtn.innerHTML = !autoUnlocked ? `<b>Produção Interna</b><br>${formatNum(autoCost)} 🍯` : `<b>Produção Interna (Lvl ${autoLevel})</b><br>${formatNum(autoCost)} 🍯`; }
-    if(upgLuckBtn) { upgLuckBtn.disabled = (honey < luckCost); upgLuckBtn.innerHTML = `<b>Sorte Real (Lvl ${luckLvl})</b><br>${formatNum(luckCost)} 🍯`; }
-    buildShop(); renderActiveBoosts(); updateRecordsUI();
+    
+    // Atualiza hPerClick com base em talentos
+    hPerClick = 0.2 + (talents.operario_forca * 0.5) + (level * 0.05);
+
+    buildShop(); renderActiveBoosts(); updateRecordsUI(); renderTalentTree();
     ['Bee', 'NoelBee', 'SkullBee', 'FairyBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
         if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; const mainBee = document.getElementById("mainBeeSprite"); const headerBee = document.getElementById("miniBeeHeader"); if(mainBee) mainBee.src = `${id}.png`; if(headerBee) headerBee.src = `${id}.png`; }
@@ -2816,6 +2861,69 @@ function updateUI() {
     checkUpdateStatus(); updateVersionDisplay(); renderHangars();
     const hivePane = document.getElementById("hive-stats");
     if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
+}
+
+// LOGICA DE TALENTOS
+function renderTalentTree() {
+    const ptsDisplay = document.getElementById("talentPointsDisplay");
+    if(ptsDisplay) ptsDisplay.textContent = `PONTOS DISPONÍVEIS: ${talentPoints}`;
+
+    const treeData = [
+        { tree: 'tree_clicks', key: 'operario_forca', name: 'Força Operária', icon: '💪', desc: '+0.5 Mel por Click' },
+        { tree: 'tree_clicks', key: 'operario_critico', name: 'Foco Aguçado', icon: '🎯', desc: '+2% Chance Alvo Crítico' },
+        { tree: 'tree_auto', key: 'arquiteto_mps', name: 'Engenharia de Mel', icon: '⚙️', desc: '+2.5 MPS Passivo Base' },
+        { tree: 'tree_auto', key: 'arquiteto_offline', name: 'Estoques Noturnos', icon: '🌙', desc: '+5% Ganho Offline' },
+        { tree: 'tree_luck', key: 'alquimista_sorte', name: 'Destino Real', icon: '🍀', desc: '+1% Sorte Real' },
+        { tree: 'tree_luck', key: 'alquimista_boost', name: 'Essência Duradoura', icon: '🧪', desc: '+10% Duração Boosts' }
+    ];
+
+    treeData.forEach(t => {
+        const cont = document.getElementById(t.tree);
+        if(!cont) return;
+        if(!document.getElementById(`talent_${t.key}`)) {
+            cont.innerHTML += `
+                <div class="talent-card" id="talent_${t.key}">
+                    <div class="talent-icon">${t.icon}</div>
+                    <div class="talent-info">
+                        <div class="talent-name">${t.name}</div>
+                        <div class="talent-desc">${t.desc}</div>
+                    </div>
+                    <div class="talent-points" id="val_${t.key}">0/20</div>
+                    <button class="talent-btn" onclick="upgradeTalent('${t.key}')">+</button>
+                </div>
+            `;
+        }
+        const valEl = document.getElementById(`val_${t.key}`);
+        if(valEl) valEl.textContent = `${talents[t.key]}/20`;
+        const btn = document.querySelector(`#talent_${t.key} .talent-btn`);
+        if(btn) btn.disabled = (talentPoints <= 0 || talents[t.key] >= 20);
+    });
+}
+
+function upgradeTalent(key) {
+    if(talentPoints > 0 && talents[key] < 20) {
+        talentPoints--;
+        talents[key]++;
+        playClickSound();
+        updateMissionProgress('buy_upgrade', 1);
+        updateUI();
+        executeSave();
+    }
+}
+
+function resetTalents() {
+    const cost = honey * 0.1;
+    if(confirm(`Deseja resetar todos os talentos? Custo: ${formatNum(cost)} 🍯`)) {
+        honey -= cost;
+        talentPoints = level; // Recupera todos os pontos
+        for(let k in talents) talents[k] = 0;
+        document.getElementById("tree_clicks").innerHTML = "";
+        document.getElementById("tree_auto").innerHTML = "";
+        document.getElementById("tree_luck").innerHTML = "";
+        updateUI();
+        executeSave();
+        notify({n: "Árvore Resetada!", d: "Distribua seus pontos novamente."});
+    }
 }
 
 function buyHangar(id) {
@@ -3017,12 +3125,12 @@ function renderHiveStats() {
 
         <div class="section-title">EFICIÊNCIA REAL ✨</div>
         <div class="hive-stat-row">
-            <div class="hive-stat-label">🧬 Nível de Upgrades</div>
-            <div class="hive-stat-val">Lvl. ${clickLvl + autoLevel}</div>
+            <div class="hive-stat-label">🧪 Talentos Atribuídos</div>
+            <div class="hive-stat-val">${Object.values(talents).reduce((a,b)=>a+b,0)} pts</div>
         </div>
         <div class="hive-stat-row">
-            <div class="hive-stat-label">🛡️ Sorte Real Base</div>
-            <div class="hive-stat-val">${(0.1 + (luckLvl-1)*0.02).toFixed(2)}%</div>
+            <div class="hive-stat-label">🛡️ Sorte Real Total</div>
+            <div class="hive-stat-val">${(0.1 + (talents.alquimista_sorte)*1.0).toFixed(2)}%</div>
         </div>
         <div class="hive-stat-row">
             <div class="hive-stat-label">👔 Bônus de Visual</div>
@@ -3065,15 +3173,6 @@ function tickExpedition() {
                 const m = Math.floor(remaining / 60000);
                 const s = Math.floor((remaining % 60000) / 1000);
                 timerEl.textContent = m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
-            }
-            if(Math.random() < 0.002 && exp.eventChance === 0) {
-                exp.eventChance = Math.random() < 0.5 ? 1 : 2;
-                const area = document.getElementById(`expEventArea_${i}`);
-                const btn = document.getElementById(`expEventBtn_${i}`);
-                if(area && btn) {
-                    area.style.display = "block";
-                    btn.textContent = exp.eventChance === 1 ? "DEFENDER VESPAS!" : "IMPULSO DE VENTO!";
-                }
             }
         }
     });
@@ -3160,13 +3259,13 @@ function triggerImpact(isTarget, isSuperCritical) { const card = document.getEle
 function doClick(event, isTarget = false) { 
     if (gameLoaded && !checkFullscreenState()) requestFullscreen();
     playClickSound(); 
-    let baseChance = 0.001 + ((luckLvl - 1) * 0.0002); 
+    let baseChance = 0.001 + (talents.alquimista_sorte * 0.01); 
     if(equippedCosmetic === "SkullBee") baseChance += 0.05; 
     if(equippedCosmetic === "FairyBee") baseChance += 0.06;
     if(activeBoosts.luck > 0) baseChance *= 2; 
 
     const superCriticalChance = Math.random() < baseChance; 
-    let multiplier = (isTarget ? 2 : 1) * (superCriticalChance ? 5 : 1); 
+    let multiplier = (isTarget ? (2 + talents.operario_critico*0.1) : 1) * (superCriticalChance ? 5 : 1); 
     
     let totalReduction = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
     let expMult = (100 - Math.min(95, totalReduction)) / 100; 
@@ -3195,9 +3294,21 @@ function doClick(event, isTarget = false) {
     updateUI(); 
 }
 
-function addXP(amt) { let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); let xpGain = validateNum(amt * 0.15 * m); currentXP = validateNum(currentXP + xpGain); updateMissionProgress('xp_gain', xpGain); while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; nextLevelXP = Math.floor(nextLevelXP * 1.35); triggerLevelUpCelebration(); } }
+function addXP(amt) { 
+    let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); 
+    let xpGain = validateNum(amt * 0.15 * m); 
+    currentXP = validateNum(currentXP + xpGain); 
+    updateMissionProgress('xp_gain', xpGain); 
+    while(currentXP >= nextLevelXP){ 
+        currentXP = validateNum(currentXP - nextLevelXP); 
+        level++; 
+        talentPoints++; // GANHA PONTO AO SUBIR
+        nextLevelXP = Math.floor(nextLevelXP * 1.35); 
+        triggerLevelUpCelebration(); 
+    } 
+}
 
-function triggerLevelUpCelebration() { soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {}); notify({n:`Nível Real ${level}!`}); const card = document.getElementById("statsCard"); if(card) { card.classList.add("lvl-up-flash"); setTimeout(() => card.classList.remove("lvl-up-flash"), 1000); } spawnLevelUpFireworks(); }
+function triggerLevelUpCelebration() { soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {}); notify({n:`Nível Real ${level}!`, d:"+1 Ponto de Talento"}); const card = document.getElementById("statsCard"); if(card) { card.classList.add("lvl-up-flash"); setTimeout(() => card.classList.remove("lvl-up-flash"), 1000); } spawnLevelUpFireworks(); }
 
 function spawnLevelUpFireworks() { const count = 30; const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200']; for(let i=0; i<count; i++) { const p = document.createElement("div"); p.className = "honey-particle"; p.style.background = colors[Math.floor(Math.random() * colors.length)]; p.style.width = (Math.random() * 10 + 5) + "px"; p.style.height = p.style.width; p.style.left = "50vw"; p.style.top = "50vh"; p.style.boxShadow = "0 0 10px gold"; const angle = Math.random() * Math.PI * 2; const velocity = Math.random() * 400 + 200; const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity; p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`); document.body.appendChild(p); setTimeout(() => p.remove(), 1000); } }
 
@@ -3205,7 +3316,8 @@ function buyBoostManual(type, ticks, cost, label) {
     cost = validateNum(cost); 
     if(honey >= cost) { 
         honey = validateNum(honey - cost); 
-        activeBoosts[type] += ticks; 
+        let durationBonus = 1 + (talents.alquimista_boost * 0.1);
+        activeBoosts[type] += (ticks * durationBonus); 
         notify({n: "Consumível Ativado!", d: `+${label}`}); 
         updateUI(); 
         executeSave(); 
@@ -3245,9 +3357,17 @@ function handleMagnetEffect() {
     }
 }
 
-function executeSave(){ const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), hPerClick: validateNum(hPerClick), clickCost: validateNum(clickCost), level, currentXP, nextLevelXP, autoUnlocked, autoLevel, autoCost: validateNum(autoCost), activeBoosts, equippedCosmetic, equippedBackground, clickLvl, autoLvlLvl, luckLvl, luckCost, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
+function executeSave(){ const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), level, currentXP, nextLevelXP, talents, talentPoints, activeBoosts, equippedCosmetic, equippedBackground, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
 
-function checkOfflineGains(lastTimestamp) { if (!autoUnlocked) return; const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; const offlineIconEl = document.getElementById("offlineIcon"); const offlineTitleEl = document.getElementById("offlineTitle"); const btnCollect = document.getElementById("btnCollectOffline"); const offlineText = document.getElementById("offlineText"); if (diffInSeconds > 604800) { pendingOfflineHoney = 0; pendingOfflineXP = 0; if(offlineIconEl) { offlineIconEl.textContent = "🥀"; offlineIconEl.style.background = "rgba(255, 0, 0, 0.1)"; } if(offlineTitleEl) { offlineTitleEl.textContent = "A Colmeia foi abandonada..."; offlineTitleEl.style.color = "#ff4757"; } if(offlineText) offlineText.innerHTML = `As abelhas ficaram tristes com sua ausência.`; if(btnCollect) { btnCollect.textContent = "VOLTAR AO TRABALHO"; btnCollect.style.background = "#57606f"; } return; } if(offlineIconEl) { offlineIconEl.textContent = "🍯"; offlineIconEl.style.background = "rgba(255, 204, 0, 0.2)"; } if(offlineTitleEl) { offlineTitleEl.textContent = "Bem-vindo de volta!"; offlineTitleEl.style.color = "inherit"; } const mps = getMPSBase() * getGlobalBonus(); const calculatedHoney = Math.floor(mps * diffInSeconds * 0.7); const calculatedXP = Math.floor(calculatedHoney * 0.2); pendingOfflineHoney += calculatedHoney; pendingOfflineXP += calculatedXP; if (pendingOfflineHoney > 0 && offlineText) { offlineText.innerHTML = `As abelhas produziram mel enquanto você descansava.<br><br><b>Acumulado Total:</b><br><span style='color:var(--accent)'>🍯 ${formatNum(pendingOfflineHoney)} Mel</span><br><span style='color:#4caf50'>✨ ${formatNum(pendingOfflineXP)} XP</span>`; } }
+function checkOfflineGains(lastTimestamp) { 
+    const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); 
+    if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; 
+    const offlineBoost = 0.7 + (talents.arquiteto_offline * 0.05);
+    const mps = getMPSBase() * getGlobalBonus(); 
+    const calculatedHoney = Math.floor(mps * diffInSeconds * offlineBoost); 
+    const calculatedXP = Math.floor(calculatedHoney * 0.2); 
+    pendingOfflineHoney += calculatedHoney; pendingOfflineXP += calculatedXP; 
+}
 
 function collectOfflineRewards() { honey = validateNum(honey + pendingOfflineHoney); totalHoneyEver = validateNum(totalHoneyEver + pendingOfflineHoney); addXP(pendingOfflineXP); pendingOfflineHoney = 0; pendingOfflineXP = 0; closeModal('offlineModal'); updateUI(); executeSave(); checkDailyLogic(); }
 
@@ -3286,42 +3406,24 @@ function load(){
     if(savedAudio) audioSettings = JSON.parse(savedAudio); 
     applyAudioSettings(); 
     const savedTheme = localStorage.getItem(THEME_KEY); 
-    if(savedTheme) { 
-        themeSettings = JSON.parse(savedTheme); 
-        const colIn = document.getElementById('uiMainColor'); 
-        const opaIn = document.getElementById('uiOpacity'); 
-        if(colIn) colIn.value = themeSettings.mainColor; 
-        if(opaIn) opaIn.value = themeSettings.opacity * 100; 
-        applyTheme(); 
-    } 
+    if(savedTheme) { themeSettings = JSON.parse(savedTheme); applyTheme(); } 
     const savedRecords = localStorage.getItem(RECORDS_KEY); 
     if(savedRecords) records = JSON.parse(savedRecords); 
     const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); 
     if(savedDaily) dailyState = JSON.parse(savedDaily); 
     const rawMissions = localStorage.getItem(MISSION_KEY); 
-    if(rawMissions) { 
-        const md = JSON.parse(rawMissions); 
-        dailyMissions = md.dailyMissions || []; 
-        lastMissionReset = md.lastMissionReset || 0; 
-    } 
+    if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; } 
     const raw = localStorage.getItem(SAVE_KEY); 
     if(raw){ 
         try { 
             const d = JSON.parse(raw); 
             honey = validateNum(d.honey); 
             totalHoneyEver = validateNum(d.totalHoneyEver); 
-            hPerClick = validateNum(d.hPerClick) || 0.2; 
-            clickCost = validateNum(d.clickCost) || 1200; 
             level = d.level || 1; 
             currentXP = validateNum(d.currentXP); 
             nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
-            autoUnlocked = d.autoUnlocked || false; 
-            autoLevel = d.autoLevel || 1; 
-            autoCost = validateNum(d.autoCost) || 5600; 
-            clickLvl = d.clickLvl || 1; 
-            autoLvlLvl = d.autoLvlLvl || 1; 
-            luckLvl = d.luckLvl || 1; 
-            luckCost = d.luckCost || 6400; 
+            if(d.talents) talents = d.talents;
+            if(d.talentPoints !== undefined) talentPoints = d.talentPoints;
             if(d.hangarsCount) hangarsCount = d.hangarsCount;
             if(d.expeditions) expeditions = d.expeditions;
             if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics;
@@ -3334,9 +3436,10 @@ function load(){
             if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; 
             if(d.timestamp) checkOfflineGains(d.timestamp); 
         } catch(e) { console.error(e); } 
-    } 
+    } else {
+        talentPoints = level; // Inicializa pontos se for novo save
+    }
     checkMissionReset(); 
-    updateMissionAlertStatus(); 
     updateUI(); 
     updateVersionDisplay(); 
     checkUpdateStatus(); 
@@ -3347,7 +3450,6 @@ function enterGame() {
     const loadingScreen = document.getElementById("loadingScreen"); 
     const bar = document.getElementById("loadingBarFill"); 
     const bee = document.getElementById("loadingBeeImg"); 
-    const text = document.getElementById("loadingTextMsg"); 
     if(loadingScreen) loadingScreen.style.display = "flex"; 
     let progress = 0; 
     const interval = setInterval(() => { 
@@ -3362,14 +3464,11 @@ function enterGame() {
                 const startScreen = document.getElementById('startScreen'); 
                 const gameUI = document.getElementById('gameUI'); 
                 if(startScreen) startScreen.style.display = 'none'; 
-                if(gameUI) { 
-                    gameUI.style.display = 'flex'; 
-                    gameUI.style.opacity = '1'; 
-                } 
+                if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; } 
                 gameLoaded = true; 
-                if(pendingOfflineHoney > 0) openModal('offlineModal'); else checkDailyLogic(); 
+                if(pendingOfflineHoney > 1000) openModal('offlineModal'); else checkDailyLogic(); 
                 startGameTicks(); 
-                if(autoUnlocked) startAutoProducing(); 
+                startAutoProducing(); 
                 updateUI(); 
                 startDynamicNotifications(); 
             }, 300); 
@@ -3381,16 +3480,7 @@ function openModal(id) {
     const modal = document.getElementById(id); 
     if(!modal) return; 
     modal.style.display = 'flex'; 
-    if(id === 'settingsModal') { 
-        const btnExit = document.getElementById("btnExitToMain"); 
-        const gameUI = document.getElementById('gameUI'); 
-        if(gameLoaded && gameUI && gameUI.style.display === 'flex') { 
-            if(btnExit) btnExit.style.display = "block"; 
-        } else { 
-            if(btnExit) btnExit.style.display = "none"; 
-        } 
-    } 
-    if(id === 'missionsModal') { renderMissions(); const alertBtn = document.getElementById("btnMissionAlert"); if(alertBtn) alertBtn.classList.remove("mission-alert"); } 
+    if(id === 'missionsModal') renderMissions(); 
     if(id === 'dailyRewardModal') renderDailyGrid(); 
 }
 
@@ -3404,6 +3494,7 @@ function openTab(id, btn) {
     if(btn) btn.classList.add('active'); 
     if(id === 'achievements') renderAchs(); 
     if(id === 'hive-stats') renderHiveStats();
+    if(id === 'talents') renderTalentTree();
 }
 
 function openSubShop(id, btn) { 
@@ -3450,25 +3541,13 @@ function buildShop() {
 
 function renderAchs() { const l = document.getElementById("achList"); if(!l) return; l.innerHTML = ""; achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => { l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`; }); }
 
-const upgClickBtn = document.getElementById("btnUpgradeClick"); if(upgClickBtn) { upgClickBtn.onclick = () => { if(honey >= clickCost){ honey = validateNum(honey - clickCost); clickLvl++; hPerClick = validateNum(hPerClick + Math.floor(1 + (clickLvl * 0.1) + (Math.log2(clickLvl)))); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
-const upgAutoBtn = document.getElementById("btnAutoAction"); if(upgAutoBtn) { upgAutoBtn.onclick = () => { if(honey >= autoCost){ honey = validateNum(honey - autoCost); if(!autoUnlocked){ autoUnlocked = true; startAutoProducing(); } else { autoLevel++; } updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
-const upgLuckBtn = document.getElementById("btnUpgradeLuck"); if(upgLuckBtn) { upgLuckBtn.onclick = () => { if(honey >= luckCost) { honey = validateNum(honey - luckCost); luckLvl++; updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }; }
-
 const beeCont = document.getElementById("beeContainer"); 
 if(beeCont) { 
-    beeCont.addEventListener("mousedown", (e) => { 
-        e.preventDefault(); 
-        e.stopImmediatePropagation(); 
-        doClick(e, false); 
-    }); 
-    beeCont.addEventListener("touchstart", (e) => { 
-        e.preventDefault(); 
-        e.stopImmediatePropagation(); 
-        doClick(e, false); 
-    }, {passive: false}); 
+    beeCont.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); }); 
+    beeCont.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false}); 
 }
-const leftT = document.getElementById("leftTarget"); if(leftT) { leftT.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }); leftT.addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false}); }
-const rightT = document.getElementById("rightTarget"); if(rightT) { rightT.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }); rightT.addEventListener("touchstart", (e) => { e.preventDefault(); e.stopPropagation(); doClick(e, true); }, {passive: false}); }
+const leftT = document.getElementById("leftTarget"); if(leftT) { leftT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); leftT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
+const rightT = document.getElementById("rightTarget"); if(rightT) { rightT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); rightT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
 
 function spawnFlake(containerId) { const container = document.getElementById(containerId); if(!container) return; const flake = document.createElement('div'); flake.className = 'snowflake'; flake.innerHTML = '❄'; flake.style.left = (Math.random() * 95) + 'vw'; flake.style.opacity = Math.random(); flake.style.animationDuration = (Math.random() * 3 + 3) + 's'; container.appendChild(flake); setTimeout(() => flake.remove(), 6000); }
 setInterval(() => spawnFlake('snowContainer'), 300);
