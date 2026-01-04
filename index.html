@@ -30,6 +30,7 @@
   --rare: #0984e3; 
   --epic: #a29bfe;
   --panel-blur: blur(15px);
+  --crown-gold: #ffea00;
 }
 
 *{ 
@@ -196,9 +197,12 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     border-radius: 18px !important;
 }
 
+/* BOTÃO CROMÁTICO PULSANTE */
 .btn-chromatic-pulse {
     position: relative;
     overflow: visible !important;
+    border: none !important;
+    z-index: 10;
 }
 
 .btn-chromatic-pulse::before {
@@ -210,14 +214,10 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     border-radius: 22px;
     z-index: -1;
     animation: chromaticRotate 3s linear infinite, glowPulse 1.5s ease-in-out infinite;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
-    padding: 3px;
 }
 
 @keyframes chromaticRotate { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-@keyframes glowPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+@keyframes glowPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
 
 .letter-i-wrapper { position: relative; display: inline-flex; justify-content: center; color: inherit; }
 .tree-overlay {
@@ -823,6 +823,63 @@ input[type=range]::-webkit-slider-thumb {
     width: 36px; height: 36px; padding: 0; margin: 0;
     border-radius: 50%; font-size: 18px;
 }
+
+/* MODULAR HIVE CSS */
+.modular-hive-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    line-height: 0;
+}
+.hive-module {
+    width: 100%;
+    max-width: 250px;
+    display: block;
+    margin: 0;
+    padding: 0;
+    margin-top: -1px;
+    transition: all 0.5s ease-in-out;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+.hive-module-hidden {
+    display: none;
+}
+
+/* VELHO DUDU CSS */
+.dudu-card {
+    background: rgba(0,0,0,0.3);
+    border: 2px dashed var(--accent);
+    border-radius: 20px;
+    padding: 15px;
+    margin-top: 20px;
+    text-align: center;
+}
+.dudu-portrait {
+    font-size: 50px;
+    margin-bottom: 5px;
+}
+.dudu-bubble {
+    background: white;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 800;
+    position: relative;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+.dudu-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
 </style>
 </head>
 
@@ -881,7 +938,12 @@ input[type=range]::-webkit-slider-thumb {
     <div id="gameHeaderTitle" style="font-size: 18px; font-weight: 900; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
         BeeKind <img id="miniBeeHeader" src="NoelBee.png" alt="Bee" style="width: 20px; height: 20px;">
     </div>
-    <div class="stats">🍯 <span id="honey">0</span> | ⚡ <span id="mps">0</span>/s</div>
+    <div class="stats">
+        🍯 <span id="honey">0</span> | 👑 <span id="crowns" style="color: var(--crown-gold);">0</span>
+    </div>
+    <div style="font-size: 12px; font-weight: 800; opacity: 0.8; margin-top: 5px;">
+        ⚡ <span id="mps">0</span>/s
+    </div>
     <div class="level-container">
       <div class="level-info"><span>Nível <span id="lvlDisplay">1</span></span><span id="xpDisplay">0 / 1.0K</span></div>
       <div class="xp-bg"><div class="xp-fill" id="xpFill"></div></div>
@@ -945,6 +1007,25 @@ input[type=range]::-webkit-slider-thumb {
               </div>
               <div class="scroll-area">
                 <div id="shop_boosts" class="sub-shop-pane">
+                  
+                  <div class="dudu-card">
+                        <div class="dudu-bubble" id="duduSpeech">Olá jovenzinho! Quer trocar esse mel por influência real?</div>
+                        <div class="dudu-portrait">👴</div>
+                        <div style="font-size: 14px; font-weight: 900; color: var(--accent); margin-bottom: 5px;">MERCADO DO VELHO DUDU</div>
+                        <div style="font-size: 10px; opacity: 0.8; margin-bottom: 12px;">Venda mel para ganhar Favor Real permanente.</div>
+                        
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; margin-bottom: 10px;">
+                            <div style="font-size: 10px; font-weight: 800; opacity: 0.6;">FAVOR REAL ATUAL</div>
+                            <div style="font-size: 18px; font-weight: 900; color: #4caf50;" id="favorRealDisplay">0.00%</div>
+                            <div style="font-size: 9px; opacity: 0.5;">(Bônus Multiplicador de Produção)</div>
+                        </div>
+
+                        <button onclick="sellToDudu()" id="btnSellDudu" style="background: var(--xp-bar); color: white; height: auto; padding: 12px;">
+                            VENDER ESTOQUE ATUAL 🍯
+                        </button>
+                        <div id="duduEstimate" style="font-size: 9px; margin-top: 5px; font-weight: 800;">Estimativa: +0.00% de Favor</div>
+                    </div>
+
                   <div class="section-title">🧪 GELEIA REAL (2X FORÇA)</div>
                   <small id="status_jelly" style="display:block; margin-bottom:8px; font-size:10px; color:inherit; opacity: 0.6;">Dobra o valor dos seus upgrades ativos.</small>
                   <div class="shop-grid" id="grid_jelly"></div>
@@ -1174,111 +1255,6 @@ input[type=range]::-webkit-slider-thumb {
     <div id="flightHint" style="display: none; color: white; margin-top: 10px; font-weight: 800; opacity: 0.6;">TOQUE PARA SUBIR</div>
 </div>
 
-<div class="modal" id="defenderPreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>HIVE DEFENDER 🔫</span>
-            <span style="cursor:pointer" onclick="closeModal('defenderPreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
-            <h2 style="margin:0; color:var(--accent);">SISTEMA DE NÍVEIS</h2>
-            <p style="font-size:14px; opacity:0.8;">Enfrente <b>7 níveis</b> de dificuldade. Insetos de Elite aparecem no Nível 4!</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">⚠️ IDENTIFICAÇÃO:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 🪰 Moscas: Invasores Comuns (1 HP).<br>
-                    • 🪲 Besouros: Elite Blindada (2 HP).<br>
-                    • <b>INATIVIDADE:</b> Se não jogar por 24h, volta ao Nível 1.<br>
-                    • <b>POWER-UP:</b> Pegue o item 🔫 (8% de chance) para tiro duplo!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('defenderPreGameModal'); startMinigameActual('defender');" style="background:var(--xp-bar); color:white;">ÀS ARMAS!</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="flightPreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>BEE FLIGHT 🌸</span>
-            <span style="cursor:pointer" onclick="closeModal('flightPreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <img src="Bee.png" style="width: 80px; margin-bottom: 15px;">
-            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
-            <p style="font-size:14px; opacity:0.8;">Toque na tela ou pressione Espaço para voar e desviar dos canos.</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 120x Mel por ponto.<br>
-                    • 20% do Mel convertido em XP.<br>
-                    • <b>BOOSTS (A cada 50 pts):</b> Pegue itens entre os canos para ganhar Mel 2x, Velocidade 1.5x, XP 3x ou Sorte 2x (30s) após o jogo!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('flightPreGameModal'); startMinigameActual('flight');" style="background:var(--xp-bar); color:white;">COMEÇAR VOO!</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="snakePreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>BEE-LINE 🐍</span>
-            <span style="cursor:pointer" onclick="closeModal('snakePreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🍎</div>
-            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
-            <p style="font-size:14px; opacity:0.8;">Use o D-Pad ou as setas do teclado para guiar a abelha e coletar as maçãs.</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 50x Mel por maçã coletada.<br>
-                    • Ganho de XP proporcional à pontuação final.<br>
-                    • <b>NOVIDADE:</b> Boosts aleatórios aparecem a cada 40s! Você tem 5s para pegá-los!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('snakePreGameModal'); startMinigameActual('snake');" style="background:var(--xp-bar); color:white;">INICIAR COLETA!</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="rainPreGameModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <span>HONEY RAIN 🌦️</span>
-            <span style="pointer-events: auto; cursor: pointer;" onclick="closeModal('rainPreGameModal')">✖</span>
-        </div>
-        <div class="modal-content-scroll" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🍯</div>
-            <h2 style="margin:0; color:var(--accent);">COMO JOGAR</h2>
-            <p style="font-size:14px; opacity:0.8;">Toque nos potes de mel que caem do céu.</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:15px; text-align:left;">
-                <h4 style="margin:0 0 10px 0; color:var(--xp-bar);">🎁 RECOMPENSAS & PERIGOS:</h4>
-                <div style="font-size:12px; line-height:1.6;">
-                    • 180x Mel por cada pote coletado.<br>
-                    • <b>CUIDADO:</b> A abelha pode soltar <b>BOMBAS (💣)</b>! Se clicar nela, explode e você perde uma vida.<br>
-                    • <b>SORTE REAIS:</b> 8% de chance de soltar um **BOOST de 30s** aleatório!
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="closeModal('rainPreGameModal'); startMinigameActual('rain');" style="background:var(--xp-bar); color:white;">COLETAR MEL!</button>
-        </div>
-    </div>
-</div>
-
 <div class="modal" id="missionsModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -1377,7 +1353,7 @@ input[type=range]::-webkit-slider-thumb {
     <div class="modal-box">
         <div class="modal-header">Produção de Descanso 🐝</div>
         <div class="modal-content-scroll" style="text-align: center;">
-            <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
+            <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
             <h2 id="offlineTitle" style="margin: 0 0 10px; font-weight: 900; color: inherit;">Bem-vindo de volta!</h2>
             <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: inherit; opacity: 0.9;"></p>
         </div>
@@ -1510,49 +1486,46 @@ async function handlePwaClick() {
     }
 }
 
+// HISTÓRICO DE ATUALIZAÇÕES (MOSTRANDO AS ÚLTIMAS 5)
 let updateHistory = [
     {
-        version: "11.5.0",
-        title: "🌳 ÁRVORE DE TALENTOS REAIS",
+        version: "12.2.0",
+        title: "👑 SISTEMA DE COROAS REAIS",
         changes: [
-            { type: "add", text: "Novo Sistema: Substituímos upgrades lineares por uma Árvore de Talentos (3 caminhos)." },
-            { type: "add", text: "Pontos de Talento: Ganhe 1 ponto a cada nível alcançado para gastar como quiser." },
-            { type: "add", text: "Caminhos: Escolha entre Operário (Clicks), Arquiteto (Auto) ou Alquimista (Sorte)." },
-            { type: "mod", text: "Reset de Árvore: Possibilidade de redistribuir pontos em troca de 10% do Mel total." }
+            { type: "add", text: "Nova Moeda: Introduzidas as Coroas, a moeda de prestígio para a loja real." },
+            { type: "mod", text: "Painel de Status: Melhorada a interface para exibir múltiplos recursos simultâneos." },
+            { type: "mod", text: "Notificações: Sistema de aviso visual para novas atualizações no menu inicial." }
         ]
     },
     {
-        version: "11.0.0",
-        title: "🐝 EQUILÍBRIO DA AGENDA REAL",
+        version: "12.1.0",
+        title: "👴 O VELHO DUDU CHEGOU!",
         changes: [
-            { type: "mod", text: "Missões Diárias: Meta de cliques manuais reduzida para o intervalo de 8k a 11k." },
-            { type: "mod", text: "Missões Diárias: Meta de coleta de mel reduzida para o intervalo de 30k a 40k." },
-            { type: "fix", text: "Ajuste de Recompensa: Prêmios das missões foram balanceados para as novas metas." }
+            { type: "add", text: "Novo Mercado: Agora você pode vender seu mel para o Velho Dudu na aba Loja." },
+            { type: "mod", text: "Favor Real: Vender mel agora concede bônus permanente de produção (MPS e Click)." },
+            { type: "fix", text: "Economia: Ajustada a curva de valorização do mel histórico para trocas justas." }
         ]
     },
     {
-        version: "10.9.0",
-        title: "🛡️ SEGURANÇA E COLMEIA",
+        version: "11.9.0",
+        title: "👑 NUTRIÇÃO REAL",
         changes: [
-            { type: "fix", text: "Estabilidade: O clique na abelha principal não interfere mais no cronômetro das expedições." },
-            { type: "add", text: "Status da Colmeia: Boosts ativos agora são exibidos diretamente no painel de estatísticas." },
-            { type: "mod", text: "Regra de Enxame: Limite máximo de expedição ajustado para 95% para preservar a colmeia." }
+            { type: "add", text: "Fisiologia Real: A Rainha agora pode ter sua produção aumentada até o limite de 2200 abelhas." },
+            { type: "mod", text: "Imersão: Upgrade de fertilidade disponível na aba Colmeia." }
         ]
     },
     {
-        version: "10.8.0",
-        title: "🏠 PAINEL DA COLMEIA",
+        version: "11.8.1",
+        title: "🏠 ALINHAMENTO DA COLMEIA",
         changes: [
-            { type: "add", text: "Nova Aba 'Colmeia': Centraliza todas as estatísticas, bônus e níveis em uma interface limpa." },
-            { type: "mod", text: "Monitoramento de Enxame: Agora você vê exatamente quantas abelhas estão ocupadas em expedições." }
+            { type: "fix", text: "Engenharia Civil: Corrigido o empilhamento das peças da colmeia para encaixe perfeito." }
         ]
     },
     {
-        version: "10.7.0",
-        title: "🐝 LOGÍSTICA DE ENXAME",
+        version: "11.8.0",
+        title: "🛡️ PERSISTÊNCIA DE DADOS",
         changes: [
-            { type: "fix", text: "Sliders Inteligentes: Agora os sliders de abelhas se ajustam automaticamente para nunca ultrapassar o limite de 90% da colmeia." },
-            { type: "add", text: "Estoque em Tempo Real: Ao mover uma barra, todas as outras janelas de hangar recalculam as abelhas disponíveis." }
+            { type: "fix", text: "Estabilidade: Restaurado o sistema de chaves originais para evitar perda de progresso." }
         ]
     }
 ];
@@ -1585,10 +1558,11 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V46"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V122"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
+    // SÓ MOSTRA O EFEITO PULSANTE SE O PLAYER NUNCA VIU ESSA VERSÃO
     if(!lastSeen || lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
@@ -1598,7 +1572,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V46", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V122", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1616,19 +1590,26 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-let honey = 0, totalHoneyEver = 0, hPerClick = 0.2, level = 1;
+// VARIÁVEIS DE ECONOMIA: ADICIONADA COROA (CROWNS)
+let honey = 0, totalHoneyEver = 0, crowns = 0, hPerClick = 0.2, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = true;
+let favorReal = 0; 
 
-// NOVOS TALENTOS
+// TALENTOS
 let talentPoints = 0;
 let talents = {
-    operario_forca: 0, // +0.5 hPerClick por ponto
-    operario_critico: 0, // +2% chance Alvo Crítico
-    arquiteto_mps: 0, // +1.0 mps base por ponto
-    arquiteto_offline: 0, // +5% ganho offline
-    alquimista_sorte: 0, // +1% Sorte Real
-    alquimista_boost: 0 // +10% duração boosts
+    operario_forca: 0, 
+    operario_critico: 0, 
+    arquiteto_mps: 0, 
+    arquiteto_offline: 0, 
+    alquimista_sorte: 0, 
+    alquimista_boost: 0 
 };
+
+// COLMEIA & PRODUÇÃO
+let hiveOwned = { base: true, middle: false, top: false };
+const HIVE_COSTS = { middle: 500000, top: 2500000 };
+let queenProductionLevel = 0;
 
 let hangarsCount = 1;
 let expeditions = [
@@ -2411,7 +2392,7 @@ function finishMG() {
     const scoreVal = document.getElementById("mgResultScore");
     if(scoreVal) scoreVal.textContent = mgScore;
     const rewardVal = document.getElementById("mgResultReward");
-    if(rewardVal) rewardVal.innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
+    rewardVal.innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
     
     const boostDisplay = document.getElementById("mgResultBoosts");
     if(boostDisplay) {
@@ -2563,7 +2544,6 @@ function returnToMain() {
     const loadingScreen = document.getElementById("loadingScreen");
     const bar = document.getElementById("loadingBarFill");
     const bee = document.getElementById("loadingBeeImg");
-    const text = document.getElementById("loadingTextMsg");
     if(loadingScreen) loadingScreen.style.display = "flex";
     let progress = 0;
     const interval = setInterval(() => {
@@ -2789,7 +2769,7 @@ function getMissionIcon(type) {
 
 function renderMissions() {
     const list = document.getElementById("missionsList"); if(!list) return; list.innerHTML = "";
-    const sortedMissions = [...dailyMissions].sort((a, b) => { const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2); const scoreB = (b.completed && !b.collected) ? 0 : (!b.completed ? 1 : 2); return scoreA - scoreB; });
+    const sortedMissions = [...dailyMissions].sort((a, b) => { const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2); const scoreB = (b.completed && !b.collected) ? 0 : (!a.completed ? 1 : 2); return scoreA - scoreB; });
     sortedMissions.forEach(m => {
         const perc = Math.min(100, (m.progress / m.target) * 100); const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
         let actionButton = '';
@@ -2805,10 +2785,11 @@ function formatNum(n) {
 
 function formatTime(t) { let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h"; }
 
-// CALCULO BASEADO EM TALENTOS
 function getMPSBase() { 
     if(!autoUnlocked) return 0; 
     let base = (talents.arquiteto_mps * 2.5) + (level * 1.5);
+    if(hiveOwned.middle) base *= 1.5;
+    if(hiveOwned.top) base *= 2.0;
     if(activeBoosts.jelly > 0) base *= 2; 
     return base; 
 }
@@ -2828,18 +2809,35 @@ function getGlobalBonus() {
     let biomesActive = new Set();
     expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
     if(biomesActive.size >= 2) b += (biomesActive.size * 0.05); 
+    
+    // Adiciona o bônus do Favor Real do Velho Dudu
+    b *= (1 + favorReal);
+
     return b;
 }
 
 function updateUI() {
     honey = validateNum(honey); 
-    const honeyEl = document.getElementById("honey"); const mpsEl = document.getElementById("mps"); const lvlEl = document.getElementById("lvlDisplay"); const xpEl = document.getElementById("xpDisplay"); const xpFill = document.getElementById("xpFill");
-    if(honeyEl) honeyEl.textContent = formatNum(honey); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lvlEl) lvlEl.textContent = level; if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    crowns = validateNum(crowns);
+    const honeyEl = document.getElementById("honey"); 
+    const crownEl = document.getElementById("crowns");
+    const mpsEl = document.getElementById("mps"); 
+    const lvlEl = document.getElementById("lvlDisplay"); 
+    const xpEl = document.getElementById("xpDisplay"); 
+    const xpFill = document.getElementById("xpFill");
     
-    // Atualiza hPerClick com base em talentos
+    if(honeyEl) honeyEl.textContent = formatNum(honey); 
+    if(crownEl) crownEl.textContent = formatNum(crowns);
+    if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); 
+    if(lvlEl) lvlEl.textContent = level; 
+    if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; 
+    if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    
     hPerClick = 0.2 + (talents.operario_forca * 0.5) + (level * 0.05);
 
     buildShop(); renderActiveBoosts(); updateRecordsUI(); renderTalentTree();
+    updateDuduUI();
+
     ['Bee', 'NoelBee', 'SkullBee', 'FairyBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
         if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; const mainBee = document.getElementById("mainBeeSprite"); const headerBee = document.getElementById("miniBeeHeader"); if(mainBee) mainBee.src = `${id}.png`; if(headerBee) headerBee.src = `${id}.png`; }
@@ -2863,7 +2861,40 @@ function updateUI() {
     if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
 }
 
-// LOGICA DE TALENTOS
+function updateDuduUI() {
+    const favorEl = document.getElementById("favorRealDisplay");
+    const estimateEl = document.getElementById("duduEstimate");
+    const speechEl = document.getElementById("duduSpeech");
+    const btnSell = document.getElementById("btnSellDudu");
+
+    if(favorEl) favorEl.textContent = (favorReal * 100).toFixed(2) + "%";
+    
+    let estimate = (honey / (Math.max(1000, totalHoneyEver) * 1.5)) * 0.20; 
+    if(estimateEl) estimateEl.textContent = `Estimativa: +${(estimate * 100).toFixed(2)}% de Favor`;
+    
+    if(btnSell) btnSell.disabled = honey < 500;
+
+    if(speechEl) {
+        if(honey < 500) speechEl.textContent = "Volte quando tiver pelo menos 500 potes de mel!";
+        else if (honey > totalHoneyEver * 0.1) speechEl.textContent = "Uau! Isso é muito mel. O rei vai adorar!";
+        else speechEl.textContent = "Olá jovenzinho! Quer trocar esse mel por influência real?";
+    }
+}
+
+function sellToDudu() {
+    if(honey < 500) return;
+    
+    let gain = (honey / (Math.max(1000, totalHoneyEver) * 1.5)) * 0.20;
+    favorReal += gain;
+    
+    notify({n: "VENDA CONCLUÍDA! 👴", d: `+${(gain*100).toFixed(2)}% de Favor Real`});
+    
+    honey = 0; 
+    playClickSound();
+    updateUI();
+    executeSave();
+}
+
 function renderTalentTree() {
     const ptsDisplay = document.getElementById("talentPointsDisplay");
     if(ptsDisplay) ptsDisplay.textContent = `PONTOS DISPONÍVEIS: ${talentPoints}`;
@@ -2915,7 +2946,7 @@ function resetTalents() {
     const cost = honey * 0.1;
     if(confirm(`Deseja resetar todos os talentos? Custo: ${formatNum(cost)} 🍯`)) {
         honey -= cost;
-        talentPoints = level; // Recupera todos os pontos
+        talentPoints = level; 
         for(let k in talents) talents[k] = 0;
         document.getElementById("tree_clicks").innerHTML = "";
         document.getElementById("tree_auto").innerHTML = "";
@@ -2960,14 +2991,14 @@ function onSliderChange(hangarId, newVal) {
 
 function recalculateHangarConstraints() {
     let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
-    const LIMIT = 95;
+    const PERCENT_LIMIT = 95;
 
     for(let i=0; i<4; i++) {
         const exp = expeditions[i];
         if(!exp.active && !exp.finished && i < hangarsCount) {
             const slider = document.getElementById(`expSlider_${i}`);
             if(slider) {
-                let availableForThis = Math.max(0, LIMIT - currentOccupiedTotal);
+                let availableForThis = Math.max(0, PERCENT_LIMIT - currentOccupiedTotal);
                 slider.max = availableForThis;
                 if(parseInt(slider.value) > availableForThis) {
                     slider.value = availableForThis;
@@ -2992,7 +3023,7 @@ function startExpedition(hangarId) {
     
     let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
     if(currentOccupiedTotal + perc > 95) {
-        notify({n: "LIMITE DE ABELHAS! ⚠️", d: "Você não pode enviar mais de 95% do enxame."});
+        notify({n: "LIMITE DE ABELHAS! ⚠️", d: "O enxame não suporta mais voos."});
         return;
     }
 
@@ -3080,17 +3111,39 @@ function renderHangars() {
     }
 }
 
+function buyHiveModule(module) {
+    const cost = HIVE_COSTS[module];
+    if(honey >= cost) {
+        honey -= cost;
+        hiveOwned[module] = true;
+        notify({n: "ESTRUTURA EXPANDIDA! 🏠", d: `Módulo ${module} instalado.`});
+        updateUI();
+        executeSave();
+    }
+}
+
+function upgradeQueenFertility() {
+    const cost = (queenProductionLevel + 1) * 750000;
+    if(queenProductionLevel >= 7) return;
+    if(honey >= cost) {
+        honey -= cost;
+        queenProductionLevel++;
+        notify({n: "RAINHA NUTRIDA! 👑", d: `Limite de abelhas: ${800 + (queenProductionLevel * 200)}`});
+        updateUI();
+        executeSave();
+    }
+}
+
 function renderHiveStats() {
     const container = document.getElementById("hiveStatsContent");
     if(!container) return;
 
+    let maxQueen = 800 + (queenProductionLevel * 200);
+    let maxHive = 800 + (hiveOwned.middle?800:0) + (hiveOwned.top?800:0);
+    
+    let nextProdCost = (queenProductionLevel + 1) * 750000;
     let totalOccupied = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
-    let rareAchs = achievements.filter(a => a.u && a.r === 'rare').length;
-    let epicAchs = achievements.filter(a => a.u && a.r === 'epic').length;
     let skinBonus = Math.round((getSkinBonus() - 1) * 100);
-    let biomesActive = new Set();
-    expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
-    let synergyBonus = biomesActive.size >= 2 ? (biomesActive.size * 5) : 0;
     let totalGlobalMult = (getGlobalBonus()).toFixed(2);
 
     let boostsHtml = "";
@@ -3099,62 +3152,50 @@ function renderHiveStats() {
     
     for(let b in activeBoosts) {
         if(activeBoosts[b] > 0) {
-            boostsHtml += `
-                <div class="hive-stat-row">
-                    <div class="hive-stat-label">${icons[b]} ${names[b]}</div>
-                    <div class="hive-stat-val" style="color:#fff;">${formatTime(activeBoosts[b])}</div>
-                </div>
-            `;
+            boostsHtml += `<div class="hive-stat-row"><div class="hive-stat-label">${icons[b]} ${names[b]}</div><div class="hive-stat-val" style="color:#fff;">${formatTime(activeBoosts[b])}</div></div>`;
         }
     }
 
     container.innerHTML = `
+        <div class="modular-hive-container">
+            <img src="HiveTop.png" class="hive-module ${!hiveOwned.top ? 'hive-module-hidden' : ''}">
+            <img src="HiveMidle.png" class="hive-module ${!hiveOwned.middle ? 'hive-module-hidden' : ''}">
+            <img src="HiveBase.png" class="hive-module">
+        </div>
+
+        <div id="hiveShopArea" style="margin-bottom: 20px;">
+            ${!hiveOwned.middle ? `<button onclick="buyHiveModule('middle')" ${honey < HIVE_COSTS.middle ? 'disabled' : ''}>COMPRAR MEIO: ${formatNum(HIVE_COSTS.middle)} 🍯 (Cap. +800)</button>` : ''}
+            ${hiveOwned.middle && !hiveOwned.top ? `<button onclick="buyHiveModule('top')" ${honey < HIVE_COSTS.top ? 'disabled' : ''}>COMPRAR TOPO: ${formatNum(HIVE_COSTS.top)} 🍯 (Cap. +800)</button>` : ''}
+            
+            <div class="section-title">NUTRIÇÃO DA RAINHA 🧪</div>
+            <div class="card" style="margin-bottom: 10px; padding: 15px;">
+                <div style="font-size: 12px; font-weight: 800; opacity: 0.7;">CAPACIDADE BIOLÓGICA</div>
+                <div style="font-size: 24px; font-weight: 900; color: var(--accent);">${maxQueen} ABELHAS</div>
+                ${queenProductionLevel < 7 ? 
+                    `<button onclick="upgradeQueenFertility()" ${honey < nextProdCost ? 'disabled' : ''} style="font-size:12px; height:auto; padding:10px; background:var(--xp-bar); color:white;">
+                        GELEIA REAL CONCENTRADA: ${formatNum(nextProdCost)} 🍯 (+200 abelhas)
+                    </button>` : 
+                    '<div style="font-size: 11px; color: gold; font-weight: 900; margin-top: 10px;">LIMITE REAL ALCANÇADO!</div>'}
+            </div>
+        </div>
+        
         <div class="section-title">OCUPAÇÃO DO ENXAME 🐝</div>
         <div class="card" style="margin-bottom: 20px;">
             <div style="font-size: 32px; font-weight: 900; color: var(--accent);">${totalOccupied}%</div>
-            <div style="font-size: 11px; opacity: 0.6; margin-top: 5px;">Abelhas atualmente fora da colmeia</div>
+            <div style="font-size: 11px; opacity: 0.6; margin-top: 5px;">População ocupada em tarefas externas</div>
             <div class="xp-bg" style="margin-top: 15px;">
                 <div class="xp-fill" style="width: ${(totalOccupied / 95) * 100}%; background: ${totalOccupied > 80 ? '#e74c3c' : 'var(--accent)'};"></div>
             </div>
         </div>
 
-        <div class="section-title">BOOSTS ATIVOS ⚡</div>
-        <div id="hiveBoostsList">
-            ${boostsHtml || '<div class="hive-stat-row"><div class="hive-stat-label">Nenhum boost ativo</div></div>'}
-        </div>
-
         <div class="section-title">EFICIÊNCIA REAL ✨</div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">🧪 Talentos Atribuídos</div>
-            <div class="hive-stat-val">${Object.values(talents).reduce((a,b)=>a+b,0)} pts</div>
-        </div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">🛡️ Sorte Real Total</div>
-            <div class="hive-stat-val">${(0.1 + (talents.alquimista_sorte)*1.0).toFixed(2)}%</div>
-        </div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">👔 Bônus de Visual</div>
-            <div class="hive-bonus-badge">+${skinBonus}%</div>
-        </div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">🎖️ Glória das Conquistas</div>
-            <div class="hive-bonus-badge">+${(rareAchs * 1) + (epicAchs * 5)}%</div>
-        </div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">🧭 Sinergia de Biomas</div>
-            <div class="hive-bonus-badge">+${synergyBonus}%</div>
-        </div>
+        <div class="hive-stat-row"><div class="hive-stat-label">👴 Favor Real (Dudu)</div><div class="hive-stat-val" style="color: #4caf50;">+${(favorReal * 100).toFixed(2)}%</div></div>
+        <div class="hive-stat-row"><div class="hive-stat-label">🛡️ Sorte Real Total</div><div class="hive-stat-val">${(0.1 + (talents.alquimista_sorte)*1.0).toFixed(2)}%</div></div>
+        <div class="hive-stat-row"><div class="hive-stat-label">👔 Bônus de Visual</div><div class="hive-bonus-badge">+${skinBonus}%</div></div>
 
         <div class="section-title">RESERVAS TOTAIS 🍯</div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">💰 Mel Histórico</div>
-            <div class="hive-stat-val">${formatNum(totalHoneyEver)}</div>
-        </div>
-        <div class="hive-stat-row">
-            <div class="hive-stat-label">📊 Multiplicador Global</div>
-            <div class="hive-stat-val" style="color: var(--xp-bar);">${totalGlobalMult}x</div>
-        </div>
-        
+        <div class="hive-stat-row"><div class="hive-stat-label">💰 Mel Histórico</div><div class="hive-stat-val">${formatNum(totalHoneyEver)}</div></div>
+        <div class="hive-stat-row"><div class="hive-stat-label">📊 Multiplicador Global</div><div class="hive-stat-val" style="color: var(--xp-bar);">${totalGlobalMult}x</div></div>
         <div class="version-tag" style="margin-top: 30px;">DADOS SINCRONIZADOS COM A RAINHA ✅</div>
     `;
 }
@@ -3183,7 +3224,11 @@ function finishExpedition(hangarId) {
     exp.active = false;
     exp.finished = true;
     
-    const power = (hPerClick * exp.reductionPerc * 300);
+    const maxHive = 800 + (hiveOwned.middle?800:0) + (hiveOwned.top?800:0);
+    const prodLimit = 800 + (queenProductionLevel * 200);
+    const effectivePop = Math.min(maxHive, prodLimit);
+    
+    const power = (hPerClick * exp.reductionPerc * (effectivePop / 2));
     let hGain = power;
     let xGain = hGain * 0.15;
     let msg = "";
@@ -3302,7 +3347,7 @@ function addXP(amt) {
     while(currentXP >= nextLevelXP){ 
         currentXP = validateNum(currentXP - nextLevelXP); 
         level++; 
-        talentPoints++; // GANHA PONTO AO SUBIR
+        talentPoints++; 
         nextLevelXP = Math.floor(nextLevelXP * 1.35); 
         triggerLevelUpCelebration(); 
     } 
@@ -3357,7 +3402,8 @@ function handleMagnetEffect() {
     }
 }
 
-function executeSave(){ const data = {honey: validateNum(honey), totalHoneyEver: validateNum(totalHoneyEver), level, currentXP, nextLevelXP, talents, talentPoints, activeBoosts, equippedCosmetic, equippedBackground, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
+// ATUALIZADO SISTEMA DE SAVE PARA INCLUIR COROAS
+function executeSave(){ const data = {honey: validateNum(honey), crowns: validateNum(crowns), favorReal: validateNum(favorReal), totalHoneyEver: validateNum(totalHoneyEver), level, currentXP, nextLevelXP, talents, talentPoints, activeBoosts, equippedCosmetic, equippedBackground, hiveOwned, queenProductionLevel, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
 
 function checkOfflineGains(lastTimestamp) { 
     const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); 
@@ -3394,55 +3440,37 @@ function handleCosmetic(id) {
     executeSave();
 }
 
-function handleBackground(id) {
-    equippedBackground = id;
-    updateUI();
-    executeSave();
-}
+function handleBackground(id) { equippedBackground = id; updateUI(); executeSave(); }
 
 function load(){ 
     initAchievements(); 
-    const savedAudio = localStorage.getItem(AUDIO_KEY); 
-    if(savedAudio) audioSettings = JSON.parse(savedAudio); 
-    applyAudioSettings(); 
-    const savedTheme = localStorage.getItem(THEME_KEY); 
-    if(savedTheme) { themeSettings = JSON.parse(savedTheme); applyTheme(); } 
-    const savedRecords = localStorage.getItem(RECORDS_KEY); 
-    if(savedRecords) records = JSON.parse(savedRecords); 
-    const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); 
-    if(savedDaily) dailyState = JSON.parse(savedDaily); 
-    const rawMissions = localStorage.getItem(MISSION_KEY); 
-    if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; } 
+    const savedAudio = localStorage.getItem(AUDIO_KEY); if(savedAudio) audioSettings = JSON.parse(savedAudio); applyAudioSettings(); 
+    const savedTheme = localStorage.getItem(THEME_KEY); if(savedTheme) { themeSettings = JSON.parse(savedTheme); applyTheme(); } 
+    const savedRecords = localStorage.getItem(RECORDS_KEY); if(savedRecords) records = JSON.parse(savedRecords); 
+    const savedDaily = localStorage.getItem(DAILY_REWARD_KEY); if(savedDaily) dailyState = JSON.parse(savedDaily); 
+    const rawMissions = localStorage.getItem(MISSION_KEY); if(rawMissions) { const md = JSON.parse(rawMissions); dailyMissions = md.dailyMissions || []; lastMissionReset = md.lastMissionReset || 0; } 
     const raw = localStorage.getItem(SAVE_KEY); 
     if(raw){ 
         try { 
             const d = JSON.parse(raw); 
             honey = validateNum(d.honey); 
+            crowns = validateNum(d.crowns || 0);
+            favorReal = validateNum(d.favorReal || 0); 
             totalHoneyEver = validateNum(d.totalHoneyEver); 
             level = d.level || 1; 
-            currentXP = validateNum(d.currentXP); 
-            nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
-            if(d.talents) talents = d.talents;
-            if(d.talentPoints !== undefined) talentPoints = d.talentPoints;
-            if(d.hangarsCount) hangarsCount = d.hangarsCount;
-            if(d.expeditions) expeditions = d.expeditions;
-            if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics;
-            if(d.activeBoosts) activeBoosts = d.activeBoosts; 
-            if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; 
-            if(d.equippedBackground) equippedBackground = d.equippedBackground; 
+            currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
+            if(d.talents) talents = d.talents; if(d.talentPoints !== undefined) talentPoints = d.talentPoints;
+            if(d.queenProductionLevel !== undefined) queenProductionLevel = d.queenProductionLevel;
+            if(d.hangarsCount) hangarsCount = d.hangarsCount; if(d.expeditions) expeditions = d.expeditions;
+            if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics; if(d.activeBoosts) activeBoosts = d.activeBoosts; 
+            if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; 
+            if(d.hiveOwned) hiveOwned = d.hiveOwned;
             if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); 
             if(d.defenderProgress) defenderProgress = d.defenderProgress; 
-            if(d.pendingOfflineHoney) pendingOfflineHoney = d.pendingOfflineHoney; 
-            if(d.pendingOfflineXP) pendingOfflineXP = d.pendingOfflineXP; 
             if(d.timestamp) checkOfflineGains(d.timestamp); 
         } catch(e) { console.error(e); } 
-    } else {
-        talentPoints = level; // Inicializa pontos se for novo save
-    }
-    checkMissionReset(); 
-    updateUI(); 
-    updateVersionDisplay(); 
-    checkUpdateStatus(); 
+    } else { talentPoints = level; }
+    checkMissionReset(); updateUI(); updateVersionDisplay(); checkUpdateStatus(); 
 }
 
 function enterGame() { 
@@ -3453,88 +3481,46 @@ function enterGame() {
     if(loadingScreen) loadingScreen.style.display = "flex"; 
     let progress = 0; 
     const interval = setInterval(() => { 
-        progress += Math.random() * 5; 
-        if(progress > 100) progress = 100; 
-        if(bar) bar.style.width = progress + "%"; 
-        if(bee) bee.style.left = progress + "%"; 
+        progress += Math.random() * 5; if(progress > 100) progress = 100; 
+        if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%"; 
         if(progress === 100) { 
             clearInterval(interval); 
             setTimeout(() => { 
                 if(loadingScreen) loadingScreen.style.display = "none"; 
-                const startScreen = document.getElementById('startScreen'); 
-                const gameUI = document.getElementById('gameUI'); 
+                const startScreen = document.getElementById('startScreen'); const gameUI = document.getElementById('gameUI'); 
                 if(startScreen) startScreen.style.display = 'none'; 
                 if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; } 
-                gameLoaded = true; 
-                if(pendingOfflineHoney > 1000) openModal('offlineModal'); else checkDailyLogic(); 
-                startGameTicks(); 
-                startAutoProducing(); 
-                updateUI(); 
-                startDynamicNotifications(); 
+                gameLoaded = true; if(pendingOfflineHoney > 1000) openModal('offlineModal'); else checkDailyLogic(); 
+                startGameTicks(); startAutoProducing(); updateUI(); startDynamicNotifications(); 
             }, 300); 
         } 
     }, 50); 
 }
 
-function openModal(id) { 
-    const modal = document.getElementById(id); 
-    if(!modal) return; 
-    modal.style.display = 'flex'; 
-    if(id === 'missionsModal') renderMissions(); 
-    if(id === 'dailyRewardModal') renderDailyGrid(); 
-}
-
+function openModal(id) { const modal = document.getElementById(id); if(!modal) return; modal.style.display = 'flex'; if(id === 'missionsModal') renderMissions(); if(id === 'dailyRewardModal') renderDailyGrid(); }
 function closeModal(id) { const modal = document.getElementById(id); if(modal) modal.style.display = 'none'; }
-
 function openTab(id, btn) { 
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); 
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-    const pane = document.getElementById(id); 
-    if(pane) pane.classList.add('active'); 
-    if(btn) btn.classList.add('active'); 
-    if(id === 'achievements') renderAchs(); 
-    if(id === 'hive-stats') renderHiveStats();
-    if(id === 'talents') renderTalentTree();
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+    const pane = document.getElementById(id); if(pane) pane.classList.add('active'); if(btn) btn.classList.add('active'); 
+    if(id === 'achievements') renderAchs(); if(id === 'hive-stats') renderHiveStats(); if(id === 'talents') renderTalentTree();
 }
-
-function openSubShop(id, btn) { 
-    document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none'); 
-    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); 
-    const pane = document.getElementById('shop_'+id); 
-    if(pane) pane.style.display = 'block'; 
-    if(btn) btn.classList.add('active'); 
-}
-
+function openSubShop(id, btn) { document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none'); document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); const pane = document.getElementById('shop_'+id); if(pane) pane.style.display = 'block'; if(btn) btn.classList.add('active'); }
 function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); renderAchs(); }
 
 function buildShop() { 
     const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); 
     ['pepper', 'energy', 'flower', 'luck'].forEach(type => { 
-        const grid = document.getElementById(`grid_${type}`); 
-        if(!grid) return; 
-        grid.innerHTML = ""; 
+        const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = ""; 
         durations.forEach(d => { 
             const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor)); 
-            const btn = document.createElement("button"); 
-            btn.className = "buy-btn-small"; 
-            btn.disabled = honey < cost; 
-            btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; 
-            btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); 
-            grid.appendChild(btn); 
+            const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn); 
         }); 
     }); 
     ['jelly', 'magnet'].forEach(type => {
-        const grid = document.getElementById(`grid_${type}`);
-        if(!grid) return;
-        grid.innerHTML = "";
+        const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
         specialDurations.forEach(sd => {
             const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.2)) * sd.m * inflationFactor));
-            const btn = document.createElement("button");
-            btn.className = "buy-btn-small";
-            btn.disabled = honey < cost;
-            btn.innerHTML = `<b>${sd.label}</b><br>${formatNum(cost)} 🍯`;
-            btn.onclick = () => buyBoostManual(type, sd.t, cost, sd.label);
-            grid.appendChild(btn);
+            const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${sd.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, sd.t, cost, sd.label); grid.appendChild(btn);
         });
     });
 }
@@ -3542,10 +3528,7 @@ function buildShop() {
 function renderAchs() { const l = document.getElementById("achList"); if(!l) return; l.innerHTML = ""; achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => { l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`; }); }
 
 const beeCont = document.getElementById("beeContainer"); 
-if(beeCont) { 
-    beeCont.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); }); 
-    beeCont.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false}); 
-}
+if(beeCont) { beeCont.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, false); }); beeCont.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, false); }, {passive: false}); }
 const leftT = document.getElementById("leftTarget"); if(leftT) { leftT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); leftT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
 const rightT = document.getElementById("rightTarget"); if(rightT) { rightT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); rightT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
 
