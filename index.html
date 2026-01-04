@@ -268,7 +268,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     100% { transform: scale(1.5); opacity: 0; border-color: #00ff00; }
 }
 
-.game{ width:100%; max-width:420px; height: 100vh; padding:14px; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; display: none; }
+.game{ width:100%; max-width:420px; height: 100vh; padding:0; position: relative; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s; z-index: 10; display: none; overflow: hidden;}
 
 .card { 
     background: var(--card); 
@@ -283,6 +283,13 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     border: 1px solid rgba(255,255,255,0.15); 
     transition: transform 0.1s, background 0.3s; 
 }
+
+#statsCard, .notif-card, #clickCard {
+    margin-left: 14px;
+    margin-right: 14px;
+}
+
+#statsCard { margin-top: 14px; }
 
 .lvl-up-flash {
     animation: lvlUpFlash 1s ease-out forwards;
@@ -332,12 +339,21 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 .stats{ margin-top:8px; font-size:18px; font-weight: 800; color: var(--accent); }
 
+/* CLICK CARD OCUPANDO O ESPAÇO DISPONÍVEL */
+#clickCard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 80px; /* Espaço para as abas inferiores */
+}
+
 .click-zone { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     width: 100%; 
-    height: 160px; 
+    height: 100%; 
     position: relative; 
     touch-action: none; 
     border-radius: 20px; 
@@ -376,8 +392,8 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .active-boost-timer { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.95); padding: 4px 8px; border-radius: 12px; border: 1.5px solid var(--accent); font-size: 10px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: var(--main-blue); }
 .active-boost-passive { border-color: #ffffff; background: rgba(255,255,255,0.8); }
 
+/* MAIN PANEL */
 .main-panel { 
-    flex: 1; 
     display: flex; 
     flex-direction: column; 
     overflow: hidden; 
@@ -385,60 +401,99 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     backdrop-filter: var(--panel-blur);
     -webkit-backdrop-filter: var(--panel-blur);
     border-radius: 30px 30px 0 0; 
-    margin: 0 -14px -14px -14px; 
+    margin: 0; 
     box-shadow: 0 -10px 30px rgba(0,0,0,0.4);
     border-top: 1px solid rgba(255,255,255,0.2);
-    transition: background 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    z-index: 100;
+}
+
+.main-panel.is-full {
+    height: 100vh;
 }
 
 .tabs-header { 
     display: flex; 
-    background: rgba(0, 0, 0, 0.2); 
-    border-bottom: 1px solid rgba(255,255,255,0.1); 
+    background: rgba(0, 0, 0, 0.4); 
+    border-top: 1px solid rgba(255,255,255,0.1); 
     flex-shrink: 0; 
+    height: 70px;
+    order: 2; 
 }
 .tab-btn { 
     flex: 1; 
-    padding: 15px 5px; 
+    padding: 10px 2px; 
     border: none; 
     background: none; 
     font-weight: 800; 
     color: rgba(255,255,255,0.4); 
     cursor: pointer; 
-    font-size: 20px; 
+    font-size: 18px; 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    gap: 4px;
+    gap: 2px;
     transition: 0.3s;
     position: relative;
 }
 
+/* GRADIENTE REMOVIDO CONFORME SOLICITADO */
 .tab-btn-games-highlight::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50px; height: 50px;
-    border: 3px solid transparent;
-    border-radius: 50%;
-    background: linear-gradient(var(--card), var(--card)) padding-box,
-                linear-gradient(90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000) border-box;
-    z-index: -1;
-    animation: chromaticRotate 3s linear infinite, gamesPulse 2s ease-in-out infinite;
+    display: none;
 }
 
-@keyframes gamesPulse { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
-
 .tab-btn span { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.tab-btn.active { color: var(--accent); border-bottom: 4px solid var(--accent); }
+.tab-btn.active { color: var(--accent); }
 .tab-btn.active span { color: var(--text-color); }
+.tab-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 0 0 5px 5px;
+}
 
-.tabs-content { flex: 1; overflow: hidden; position: relative; }
+.tabs-content { 
+    flex: 1; 
+    overflow: hidden; 
+    position: relative; 
+    order: 1; 
+    display: none; 
+}
+
+.main-panel.is-full .tabs-content {
+    display: block;
+}
+
+.close-panel-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    font-weight: 900;
+}
+
 .tab-pane { display: none; height: 100%; flex-direction: column; }
 .tab-pane.active { display: flex; }
 
-.scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+.scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 
 .section-title { font-weight: 900; font-size: 14px; color: var(--accent); margin-bottom: 12px; margin-top: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
 .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
@@ -955,7 +1010,7 @@ input[type=range]::-webkit-slider-thumb {
       <div id="notifContainer"></div>
   </div>
 
-  <div class="card" id="clickCard" style="padding: 10px; position: relative; overflow: hidden;">
+  <div class="card" id="clickCard">
     <div id="active-boosts"></div>
     <div class="click-zone" id="clickZone">
       <div class="target" id="leftTarget">🎯</div>
@@ -969,9 +1024,11 @@ input[type=range]::-webkit-slider-thumb {
     </div>
   </div>
 
-  <div class="main-panel">
+  <div class="main-panel" id="mainPanel">
+      <button class="close-panel-btn" id="btnClosePanel" style="display:none;" onclick="togglePanel(false)">✖</button>
+      
       <div class="tabs-header">
-          <button class="tab-btn active" onclick="openTab('talents', this)">🌳<span>Talentos</span></button>
+          <button class="tab-btn" onclick="openTab('talents', this)">🌳<span>Talentos</span></button>
           <button class="tab-btn" onclick="openTab('shop', this)">🛒<span>Loja</span></button>
           <button class="tab-btn" onclick="openTab('expedition-tab', this)">🧭<span>Expedição</span></button>
           <button class="tab-btn" onclick="openTab('hive-stats', this)">🏠<span>Colmeia</span></button>
@@ -980,7 +1037,7 @@ input[type=range]::-webkit-slider-thumb {
       </div>
       
       <div class="tabs-content" id="mainScrollArea">
-          <div id="talents" class="tab-pane active">
+          <div id="talents" class="tab-pane">
               <div class="scroll-area">
                 <div class="section-title">ÁRVORE DE TALENTOS REAIS</div>
                 <div id="talentPointsDisplay" style="background: var(--accent); color: var(--main-blue); padding: 10px; border-radius: 12px; font-weight: 900; font-size: 14px; margin-bottom: 20px; text-align: center;">PONTOS DISPONÍVEIS: 0</div>
@@ -1353,7 +1410,7 @@ input[type=range]::-webkit-slider-thumb {
     <div class="modal-box">
         <div class="modal-header">Produção de Descanso 🐝</div>
         <div class="modal-content-scroll" style="text-align: center;">
-            <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
+            <div id="offlineIcon" style="width: 100px; height: 100px; background: rgba(255, 204, 0, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 50px;">🍯</div>
             <h2 id="offlineTitle" style="margin: 0 0 10px; font-weight: 900; color: inherit;">Bem-vindo de volta!</h2>
             <p id="offlineText" style="font-size: 15px; line-height: 1.4; color: inherit; opacity: 0.9;"></p>
         </div>
@@ -1489,43 +1546,42 @@ async function handlePwaClick() {
 // HISTÓRICO DE ATUALIZAÇÕES (MOSTRANDO AS ÚLTIMAS 5)
 let updateHistory = [
     {
+        version: "15.0.0",
+        title: "🎨 REFINAMENTO VISUAL",
+        changes: [
+            { type: "mod", text: "Design: Removido o círculo de destaque da aba de Jogos para maior fluidez visual." },
+            { type: "add", text: "Polimento: Ajustes na consistência dos ícones da barra de navegação." }
+        ]
+    },
+    {
+        version: "14.0.0",
+        title: "⚡ EXPANSÃO DO CLICK E NOVIDADES",
+        changes: [
+            { type: "mod", text: "Painel de Click: Agora ocupa 100% da área útil entre o topo e as abas." },
+            { type: "add", text: "Histórico Real: Novo sistema que mostra apenas as últimas 5 atualizações." },
+            { type: "add", text: "Alerta Visual: Botão 'O que mudou?' agora brilha quando há novidades não lidas." }
+        ]
+    },
+    {
+        version: "13.0.0",
+        title: "📱 NAVEGAÇÃO INFERIOR E FULLSCREEN",
+        changes: [
+            { type: "mod", text: "Interface: Todas as abas foram movidas para a parte inferior para maior ergonomia." },
+            { type: "mod", text: "Navegação: Ao selecionar uma aba, ela agora ocupa a tela inteira." }
+        ]
+    },
+    {
         version: "12.2.0",
         title: "👑 SISTEMA DE COROAS REAIS",
         changes: [
-            { type: "add", text: "Nova Moeda: Introduzidas as Coroas, a moeda de prestígio para a loja real." },
-            { type: "mod", text: "Painel de Status: Melhorada a interface para exibir múltiplos recursos simultâneos." },
-            { type: "mod", text: "Notificações: Sistema de aviso visual para novas atualizações no menu inicial." }
+            { type: "add", text: "Nova Moeda: Introduzidas as Coroas, a moeda de prestígio." }
         ]
     },
     {
         version: "12.1.0",
         title: "👴 O VELHO DUDU CHEGOU!",
         changes: [
-            { type: "add", text: "Novo Mercado: Agora você pode vender seu mel para o Velho Dudu na aba Loja." },
-            { type: "mod", text: "Favor Real: Vender mel agora concede bônus permanente de produção (MPS e Click)." },
-            { type: "fix", text: "Economia: Ajustada a curva de valorização do mel histórico para trocas justas." }
-        ]
-    },
-    {
-        version: "11.9.0",
-        title: "👑 NUTRIÇÃO REAL",
-        changes: [
-            { type: "add", text: "Fisiologia Real: A Rainha agora pode ter sua produção aumentada até o limite de 2200 abelhas." },
-            { type: "mod", text: "Imersão: Upgrade de fertilidade disponível na aba Colmeia." }
-        ]
-    },
-    {
-        version: "11.8.1",
-        title: "🏠 ALINHAMENTO DA COLMEIA",
-        changes: [
-            { type: "fix", text: "Engenharia Civil: Corrigido o empilhamento das peças da colmeia para encaixe perfeito." }
-        ]
-    },
-    {
-        version: "11.8.0",
-        title: "🛡️ PERSISTÊNCIA DE DADOS",
-        changes: [
-            { type: "fix", text: "Estabilidade: Restaurado o sistema de chaves originais para evitar perda de progresso." }
+            { type: "add", text: "Novo Mercado: Agora você pode vender seu mel para o Velho Dudu na aba Loja." }
         ]
     }
 ];
@@ -1558,11 +1614,10 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V122"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V15"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
-    // SÓ MOSTRA O EFEITO PULSANTE SE O PLAYER NUNCA VIU ESSA VERSÃO
     if(!lastSeen || lastSeen !== currentVersion) {
         btn.classList.add("btn-chromatic-pulse");
     } else {
@@ -1572,7 +1627,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V122", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V15", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1590,12 +1645,10 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-// VARIÁVEIS DE ECONOMIA: ADICIONADA COROA (CROWNS)
 let honey = 0, totalHoneyEver = 0, crowns = 0, hPerClick = 0.2, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = true;
 let favorReal = 0; 
 
-// TALENTOS
 let talentPoints = 0;
 let talents = {
     operario_forca: 0, 
@@ -1606,7 +1659,6 @@ let talents = {
     alquimista_boost: 0 
 };
 
-// COLMEIA & PRODUÇÃO
 let hiveOwned = { base: true, middle: false, top: false };
 const HIVE_COSTS = { middle: 500000, top: 2500000 };
 let queenProductionLevel = 0;
@@ -1728,6 +1780,30 @@ window.addEventListener('keyup', (e) => {
     if (key === 'arrowleft' || key === 'a' || key === 'arrowright' || key === 'd') dMoving = 0;
 });
 
+function togglePanel(show) {
+    const panel = document.getElementById('mainPanel');
+    const closeBtn = document.getElementById('btnClosePanel');
+    const stats = document.getElementById('statsCard');
+    const notif = document.querySelector('.notif-card');
+    const click = document.getElementById('clickCard');
+
+    if (show) {
+        panel.classList.add('is-full');
+        closeBtn.style.display = 'flex';
+        stats.style.display = 'none';
+        if(notif) notif.style.display = 'none';
+        click.style.display = 'none';
+    } else {
+        panel.classList.remove('is-full');
+        closeBtn.style.display = 'none';
+        stats.style.display = 'block';
+        if(notif) notif.style.display = 'flex';
+        click.style.display = 'flex';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    }
+}
+
 function updateTheme() {
     const colorEl = document.getElementById('uiMainColor');
     const opacityEl = document.getElementById('uiOpacity');
@@ -1774,23 +1850,7 @@ function applyTheme() {
 }
 
 function prepareMinigame(type) {
-    if(type === 'flight') {
-        openModal('flightPreGameModal');
-    } else if(type === 'snake') {
-        openModal('snakePreGameModal');
-    } else if(type === 'rain') {
-        openModal('rainPreGameModal');
-    } else if(type === 'defender') {
-        const now = Date.now();
-        if(defenderProgress.lastPlayed > 0 && now - defenderProgress.lastPlayed > 86400000) {
-            defenderProgress.level = 1;
-            executeSave();
-            updateRecordsUI();
-        }
-        openModal('defenderPreGameModal');
-    } else {
-        startMinigameActual(type);
-    }
+    startMinigameActual(type);
 }
 
 function startMinigameActual(type) {
@@ -1883,22 +1943,8 @@ function initDefender() {
         for(let col=0; col<6; col++) {
             let hp = 1;
             let type = 'common';
-            if(currentLevel >= 4 && row === 0) {
-                hp = 2;
-                type = 'elite';
-            }
-            
-            dEnemies.push({
-                x: 30 + col*40, 
-                y: 30 + row*35, 
-                alive: true, 
-                hp: hp,
-                type: type,
-                diving: false, 
-                diveDir: 1, 
-                diveSpeed: 2.5 + (currentLevel * 0.2), 
-                baseY: 30 + row*35
-            });
+            if(currentLevel >= 4 && row === 0) { hp = 2; type = 'elite'; }
+            dEnemies.push({ x: 30 + col*40, y: 30 + row*35, alive: true, hp: hp, type: type, diving: false, diveDir: 1, diveSpeed: 2.5 + (currentLevel * 0.2), baseY: 30 + row*35 });
         }
     }
     
@@ -1925,159 +1971,61 @@ function moveDefender(dir) { dMoving = (dir === 'LEFT' ? -1 : 1); }
 function stopDefender() { dMoving = 0; }
 function defenderFire() {
     if(!mgRunning || activeMG !== 'defender' || dFireCooldown > 0) return;
-    
-    if(dHasDoubleShot) {
-        dBullets.push({x: dPlayerX + 5, y: 260});
-        dBullets.push({x: dPlayerX + 25, y: 260});
-    } else {
-        dBullets.push({x: dPlayerX + 15, y: 260});
-    }
-    
-    dFireCooldown = 25; 
-    playClickSound();
+    if(dHasDoubleShot) { dBullets.push({x: dPlayerX + 5, y: 260}); dBullets.push({x: dPlayerX + 25, y: 260}); }
+    else { dBullets.push({x: dPlayerX + 15, y: 260}); }
+    dFireCooldown = 25; playClickSound();
 }
 
 function drawDefender() {
     if(!defenderCtx) return;
     defenderCtx.fillStyle = "#000"; defenderCtx.fillRect(0, 0, 300, 300);
-    
     if(dFireCooldown > 0) dFireCooldown--;
-
     dPlayerX += dMoving * 4;
     if(dPlayerX < 0) dPlayerX = 0;
     if(dPlayerX > 270) dPlayerX = 270;
-    
     if(defenderBeeSprite.complete) {
-        defenderCtx.save();
-        defenderCtx.translate(dPlayerX + 15, 260 + 15);
-        defenderCtx.rotate(Math.PI / 2); 
-        defenderCtx.scale(1, -1); 
-        defenderCtx.drawImage(defenderBeeSprite, -15, -15, 30, 30);
-        defenderCtx.restore();
+        defenderCtx.save(); defenderCtx.translate(dPlayerX + 15, 260 + 15);
+        defenderCtx.rotate(Math.PI / 2); defenderCtx.scale(1, -1);
+        defenderCtx.drawImage(defenderBeeSprite, -15, -15, 30, 30); defenderCtx.restore();
     }
-
     dBullets.forEach((b, i) => {
-        b.y -= 5;
-        defenderCtx.fillStyle = dHasDoubleShot ? "#00ffff" : varProp('--accent');
-        defenderCtx.fillRect(b.x - 1, b.y, 2, 8); 
-        if(b.y < 0) dBullets.splice(i, 1);
+        b.y -= 5; defenderCtx.fillStyle = dHasDoubleShot ? "#00ffff" : varProp('--accent');
+        defenderCtx.fillRect(b.x - 1, b.y, 2, 8); if(b.y < 0) dBullets.splice(i, 1);
     });
-
     dEnemyBullets.forEach((eb, i) => {
-        eb.y += 3;
-        defenderCtx.fillStyle = "#ff4757";
+        eb.y += 3; defenderCtx.fillStyle = "#ff4757";
         defenderCtx.fillRect(eb.x - 1, eb.y, 2, 8);
-        
-        if(eb.x > dPlayerX && eb.x < dPlayerX + 30 && eb.y > 260 && eb.y < 290) {
-            dHearts--;
-            updateDefenderHearts();
-            dEnemyBullets.splice(i, 1);
-            if(dHearts <= 0) finishMG();
-        }
+        if(eb.x > dPlayerX && eb.x < dPlayerX + 30 && eb.y > 260 && eb.y < 290) { dHearts--; updateDefenderHearts(); dEnemyBullets.splice(i, 1); if(dHearts <= 0) finishMG(); }
         if(eb.y > 300) dEnemyBullets.splice(i, 1);
     });
-
     dModDrops.forEach((m, i) => {
-        m.y += 2;
-        defenderCtx.font = "20px Arial";
-        defenderCtx.fillText("🔫", m.x, m.y);
-        
-        if(m.x > dPlayerX && m.x < dPlayerX + 30 && m.y > 250 && m.y < 290) {
-            dHasDoubleShot = true;
-            updateMgLiveBoostsVisual();
-            dModDrops.splice(i, 1);
-            notify({n: "TIRO DUPLO ATIVADO!"});
-        } else if(m.y > 300) {
-            dModDrops.splice(i, 1);
-        }
+        m.y += 2; defenderCtx.font = "20px Arial"; defenderCtx.fillText("🔫", m.x, m.y);
+        if(m.x > dPlayerX && m.x < dPlayerX + 30 && m.y > 250 && m.y < 290) { dHasDoubleShot = true; updateMgLiveBoostsVisual(); dModDrops.splice(i, 1); notify({n: "TIRO DUPLO ATIVADO!"}); }
+        else if(m.y > 300) { dModDrops.splice(i, 1); }
     });
-
     let hitSide = false;
     let aliveEnemies = dEnemies.filter(e => e.alive);
-
     if(Math.random() < (0.015 + (defenderProgress.level * 0.005)) && aliveEnemies.length > 0) {
         let shooter = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
-        if(!shooter.diving) {
-            if(Math.random() > 0.4) {
-                dEnemyBullets.push({x: shooter.x + 12, y: shooter.y + 20});
-            } else {
-                shooter.diving = true;
-                shooter.diveDir = 1; 
-            }
-        }
+        if(!shooter.diving) { if(Math.random() > 0.4) { dEnemyBullets.push({x: shooter.x + 12, y: shooter.y + 20}); } else { shooter.diving = true; shooter.diveDir = 1; } }
     }
-
     dEnemies.forEach(e => {
         if(!e.alive) return;
-
-        if(!e.diving) {
-            e.x += dEnemyDir * (0.4 + defenderProgress.level * 0.1);
-            if(e.x > 270 || e.x < 0) hitSide = true;
-        } else {
-            e.y += e.diveSpeed * e.diveDir;
-            if(e.y > 270) e.diveDir = -1;
-            if(e.y <= e.baseY && e.diveDir === -1) {
-                e.y = e.baseY;
-                e.diving = false;
-            }
-
-            if(e.x > dPlayerX - 20 && e.x < dPlayerX + 30 && e.y > 250 && e.y < 290) {
-                dHearts--;
-                updateDefenderHearts();
-                e.alive = false; 
-                if(dHearts <= 0) finishMG();
-            }
-        }
-        
-        defenderCtx.save();
-        defenderCtx.font = "24px Arial";
-        defenderCtx.translate(e.x + 12, e.y - 10);
-        defenderCtx.rotate(Math.PI); 
-        
+        if(!e.diving) { e.x += dEnemyDir * (0.4 + defenderProgress.level * 0.1); if(e.x > 270 || e.x < 0) hitSide = true; }
+        else { e.y += e.diveSpeed * e.diveDir; if(e.y > 270) e.diveDir = -1; if(e.y <= e.baseY && e.diveDir === -1) { e.y = e.baseY; e.diving = false; }
+            if(e.x > dPlayerX - 20 && e.x < dPlayerX + 30 && e.y > 250 && e.y < 290) { dHearts--; updateDefenderHearts(); e.alive = false; if(dHearts <= 0) finishMG(); } }
+        defenderCtx.save(); defenderCtx.font = "24px Arial"; defenderCtx.translate(e.x + 12, e.y - 10); defenderCtx.rotate(Math.PI);
         let emoji = (e.type === 'elite') ? "🪲" : "🪰";
-        
-        if(e.type === 'elite') {
-            defenderCtx.fillStyle = "#fffa65"; 
-            defenderCtx.fillText(emoji, -12, 10);
-            defenderCtx.strokeStyle = "#ff4757";
-            defenderCtx.lineWidth = 1;
-            defenderCtx.strokeText(emoji, -12, 10);
-        } else {
-            defenderCtx.fillStyle = "#fff";
-            defenderCtx.fillText(emoji, -12, 10);
-        }
-        defenderCtx.restore();
-        
+        if(e.type === 'elite') { defenderCtx.fillStyle = "#fffa65"; defenderCtx.fillText(emoji, -12, 10); defenderCtx.strokeStyle = "#ff4757"; defenderCtx.lineWidth = 1; defenderCtx.strokeText(emoji, -12, 10); }
+        else { defenderCtx.fillStyle = "#fff"; defenderCtx.fillText(emoji, -12, 10); } defenderCtx.restore();
         dBullets.forEach((b, bi) => {
-            if(b.x > e.x && b.x < e.x + 25 && b.y > e.y - 20 && b.y < e.y) {
-                e.hp--;
-                dBullets.splice(bi, 1);
-                
-                if(e.hp <= 0) {
-                    e.alive = false;
-                    mgScore++;
-                    updateMissionProgress('mg_kills', 1);
-                    if(Math.random() < 0.08) dModDrops.push({x: e.x + 10, y: e.y});
-
-                    if(Math.random() < 0.005) {
-                        const types = ['pepper', 'energy', 'flower', 'luck'];
-                        const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
-                        const t = types[Math.floor(Math.random()*4)];
-                        fCollectedBoosts.push({type: t, icon: icons[t]});
-                        updateMgLiveBoostsVisual();
-                    }
-                }
-            }
+            if(b.x > e.x && b.x < e.x + 25 && b.y > e.y - 20 && b.y < e.y) { e.hp--; dBullets.splice(bi, 1);
+                if(e.hp <= 0) { e.alive = false; mgScore++; updateMissionProgress('mg_kills', 1); if(Math.random() < 0.08) dModDrops.push({x: e.x + 10, y: e.y});
+                    if(Math.random() < 0.005) { const types = ['pepper', 'energy', 'flower', 'luck']; const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' }; const t = types[Math.floor(Math.random()*4)]; fCollectedBoosts.push({type: t, icon: icons[t]}); updateMgLiveBoostsVisual(); } } }
         });
     });
-
     if(hitSide) dEnemyDir *= -1;
-    if(dEnemies.every(e => !e.alive)) {
-        mgScore += 50; 
-        if(defenderProgress.level < 7) defenderProgress.level++;
-        defenderProgress.lastPlayed = Date.now();
-        finishMG();
-    }
+    if(dEnemies.every(e => !e.alive)) { mgScore += 50; if(defenderProgress.level < 7) defenderProgress.level++; defenderProgress.lastPlayed = Date.now(); finishMG(); }
 }
 
 function initRain() {
@@ -2085,8 +2033,7 @@ function initRain() {
     rainCanvas.width = 300; rainCanvas.height = 300;
     rBeeX = 135; rBeeTargetX = 135; rDrops = []; rHearts = 3;
     rBeeSpeed = 2; rDropSpeed = 1.5; rSpawnTimer = 0; rBeeDirChangeTimer = 0; rBeeYOffset = 0;
-    fCollectedBoosts = []; 
-    updateRainHearts();
+    fCollectedBoosts = []; updateRainHearts();
     rainCanvas.onclick = (e) => {
         if(!mgRunning) return;
         const rect = rainCanvas.getBoundingClientRect();
@@ -2095,28 +2042,9 @@ function initRain() {
         rDrops.forEach((d, i) => {
             const dist = Math.sqrt((mouseX - d.x)**2 + (mouseY - d.y)**2);
             if(dist < 25) { 
-                if(d.isBomb) {
-                    rHearts--;
-                    updateRainHearts();
-                    createRainParticles(d.x, d.y, "#ff0000", 20); 
-                    rDrops.splice(i, 1);
-                    if(rHearts <= 0) finishMG();
-                } else if(d.isBoost) { 
-                    fCollectedBoosts.push({type: d.boostType, icon: d.boostIcon});
-                    updateMgLiveBoostsVisual(); 
-                    createRainParticles(d.x, d.y, "#ffffff", 15);
-                    playClickSound();
-                    rDrops.splice(i, 1);
-                    updateMissionProgress('mg_boost_collect', 1);
-                } else {
-                    rDrops.splice(i, 1);
-                    mgScore++;
-                    updateMissionProgress('mg_item_collect', 1);
-                    const scoreVal = document.getElementById("mgCurrentScore");
-                    if(scoreVal) scoreVal.textContent = mgScore;
-                    createRainParticles(d.x, d.y, "#ffcc00", 12); 
-                    playClickSound();
-                }
+                if(d.isBomb) { rHearts--; updateRainHearts(); createRainParticles(d.x, d.y, "#ff0000", 20); rDrops.splice(i, 1); if(rHearts <= 0) finishMG(); }
+                else if(d.isBoost) { fCollectedBoosts.push({type: d.boostType, icon: d.boostIcon}); updateMgLiveBoostsVisual(); createRainParticles(d.x, d.y, "#ffffff", 15); playClickSound(); rDrops.splice(i, 1); updateMissionProgress('mg_boost_collect', 1); }
+                else { rDrops.splice(i, 1); mgScore++; updateMissionProgress('mg_item_collect', 1); const scoreVal = document.getElementById("mgCurrentScore"); if(scoreVal) scoreVal.textContent = mgScore; createRainParticles(d.x, d.y, "#ffcc00", 12); playClickSound(); }
             }
         });
     };
@@ -2149,25 +2077,14 @@ function drawRain() {
     if(!rainCtx) return;
     rainCtx.fillStyle = "#000"; rainCtx.fillRect(0, 0, 300, 300);
     rBeeDirChangeTimer--;
-    if(rBeeDirChangeTimer <= 0) {
-        rBeeTargetX = Math.random() * 260;
-        rBeeDirChangeTimer = Math.random() * 60 + 20;
-        rBeeSpeed = (2 + (mgScore * 0.05)) * (Math.random() * 1.5 + 0.5);
-    }
+    if(rBeeDirChangeTimer <= 0) { rBeeTargetX = Math.random() * 260; rBeeDirChangeTimer = Math.random() * 60 + 20; rBeeSpeed = (2 + (mgScore * 0.05)) * (Math.random() * 1.5 + 0.5); }
     let movingRight = rBeeTargetX > rBeeX;
-    if(Math.abs(rBeeX - rBeeTargetX) > 2) {
-        rBeeX += (movingRight ? 1 : -1) * rBeeSpeed;
-    }
+    if(Math.abs(rBeeX - rBeeTargetX) > 2) { rBeeX += (movingRight ? 1 : -1) * rBeeSpeed; }
     rBeeYOffset = Math.sin(Date.now() / 150) * 8;
     if(rainBeeSprite.complete) {
         rainCtx.save();
-        if(!movingRight) {
-            rainCtx.translate(rBeeX + 40, 0); 
-            rainCtx.scale(-1, 1);
-            rainCtx.drawImage(rainBeeSprite, 0, 10 + rBeeYOffset, 40, 40);
-        } else {
-            rainCtx.drawImage(rainBeeSprite, rBeeX, 10 + rBeeYOffset, 40, 40);
-        }
+        if(!movingRight) { rainCtx.translate(rBeeX + 40, 0); rainCtx.scale(-1, 1); rainCtx.drawImage(rainBeeSprite, 0, 10 + rBeeYOffset, 40, 40); }
+        else { rainCtx.drawImage(rainBeeSprite, rBeeX, 10 + rBeeYOffset, 40, 40); }
         rainCtx.restore();
     }
     rSpawnTimer++;
@@ -2176,35 +2093,15 @@ function drawRain() {
         const rng = Math.random();
         let isBomb = rng < 0.35;
         let isBoost = !isBomb && rng < 0.005; 
-        
         let drop = { x: rBeeX + 20, y: 45 + rBeeYOffset, isBomb: isBomb, isBoost: isBoost };
-        
-        if(isBoost) {
-            const types = ['pepper', 'energy', 'flower', 'luck'];
-            const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
-            drop.boostType = types[Math.floor(Math.random() * types.length)];
-            drop.boostIcon = icons[drop.boostType];
-        }
-        
-        rDrops.push(drop);
-        rSpawnTimer = 0;
+        if(isBoost) { const types = ['pepper', 'energy', 'flower', 'luck']; const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' }; drop.boostType = types[Math.floor(Math.random() * types.length)]; drop.boostIcon = icons[drop.boostType]; }
+        rDrops.push(drop); rSpawnTimer = 0;
     }
     rDrops.forEach((d, i) => {
-        d.y += rDropSpeed;
-        rainCtx.font = "24px Arial";
-        rainCtx.textAlign = "center";
-        
+        d.y += rDropSpeed; rainCtx.font = "24px Arial"; rainCtx.textAlign = "center";
         let icon = d.isBomb ? "💣" : (d.isBoost ? d.boostIcon : "🍯");
         rainCtx.fillText(icon, d.x, d.y);
-        
-        if(d.y > 295) {
-            rDrops.splice(i, 1);
-            if(!d.isBomb && !d.isBoost) { 
-                rHearts--;
-                updateRainHearts();
-                if(rHearts <= 0) finishMG();
-            }
-        }
+        if(d.y > 295) { rDrops.splice(i, 1); if(!d.isBomb && !d.isBoost) { rHearts--; updateRainHearts(); if(rHearts <= 0) finishMG(); } }
     });
     rDropSpeed = 1.5 + (mgScore * 0.04);
 }
@@ -2214,8 +2111,7 @@ function initSnake() {
     snakeCanvas.width = 300; snakeCanvas.height = 300;
     snake = [{x: 140, y: 140}, {x: 120, y: 140}, {x: 100, y: 140}];
     sdx = 20; sdy = 0; snextDx = 20; snextDy = 0;
-    fCollectedBoosts = []; 
-    snakeBoost = null; snakeBoostTimer = 0; snakeBoostLife = 0; 
+    fCollectedBoosts = []; snakeBoost = null; snakeBoostTimer = 0; snakeBoostLife = 0; 
     createSnakeFood(); startSnakeLoop();
 }
 
@@ -2233,60 +2129,27 @@ function spawnSnakeBoost() {
     const types = ['pepper', 'energy', 'flower', 'luck'];
     const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
     const type = types[Math.floor(Math.random() * types.length)];
-    let bx, by;
-    let valid = false;
-    while(!valid) {
-        bx = Math.floor(Math.random() * (snakeCanvas.width / 20)) * 20;
-        by = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20;
-        valid = !snake.some(s => s.x === bx && s.y === by) && (bx !== snakeFood.x || by !== snakeFood.y);
-    }
-    snakeBoost = { x: bx, y: by, type: type, icon: icons[type] };
-    snakeBoostLife = 5000; 
+    let bx, by; let valid = false;
+    while(!valid) { bx = Math.floor(Math.random() * (snakeCanvas.width / 20)) * 20; by = Math.floor(Math.random() * (snakeCanvas.height / 20)) * 20; valid = !snake.some(s => s.x === bx && s.y === by) && (bx !== snakeFood.x || by !== snakeFood.y); }
+    snakeBoost = { x: bx, y: by, type: type, icon: icons[type] }; snakeBoostLife = 5000; 
 }
 
 function drawSnake() {
     if(!snakeCtx || !snakeCanvas) return;
     snakeBoostTimer += mgSpeed;
-    if(snakeBoostTimer >= 40000) { 
-        spawnSnakeBoost();
-        snakeBoostTimer = 0;
-    }
-    if(snakeBoost) {
-        snakeBoostLife -= mgSpeed;
-        if(snakeBoostLife <= 0) snakeBoost = null;
-    }
+    if(snakeBoostTimer >= 40000) { spawnSnakeBoost(); snakeBoostTimer = 0; }
+    if(snakeBoost) { snakeBoostLife -= mgSpeed; if(snakeBoostLife <= 0) snakeBoost = null; }
     sdx = snextDx; sdy = snextDy;
     const head = {x: snake[0].x + sdx, y: snake[0].y + sdy};
     if (head.x < 0 || head.x >= snakeCanvas.width || head.y < 0 || head.y >= snakeCanvas.height || snake.some(s => s.x === head.x && s.y === head.y)) { finishMG(); return; }
     snake.unshift(head);
-    if(head.x === snakeFood.x && head.y === snakeFood.y) {
-        mgScore++; 
-        const scoreVal = document.getElementById("mgCurrentScore");
-        if(scoreVal) scoreVal.textContent = mgScore;
-        updateMissionProgress('mg_item_collect', 1);
-        createSnakeFood(); 
-        if(mgScore % 2 === 0 && mgSpeed > 60) { mgSpeed *= 0.97; startSnakeLoop(); }
-    } 
-    else if(snakeBoost && head.x === snakeBoost.x && head.y === snakeBoost.y) {
-        fCollectedBoosts.push({type: snakeBoost.type, icon: snakeBoost.icon});
-        updateMgLiveBoostsVisual(); 
-        updateMissionProgress('mg_boost_collect', 1);
-        playClickSound();
-        snakeBoost = null;
-    }
+    if(head.x === snakeFood.x && head.y === snakeFood.y) { mgScore++; const scoreVal = document.getElementById("mgCurrentScore"); if(scoreVal) scoreVal.textContent = mgScore; updateMissionProgress('mg_item_collect', 1); createSnakeFood(); if(mgScore % 2 === 0 && mgSpeed > 60) { mgSpeed *= 0.97; startSnakeLoop(); } } 
+    else if(snakeBoost && head.x === snakeBoost.x && head.y === snakeBoost.y) { fCollectedBoosts.push({type: snakeBoost.type, icon: snakeBoost.icon}); updateMgLiveBoostsVisual(); updateMissionProgress('mg_boost_collect', 1); playClickSound(); snakeBoost = null; }
     else snake.pop();
     snakeCtx.fillStyle = "#000"; snakeCtx.fillRect(0, 0, 300, 300);
-    snakeCtx.fillStyle = "#ff4757"; snakeCtx.beginPath();
-    snakeCtx.arc(snakeFood.x + 10, snakeFood.y + 10, 8, 0, Math.PI * 2); snakeCtx.fill();
-    if(snakeBoost) {
-        snakeCtx.font = "16px Arial";
-        snakeCtx.textAlign = "center";
-        snakeCtx.fillText(snakeBoost.icon, snakeBoost.x + 10, snakeBoost.y + 15);
-    }
-    snake.forEach((p, i) => {
-        snakeCtx.fillStyle = i === 0 ? varProp('--accent') : "rgba(255,255,255,0.4)";
-        snakeCtx.fillRect(p.x, p.y, 18, 18);
-    });
+    snakeCtx.fillStyle = "#ff4757"; snakeCtx.beginPath(); snakeCtx.arc(snakeFood.x + 10, snakeFood.y + 10, 8, 0, Math.PI * 2); snakeCtx.fill();
+    if(snakeBoost) { snakeCtx.font = "16px Arial"; snakeCtx.textAlign = "center"; snakeCtx.fillText(snakeBoost.icon, snakeBoost.x + 10, snakeBoost.y + 15); }
+    snake.forEach((p, i) => { snakeCtx.fillStyle = i === 0 ? varProp('--accent') : "rgba(255,255,255,0.4)"; snakeCtx.fillRect(p.x, p.y, 18, 18); });
 }
 
 function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
@@ -2309,15 +2172,9 @@ function flightJump() { if(mgRunning && activeMG === 'flight') fVelocity = fJump
 
 function spawnFlightBoost(x, gapY, gapH) {
     if(Math.random() > 0.7) return;
-    const types = ['pepper', 'energy', 'flower', 'luck'];
-    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
+    const types = ['pepper', 'energy', 'flower', 'luck']; const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀' };
     const type = types[Math.floor(Math.random() * types.length)];
-    fBoosts.push({
-        x: x + 10,
-        y: gapY + (gapH / 2) - 10,
-        type: type,
-        icon: icons[type]
-    });
+    fBoosts.push({ x: x + 10, y: gapY + (gapH / 2) - 10, type: type, icon: icons[type] });
 }
 
 function drawFlight() {
@@ -2325,249 +2182,93 @@ function drawFlight() {
     fVelocity += fGravity; fBeeY += fVelocity;
     if(fBeeY < 0 || fBeeY > 285) { finishMG(); return; }
     if(fPipes.length === 0 || fPipes[fPipes.length-1].x < 150) {
-        let gap = 110; let topH = Math.random() * (180 - gap) + 20;
-        let newX = 350;
+        let gap = 110; let topH = Math.random() * (180 - gap) + 20; let newX = 350;
         fPipes.push({x: newX, topH: topH, gap: gap, passed: false, boostSpawned: false});
-        if(mgScore > 0 && mgScore % 50 === 0 && !fPipes[fPipes.length-1].boostSpawned) {
-             spawnFlightBoost(newX, topH, gap);
-             fPipes[fPipes.length-1].boostSpawned = true;
-        }
+        if(mgScore > 0 && mgScore % 50 === 0 && !fPipes[fPipes.length-1].boostSpawned) { spawnFlightBoost(newX, topH, gap); fPipes[fPipes.length-1].boostSpawned = true; }
     }
     flightCtx.fillStyle = "#000"; flightCtx.fillRect(0, 0, 300, 300);
-    if(beeSprite.complete) {
-        flightCtx.drawImage(beeSprite, 40, fBeeY, 25, 25);
-    }
+    if(beeSprite.complete) { flightCtx.drawImage(beeSprite, 40, fBeeY, 25, 25); }
     fPipes.forEach((p, i) => {
         p.x -= 3; flightCtx.fillStyle = "rgba(255,255,255,0.2)";
         flightCtx.fillRect(p.x, 0, 40, p.topH); flightCtx.fillRect(p.x, p.topH + p.gap, 40, 300);
         if(p.x < 65 && p.x + 40 > 40) if(fBeeY < p.topH || fBeeY + 20 > p.topH + p.gap) { finishMG(); return; }
-        if(!p.passed && p.x < 40) { 
-            p.passed = true; mgScore++; 
-            updateMissionProgress('mg_item_collect', 1); 
-            const scoreVal = document.getElementById("mgCurrentScore");
-            if(scoreVal) scoreVal.textContent = mgScore; 
-        }
+        if(!p.passed && p.x < 40) { p.passed = true; mgScore++; updateMissionProgress('mg_item_collect', 1); const scoreVal = document.getElementById("mgCurrentScore"); if(scoreVal) scoreVal.textContent = mgScore; }
     });
     fBoosts.forEach((b, i) => {
-        b.x -= 3;
-        flightCtx.font = "20px Arial";
-        flightCtx.fillText(b.icon, b.x, b.y + 15);
-        if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) {
-            fCollectedBoosts.push(b); 
-            updateMgLiveBoostsVisual(); 
-            updateMissionProgress('mg_boost_collect', 1);
-            playClickSound();
-            fBoosts.splice(i, 1);
-        }
+        b.x -= 3; flightCtx.font = "20px Arial"; flightCtx.fillText(b.icon, b.x, b.y + 15);
+        if(b.x < 65 && b.x + 20 > 40 && fBeeY < b.y + 20 && fBeeY + 20 > b.y) { fCollectedBoosts.push(b); updateMgLiveBoostsVisual(); updateMissionProgress('mg_boost_collect', 1); playClickSound(); fBoosts.splice(i, 1); }
     });
-    fPipes = fPipes.filter(p => p.x > -50);
-    fBoosts = fBoosts.filter(b => b.x > -50);
+    fPipes = fPipes.filter(p => p.x > -50); fBoosts = fBoosts.filter(b => b.x > -50);
 }
 
 function finishMG() {
-    mgRunning = false; clearInterval(mgInterval);
-    if(dGameTimer) clearInterval(dGameTimer);
-
-    if(mgScore > (records[activeMG] || 0)) { 
-        records[activeMG] = mgScore; 
-        localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); 
-        updateRecordsUI(); 
-    }
-    
-    if(activeMG === 'defender') {
-        defenderProgress.lastPlayed = Date.now();
-        executeSave();
-    }
-    
+    mgRunning = false; clearInterval(mgInterval); if(dGameTimer) clearInterval(dGameTimer);
+    if(mgScore > (records[activeMG] || 0)) { records[activeMG] = mgScore; localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); updateRecordsUI(); }
+    if(activeMG === 'defender') { defenderProgress.lastPlayed = Date.now(); executeSave(); }
     updateMissionProgress('mg_session_finished', 1);
-    
-    let multiplier = 50; 
-    if(activeMG === 'flight') multiplier = 120; 
-    if(activeMG === 'rain') multiplier = 180; 
-    if(activeMG === 'defender') multiplier = 150; 
-    
-    let hGain = mgScore * multiplier * (1 + level * 0.1);
-    let xGain = hGain * 0.20; 
-    
-    const scoreVal = document.getElementById("mgResultScore");
-    if(scoreVal) scoreVal.textContent = mgScore;
-    const rewardVal = document.getElementById("mgResultReward");
-    rewardVal.innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
-    
+    let multiplier = 50; if(activeMG === 'flight') multiplier = 120; if(activeMG === 'rain') multiplier = 180; if(activeMG === 'defender') multiplier = 150; 
+    let hGain = mgScore * multiplier * (1 + level * 0.1); let xGain = hGain * 0.20; 
+    const scoreVal = document.getElementById("mgResultScore"); if(scoreVal) scoreVal.textContent = mgScore;
+    const rewardVal = document.getElementById("mgResultReward"); rewardVal.innerHTML = `+${formatNum(hGain)} 🍯 | +${formatNum(xGain)} XP`;
     const boostDisplay = document.getElementById("mgResultBoosts");
-    if(boostDisplay) {
-        if(fCollectedBoosts.length > 0) {
-            let icons = fCollectedBoosts.map(b => b.icon).join(' ');
-            boostDisplay.innerHTML = `BOOSTS COLETADOS: ${icons} (30s cada)`;
-        } else {
-            boostDisplay.innerHTML = "";
-        }
-    }
-
-    const resScreen = document.getElementById("mgResultScreen");
-    if(resScreen) resScreen.style.display = "flex";
+    if(boostDisplay) { if(fCollectedBoosts.length > 0) { let icons = fCollectedBoosts.map(b => b.icon).join(' '); boostDisplay.innerHTML = `BOOSTS COLETADOS: ${icons} (30s cada)`; } else { boostDisplay.innerHTML = ""; } }
+    const resScreen = document.getElementById("mgResultScreen"); if(resScreen) resScreen.style.display = "flex";
     activeMGData = { hGain, xGain, boosts: [...fCollectedBoosts] };
 }
 
 let activeMGData = null;
 
 function closeMgResult() { 
-    if(activeMGData) {
-        honey = validateNum(honey + activeMGData.hGain); 
-        addXP(activeMGData.xGain);
-        activeMGData.boosts.forEach(b => {
-            activeBoosts[b.type] += 300; 
-        });
-        updateUI(); 
-        executeSave();
-        activeMGData = null;
-    }
-    const overlay = document.getElementById("minigameOverlay");
-    if(overlay) overlay.style.display = "none"; 
+    if(activeMGData) { honey = validateNum(honey + activeMGData.hGain); addXP(activeMGData.xGain); activeMGData.boosts.forEach(b => { activeBoosts[b.type] += 300; }); updateUI(); executeSave(); activeMGData = null; }
+    const overlay = document.getElementById("minigameOverlay"); if(overlay) overlay.style.display = "none"; 
 }
 
 function updateRecordsUI() {
-    const rainR = document.getElementById("rainRecordDisplay");
-    const snakeR = document.getElementById("snakeRecordDisplay");
-    const flightR = document.getElementById("flightRecordDisplay");
-    const defL = document.getElementById("defenderLevelDisplay");
-    if(rainR) rainR.textContent = records.rain || 0;
-    if(snakeR) snakeR.textContent = records.snake || 0;
-    if(flightR) flightR.textContent = records.flight || 0;
-    if(defL) defL.textContent = defenderProgress.level || 1;
+    const rainR = document.getElementById("rainRecordDisplay"); const snakeR = document.getElementById("snakeRecordDisplay"); const flightR = document.getElementById("flightRecordDisplay"); const defL = document.getElementById("defenderLevelDisplay");
+    if(rainR) rainR.textContent = records.rain || 0; if(snakeR) snakeR.textContent = records.snake || 0; if(flightR) flightR.textContent = records.flight || 0; if(defL) defL.textContent = defenderProgress.level || 1;
 }
 
 function exitMinigame() { 
-    clearInterval(mgInterval); mgRunning = false; 
-    if(dGameTimer) clearInterval(dGameTimer);
-    const overlay = document.getElementById("minigameOverlay");
-    if(overlay) overlay.style.display = "none"; 
+    clearInterval(mgInterval); mgRunning = false; if(dGameTimer) clearInterval(dGameTimer);
+    const overlay = document.getElementById("minigameOverlay"); if(overlay) overlay.style.display = "none"; 
 }
 
 function updateVolume(type) {
     tryPlayMusic();
-    if(type === 'music') { 
-        const musicIn = document.getElementById('musicVol');
-        if(musicIn) {
-            audioSettings.music = musicIn.value; 
-            const label = document.getElementById('musicVolLabel');
-            if(label) label.textContent = audioSettings.music + '%'; 
-            soundMusic.volume = audioSettings.music / 100; 
-        }
-    } else if(type === 'click') { 
-        const clickIn = document.getElementById('clickVol');
-        if(clickIn) {
-            audioSettings.click = clickIn.value; 
-            const label = document.getElementById('clickVolLabel');
-            if(label) label.textContent = audioSettings.click + '%'; 
-            soundClick.volume = audioSettings.click / 100; 
-        }
-    } else if(type === 'lvlUp') {
-        const lvlIn = document.getElementById('lvlUpVol');
-        if(lvlIn) {
-            audioSettings.lvlUp = lvlIn.value;
-            const label = document.getElementById('lvlUpVolLabel');
-            if(label) label.textContent = audioSettings.lvlUp + '%';
-            soundLvlUp.volume = audioSettings.lvlUp / 100;
-        }
-    }
+    if(type === 'music') { const musicIn = document.getElementById('musicVol'); if(musicIn) { audioSettings.music = musicIn.value; const label = document.getElementById('musicVolLabel'); if(label) label.textContent = audioSettings.music + '%'; soundMusic.volume = audioSettings.music / 100; } }
+    else if(type === 'click') { const clickIn = document.getElementById('clickVol'); if(clickIn) { audioSettings.click = clickIn.value; const label = document.getElementById('clickVolLabel'); if(label) label.textContent = audioSettings.click + '%'; soundClick.volume = audioSettings.click / 100; } }
+    else if(type === 'lvlUp') { const lvlIn = document.getElementById('lvlUpVol'); if(lvlIn) { audioSettings.lvlUp = lvlIn.value; const label = document.getElementById('lvlUpVolLabel'); if(label) label.textContent = audioSettings.lvlUp + '%'; soundLvlUp.volume = audioSettings.lvlUp / 100; } }
     localStorage.setItem(AUDIO_KEY, JSON.stringify(audioSettings));
 }
 
 function applyAudioSettings() {
-    soundMusic.volume = (audioSettings.music || 50) / 100; 
-    soundClick.volume = (audioSettings.click || 80) / 100; 
-    soundLvlUp.volume = (audioSettings.lvlUp || 100) / 100;
-    
-    const musicIn = document.getElementById('musicVol');
-    const musicLab = document.getElementById('musicVolLabel');
-    if(musicIn) musicIn.value = audioSettings.music; 
-    if(musicLab) musicLab.textContent = audioSettings.music + '%'; 
-    
-    const clickIn = document.getElementById('clickVol');
-    const clickLab = document.getElementById('clickVolLabel');
-    if(clickIn) clickIn.value = audioSettings.click; 
-    if(clickLab) clickLab.textContent = audioSettings.click + '%'; 
-    
-    const lvlIn = document.getElementById('lvlUpVol');
-    const lvlLab = document.getElementById('lvlUpVolLabel');
-    if(lvlIn) lvlIn.value = audioSettings.lvlUp || 100;
-    if(lvlLab) lvlLab.textContent = (audioSettings.lvlUp || 100) + '%';
+    soundMusic.volume = (audioSettings.music || 50) / 100; soundClick.volume = (audioSettings.click || 80) / 100; soundLvlUp.volume = (audioSettings.lvlUp || 100) / 100;
+    const musicIn = document.getElementById('musicVol'); const musicLab = document.getElementById('musicVolLabel'); if(musicIn) musicIn.value = audioSettings.music; if(musicLab) musicLab.textContent = audioSettings.music + '%'; 
+    const clickIn = document.getElementById('clickVol'); const clickLab = document.getElementById('clickVolLabel'); if(clickIn) clickIn.value = audioSettings.click; if(clickLab) clickLab.textContent = audioSettings.click + '%'; 
+    const lvlIn = document.getElementById('lvlUpVol'); const lvlLab = document.getElementById('lvlUpVolLabel'); if(lvlIn) lvlIn.value = audioSettings.lvlUp || 100; if(lvlLab) lvlLab.textContent = (audioSettings.lvlUp || 100) + '%';
 }
 
-function tryPlayMusic() {
-    if(soundMusic.paused) soundMusic.play().then(() => { 
-        window.removeEventListener('click', tryPlayMusic); 
-        window.removeEventListener('touchstart', tryPlayMusic); 
-    }).catch(() => {});
-}
-
+function tryPlayMusic() { if(soundMusic.paused) soundMusic.play().then(() => { window.removeEventListener('click', tryPlayMusic); window.removeEventListener('touchstart', tryPlayMusic); }).catch(() => {}); }
 window.addEventListener('click', tryPlayMusic); window.addEventListener('touchstart', tryPlayMusic);
 
-function playClickSound() { 
-    soundClick.currentTime = 0; 
-    soundClick.play().catch(() => {}); 
-}
+function playClickSound() { soundClick.currentTime = 0; soundClick.play().catch(() => {}); }
 
-function checkFullscreenState() {
-    const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-    return !!isFS;
-}
-
-function requestFullscreen() {
-    const doc = window.document, docEl = doc.documentElement;
-    const request = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
-    
-    if (request && !checkFullscreenState()) {
-        request.call(docEl).catch(err => { 
-            console.warn("Fullscreen negado ou bloqueado:", err.message); 
-        });
-    }
-}
+function checkFullscreenState() { const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement; return !!isFS; }
+function requestFullscreen() { const doc = window.document, docEl = doc.documentElement; const request = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen; if (request && !checkFullscreenState()) { request.call(docEl).catch(err => { console.warn("Fullscreen negado ou bloqueado:", err.message); }); } }
 
 document.addEventListener('fullscreenchange', handleFSChange);
 document.addEventListener('webkitfullscreenchange', handleFSChange);
 document.addEventListener('mozfullscreenchange', handleFSChange);
 document.addEventListener('MSFullscreenChange', handleFSChange);
 
-function handleFSChange() {
-    if(!checkFullscreenState() && gameLoaded) {
-        console.log("Saiu do modo imersivo.");
-    }
-}
+function handleFSChange() { if(!checkFullscreenState() && gameLoaded) { console.log("Saiu do modo imersivo."); } }
 
 function returnToMain() {
-    closeModal('settingsModal'); 
-    if(autoProduceInterval) clearInterval(autoProduceInterval); 
-    if(gameTickInterval) clearInterval(gameTickInterval);
-    executeSave(); 
-    const loadingScreen = document.getElementById("loadingScreen");
-    const bar = document.getElementById("loadingBarFill");
-    const bee = document.getElementById("loadingBeeImg");
-    if(loadingScreen) loadingScreen.style.display = "flex";
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 8;
-        if(progress > 100) progress = 100;
-        if(bar) bar.style.width = progress + "%";
-        if(bee) bee.style.left = progress + "%";
-        if(progress === 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                if(loadingScreen) loadingScreen.style.display = "none";
-                const gameUI = document.getElementById('gameUI');
-                const startScreen = document.getElementById('startScreen');
-                if(gameUI) gameUI.style.opacity = '0';
-                setTimeout(() => { 
-                    if(gameUI) gameUI.style.display = 'none'; 
-                    if(startScreen) {
-                        startScreen.style.display = 'flex'; 
-                        startScreen.style.opacity = '1'; 
-                    }
-                    gameLoaded = false; 
-                }, 500);
-            }, 300);
-        }
+    closeModal('settingsModal'); if(autoProduceInterval) clearInterval(autoProduceInterval); if(gameTickInterval) clearInterval(gameTickInterval); executeSave(); 
+    const loadingScreen = document.getElementById("loadingScreen"); const bar = document.getElementById("loadingBarFill"); const bee = document.getElementById("loadingBeeImg"); if(loadingScreen) loadingScreen.style.display = "flex";
+    let progress = 0; const interval = setInterval(() => {
+        progress += Math.random() * 8; if(progress > 100) progress = 100; if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%";
+        if(progress === 100) { clearInterval(interval); setTimeout(() => { if(loadingScreen) loadingScreen.style.display = "none"; const gameUI = document.getElementById('gameUI'); const startScreen = document.getElementById('startScreen'); if(gameUI) gameUI.style.opacity = '0'; setTimeout(() => { if(gameUI) gameUI.style.display = 'none'; if(startScreen) { startScreen.style.display = 'flex'; startScreen.style.opacity = '1'; } gameLoaded = false; }, 500); }, 300); }
     }, 50);
 }
 
@@ -2578,46 +2279,17 @@ let lastNotifType = "fact";
 let notificationQueue = [];
 let isProcessingNotifs = false;
 
-function notify(a) {
-    notificationQueue.push({
-        n: a.n,
-        d: a.d ? a.d : ""
-    });
-    if (!isProcessingNotifs) {
-        processNextNotification();
-    }
-}
+function notify(a) { notificationQueue.push({ n: a.n, d: a.d ? a.d : "" }); if (!isProcessingNotifs) { processNextNotification(); } }
 
 function processNextNotification() {
-    if (notificationQueue.length === 0) {
-        isProcessingNotifs = false;
-        return;
-    }
-    isProcessingNotifs = true;
-    const currentNotif = notificationQueue.shift();
-    const container = document.getElementById("notifContainer");
-    if(!container) return;
-    container.innerHTML = "";
-    const div = document.createElement("div");
-    div.className = "popup";
-    div.textContent = `${currentNotif.n} ${currentNotif.d ? '(' + currentNotif.d + ')' : ''}`;
-    container.appendChild(div);
-    div.style.animation = "slideInNotif 8s ease-in-out forwards";
-    setTimeout(() => {
-        if(div) div.remove();
-        processNextNotification();
-    }, 8000);
+    if (notificationQueue.length === 0) { isProcessingNotifs = false; return; }
+    isProcessingNotifs = true; const currentNotif = notificationQueue.shift(); const container = document.getElementById("notifContainer"); if(!container) return;
+    container.innerHTML = ""; const div = document.createElement("div"); div.className = "popup"; div.textContent = `${currentNotif.n} ${currentNotif.d ? '(' + currentNotif.d + ')' : ''}`;
+    container.appendChild(div); div.style.animation = "slideInNotif 8s ease-in-out forwards";
+    setTimeout(() => { if(div) div.remove(); processNextNotification(); }, 8000);
 }
 
-function startDynamicNotifications() {
-    setInterval(() => {
-        const gameUI = document.getElementById('gameUI');
-        if (!gameLoaded || !gameUI || gameUI.style.opacity !== '1') return;
-        let msg = lastNotifType === "fact" ? gameTips[Math.floor(Math.random() * gameTips.length)] : "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)];
-        lastNotifType = lastNotifType === "fact" ? "tip" : "fact";
-        notify({n: msg});
-    }, 45000); 
-}
+function startDynamicNotifications() { setInterval(() => { const gameUI = document.getElementById('gameUI'); if (!gameLoaded || !gameUI || gameUI.style.opacity !== '1') return; let msg = lastNotifType === "fact" ? gameTips[Math.floor(Math.random() * gameTips.length)] : "🐝 " + beeFacts[Math.floor(Math.random() * beeFacts.length)]; lastNotifType = lastNotifType === "fact" ? "tip" : "fact"; notify({n: msg}); }, 45000); }
 
 const durations = [{label:"30s",t:300,m:1},{label:"1m",t:600,m:1.8},{label:"5m",t:3000,m:8},{label:"1h",t:36000,m:70},{label:"24h",t:864000,m:1200}];
 const specialDurations = [{label:"2m",t:1200,m:10}]; 
@@ -2640,28 +2312,14 @@ const missionTemplates = [
 ];
 
 function checkMissionReset() {
-    const now = new Date();
-    const resetHour = 22; 
-    let resetLimit = new Date();
-    resetLimit.setHours(resetHour, 0, 0, 0);
-    if (now.getHours() < resetHour) { resetLimit.setDate(resetLimit.getDate() - 1); }
-    if (lastMissionReset < resetLimit.getTime()) {
-        let forgottenHoney = 0; let forgottenXP = 0;
-        dailyMissions.forEach(m => { if (m.completed && !m.collected) { forgottenHoney += m.rewardHoney; forgottenXP += m.rewardXP; } });
-        if (forgottenHoney > 0) { pendingOfflineHoney += forgottenHoney; pendingOfflineXP += forgottenXP; }
-        generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); 
-    }
+    const now = new Date(); const resetHour = 22; let resetLimit = new Date(); resetLimit.setHours(resetHour, 0, 0, 0); if (now.getHours() < resetHour) { resetLimit.setDate(resetLimit.getDate() - 1); }
+    if (lastMissionReset < resetLimit.getTime()) { let forgottenHoney = 0; let forgottenXP = 0; dailyMissions.forEach(m => { if (m.completed && !m.collected) { forgottenHoney += m.rewardHoney; forgottenXP += m.rewardXP; } }); if (forgottenHoney > 0) { pendingOfflineHoney += forgottenHoney; pendingOfflineXP += forgottenXP; } generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); }
     else if (!dailyMissions || dailyMissions.length < 10) { generateDailyMissions(); lastMissionReset = now.getTime(); executeSave(); }
 }
 
 function generateDailyMissions() {
-    dailyMissions = []; 
-    const scaleFactor = Math.pow(level, 1.2);
-    const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
-    for(let i=0; i<10; i++) { 
-        const tmp = shuffled[i % shuffled.length]; 
-        dailyMissions.push(createSingleMission(tmp, scaleFactor)); 
-    }
+    dailyMissions = []; const scaleFactor = Math.pow(level, 1.2); const shuffled = [...missionTemplates].sort(() => 0.5 - Math.random());
+    for(let i=0; i<10; i++) { const tmp = shuffled[i % shuffled.length]; dailyMissions.push(createSingleMission(tmp, scaleFactor)); }
 }
 
 function createSingleMission(tmp, scaleFactor) {
@@ -2678,177 +2336,75 @@ function createSingleMission(tmp, scaleFactor) {
         case 'mg_boost_collect': target = Math.ceil(tmp.baseGoal); break;
         case 'mg_session_finished': target = Math.ceil(tmp.baseGoal); break;
     }
-    const logBase = Math.max(1, Math.log10(hPerClick * 100));
-    const rewardHoney = Math.max(target * (hPerClick * 2.5), 600) * tmp.rewardMult * logBase;
-    const rewardXP = (nextLevelXP * 0.12) * tmp.rewardMult;
-    
-    return { 
-        id: tmp.id + Date.now() + Math.random(), 
-        type: tmp.type, 
-        title: tmp.title, 
-        desc: tmp.desc.replace("{target}", formatNum(target)), 
-        target: target, 
-        progress: 0, 
-        completed: false, 
-        collected: false, 
-        rewardHoney: rewardHoney, 
-        rewardXP: rewardXP, 
-        rewardLabel: `${formatNum(rewardHoney)} 🍯 | ${formatNum(rewardXP)} XP` 
-    };
+    const logBase = Math.max(1, Math.log10(hPerClick * 100)); const rewardHoney = Math.max(target * (hPerClick * 2.5), 600) * tmp.rewardMult * logBase; const rewardXP = (nextLevelXP * 0.12) * tmp.rewardMult;
+    return { id: tmp.id + Date.now() + Math.random(), type: tmp.type, title: tmp.title, desc: tmp.desc.replace("{target}", formatNum(target)), target: target, progress: 0, completed: false, collected: false, rewardHoney: rewardHoney, rewardXP: rewardXP, rewardLabel: `${formatNum(rewardHoney)} 🍯 | ${formatNum(rewardXP)} XP` };
 }
 
 function updateMissionProgress(type, amt = 1) {
-    if (!gameLoaded) return; 
-    let changed = false;
-    dailyMissions.forEach(m => { 
-        if (m.type === type && !m.completed) { 
-            m.progress = validateNum(m.progress + amt); 
-            if (m.progress >= m.target) { 
-                m.progress = m.target; 
-                m.completed = true; 
-                notify({n: "Missão Realizada!", d: m.title}); 
-            } 
-            changed = true; 
-        } 
-    });
-    if (changed) { 
-        const modal = document.getElementById('missionsModal'); 
-        if (modal && modal.style.display === 'flex') renderMissions(); 
-        updateMissionAlertStatus(); 
-    }
+    if (!gameLoaded) return; let changed = false;
+    dailyMissions.forEach(m => { if (m.type === type && !m.completed) { m.progress = validateNum(m.progress + amt); if (m.progress >= m.target) { m.progress = m.target; m.completed = true; notify({n: "Missão Realizada!", d: m.title}); } changed = true; } });
+    if (changed) { const list = document.getElementById('missionsList'); if (list) renderMissions(); updateMissionAlertStatus(); }
 }
 
 function updateMissionAlertStatus() { 
-    const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected); 
-    const alertBtn = document.getElementById("btnMissionAlert"); 
-    if(!alertBtn) return; 
-    if (hasRewardsToClaim) alertBtn.classList.add("mission-alert"); 
-    else alertBtn.classList.remove("mission-alert"); 
+    const hasRewardsToClaim = dailyMissions.some(m => m.completed && !m.collected); const alertBtn = document.getElementById("btnMissionAlert"); if(!alertBtn) return; 
+    if (hasRewardsToClaim) alertBtn.classList.add("mission-alert"); else alertBtn.classList.remove("mission-alert"); 
 }
 
 function openRerollConfirmation(id) { pendingRerollId = id; openModal('rerollModal'); }
-
 const confirmRerollBtn = document.getElementById('btnConfirmReroll');
-if(confirmRerollBtn) {
-    confirmRerollBtn.onclick = () => {
-        if (pendingRerollId) {
-            const index = dailyMissions.findIndex(m => m.id === pendingRerollId);
-            if (index !== -1) {
-                const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)];
-                const scaleFactor = Math.pow(level, 1.2);
-                dailyMissions[index] = createSingleMission(randomTmp, scaleFactor);
-                renderMissions(); updateMissionAlertStatus(); executeSave(); closeModal('rerollModal'); pendingRerollId = null;
-            }
-        }
-    };
-}
+if(confirmRerollBtn) { confirmRerollBtn.onclick = () => { if (pendingRerollId) { const index = dailyMissions.findIndex(m => m.id === pendingRerollId); if (index !== -1) { const randomTmp = missionTemplates[Math.floor(Math.random() * missionTemplates.length)]; const scaleFactor = Math.pow(level, 1.2); dailyMissions[index] = createSingleMission(randomTmp, scaleFactor); renderMissions(); updateMissionAlertStatus(); executeSave(); closeModal('rerollModal'); pendingRerollId = null; } } }; }
 
 function collectMissionReward(id) {
     const m = dailyMissions.find(x => x.id === id);
-    if (m && m.completed && !m.collected) {
-        m.collected = true; 
-        honey = validateNum(honey + m.rewardHoney); 
-        addXP(m.rewardXP);
-        notify({n: "Recompensa Coletada!", d: m.rewardLabel});
-        const allCollected = dailyMissions.every(x => x.collected); 
-        if(allCollected && dailyMissions.length >= 10) triggerCrownBonus();
-        renderMissions(); 
-        updateMissionAlertStatus(); 
-        updateUI(); 
-        executeSave();
-    }
+    if (m && m.completed && !m.collected) { m.collected = true; honey = validateNum(honey + m.rewardHoney); addXP(m.rewardXP); notify({n: "Recompensa Coletada!", d: m.rewardLabel}); const allCollected = dailyMissions.every(x => x.collected); if(allCollected && dailyMissions.length >= 10) triggerCrownBonus(); renderMissions(); updateMissionAlertStatus(); updateUI(); executeSave(); }
 }
 
 function triggerCrownBonus() { activeBoosts.crown = 36000; notify({n: "MESTRE DA COLMEIA! 👑", d: "Bônus de 8x ATIVO por 1h!"}); }
 
-function getMissionIcon(type) {
-    switch(type) {
-        case 'clicks': return '🐝'; case 'honey_gain': return '🍯'; case 'target_clicks': return '🎯'; case 'buy_upgrade': return '🚀'; case 'xp_gain': return '✨'; case 'play_time': return '⏳'; case 'mg_item_collect': return '🍎'; case 'mg_boost_collect': return '🥤'; case 'mg_kills': return '🔫'; case 'mg_session_finished': return '🎮'; default: return '📝';
-    }
-}
+function getMissionIcon(type) { switch(type) { case 'clicks': return '🐝'; case 'honey_gain': return '🍯'; case 'target_clicks': return '🎯'; case 'buy_upgrade': return '🚀'; case 'xp_gain': return '✨'; case 'play_time': return '⏳'; case 'mg_item_collect': return '🍎'; case 'mg_boost_collect': return '🥤'; case 'mg_kills': return '🔫'; case 'mg_session_finished': return '🎮'; default: return '📝'; } }
 
 function renderMissions() {
     const list = document.getElementById("missionsList"); if(!list) return; list.innerHTML = "";
     const sortedMissions = [...dailyMissions].sort((a, b) => { const scoreA = (a.completed && !a.collected) ? 0 : (!a.completed ? 1 : 2); const scoreB = (b.completed && !b.collected) ? 0 : (!a.completed ? 1 : 2); return scoreA - scoreB; });
     sortedMissions.forEach(m => {
         const perc = Math.min(100, (m.progress / m.target) * 100); const icon = m.collected ? '🎁' : (m.completed ? '✅' : getMissionIcon(m.type));
-        let actionButton = '';
-        if (m.completed && !m.collected) { actionButton = `<button onclick="collectMissionReward('${m.id}')" style="margin-top:8px; padding:8px; background:var(--xp-bar); font-size:12px; height:auto; box-shadow:0 3px 0 #2e7d32;">COLETAR RECOMPENSA</button>`; }
+        let actionButton = ''; if (m.completed && !m.collected) { actionButton = `<button onclick="collectMissionReward('${m.id}')" style="margin-top:8px; padding:8px; background:var(--xp-bar); font-size:12px; height:auto; box-shadow:0 3px 0 #2e7d32;">COLETAR RECOMPENSA</button>`; }
         else if (!m.completed) { actionButton = `<div class="mission-reroll-btn" onclick="openRerollConfirmation('${m.id}')" title="Trocar Missão">🔄</div>`; }
         list.innerHTML += `<div class="mission-card ${m.completed ? 'completed' : ''} ${m.collected ? 'collected' : ''}"><div style="font-size: 24px">${icon}</div><div style="flex: 1"><div style="font-weight: 900; font-size: 14px; color: inherit">${m.title}</div><div style="font-size: 11px; color: inherit; opacity: 0.6;">${m.desc}</div><div class="mission-reward-tag">Prêmio: ${m.rewardLabel}</div><div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${perc}%"></div></div>${actionButton}</div><div style="font-size: 10px; font-weight: 800; min-width: 50px; text-align: right; padding-right: 5px;">${formatNum(m.progress)}/${formatNum(m.target)}</div></div>`;
     });
 }
 
-function formatNum(n) {
-    n = validateNum(n); if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return parseFloat(n.toFixed(2)).toString();
-}
-
+function formatNum(n) { n = validateNum(n); if (n >= 1e12) return (n/1e12).toFixed(2) + "T"; if (n >= 1e9) return (n/1e9).toFixed(2) + "B"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1000) return (n/1000).toFixed(1) + "K"; return parseFloat(n.toFixed(2)).toString(); }
 function formatTime(t) { let s = Math.ceil(t/10); if(s < 60) return s + "s"; let m = Math.floor(s/60); if(m < 60) return m + "m"; return Math.floor(m/60) + "h"; }
 
 function getMPSBase() { 
     if(!autoUnlocked) return 0; 
     let base = (talents.arquiteto_mps * 2.5) + (level * 1.5);
-    if(hiveOwned.middle) base *= 1.5;
-    if(hiveOwned.top) base *= 2.0;
-    if(activeBoosts.jelly > 0) base *= 2; 
+    if(hiveOwned.middle) base *= 1.5; if(hiveOwned.top) base *= 2.0; if(activeBoosts.jelly > 0) base *= 2; 
     return base; 
 }
 
-function getSkinBonus() { 
-    let bonus = 1.0;
-    if(equippedCosmetic === "NoelBee") bonus = 1.10;
-    return bonus;
-}
+function getSkinBonus() { let bonus = 1.0; if(equippedCosmetic === "NoelBee") bonus = 1.10; return bonus; }
 
 function getGlobalBonus() {
     let r = achievements.filter(a => a.u && a.r === 'rare').length, e = achievements.filter(a => a.u && a.r === 'epic').length;
     let b = (1 + (r * 0.01) + (e * 0.05)) * getSkinBonus(); 
-    if(activeBoosts.pepper > 0) b += 1; 
-    if(activeBoosts.energy > 0) b += 0.5; 
-    if(activeBoosts.crown > 0) b *= 8; 
-    let biomesActive = new Set();
-    expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
-    if(biomesActive.size >= 2) b += (biomesActive.size * 0.05); 
-    
-    // Adiciona o bônus do Favor Real do Velho Dudu
-    b *= (1 + favorReal);
-
-    return b;
+    if(activeBoosts.pepper > 0) b += 1; if(activeBoosts.energy > 0) b += 0.5; if(activeBoosts.crown > 0) b *= 8; 
+    let biomesActive = new Set(); expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
+    if(biomesActive.size >= 2) b += (biomesActive.size * 0.05); b *= (1 + favorReal); return b;
 }
 
 function updateUI() {
-    honey = validateNum(honey); 
-    crowns = validateNum(crowns);
-    const honeyEl = document.getElementById("honey"); 
-    const crownEl = document.getElementById("crowns");
-    const mpsEl = document.getElementById("mps"); 
-    const lvlEl = document.getElementById("lvlDisplay"); 
-    const xpEl = document.getElementById("xpDisplay"); 
-    const xpFill = document.getElementById("xpFill");
-    
-    if(honeyEl) honeyEl.textContent = formatNum(honey); 
-    if(crownEl) crownEl.textContent = formatNum(crowns);
-    if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); 
-    if(lvlEl) lvlEl.textContent = level; 
-    if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; 
-    if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
-    
+    honey = validateNum(honey); crowns = validateNum(crowns);
+    const honeyEl = document.getElementById("honey"); const crownEl = document.getElementById("crowns"); const mpsEl = document.getElementById("mps"); const lvlEl = document.getElementById("lvlDisplay"); const xpEl = document.getElementById("xpDisplay"); const xpFill = document.getElementById("xpFill");
+    if(honeyEl) honeyEl.textContent = formatNum(honey); if(crownEl) crownEl.textContent = formatNum(crowns); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lvlEl) lvlEl.textContent = level; if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     hPerClick = 0.2 + (talents.operario_forca * 0.5) + (level * 0.05);
-
-    buildShop(); renderActiveBoosts(); updateRecordsUI(); renderTalentTree();
-    updateDuduUI();
-
+    buildShop(); renderActiveBoosts(); updateRecordsUI(); renderTalentTree(); updateDuduUI();
     ['Bee', 'NoelBee', 'SkullBee', 'FairyBee'].forEach(id => {
         const btn = document.getElementById(`btn_cos_${id}`); if(!btn) return;
         if(equippedCosmetic === id) { btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>EQUIPADO</b>`; btn.style.background = "var(--xp-bar)"; btn.style.color = "white"; const mainBee = document.getElementById("mainBeeSprite"); const headerBee = document.getElementById("miniBeeHeader"); if(mainBee) mainBee.src = `${id}.png`; if(headerBee) headerBee.src = `${id}.png`; }
-        else { 
-            let label = "Comum";
-            if(id === "NoelBee") label = "Noel (+10%)";
-            else if(id === "SkullBee") label = "Skull (+5% Crit)";
-            else if(id === "FairyBee") label = "Fairy (+6% Luck)";
-            btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; 
-            btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; 
-        }
+        else { let label = id === "NoelBee" ? "Noel (+10%)" : (id === "SkullBee" ? "Skull (+5% Crit)" : (id === "FairyBee" ? "Fairy (+6% Luck)" : "Comum")); btn.innerHTML = `<img src="${id}.png" class="skin-preview"><b>${label}</b>`; btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
     const clickZone = document.getElementById("clickZone");
     ['BgPadrao', 'BgCristmas', 'BgRaining', 'BgNight', 'BgLake'].forEach(id => {
@@ -2857,442 +2413,143 @@ function updateUI() {
         else { btn.style.background = "rgba(255,255,255,0.05)"; btn.style.color = "inherit"; }
     });
     checkUpdateStatus(); updateVersionDisplay(); renderHangars();
-    const hivePane = document.getElementById("hive-stats");
-    if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
+    const hivePane = document.getElementById("hive-stats"); if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
 }
 
 function updateDuduUI() {
-    const favorEl = document.getElementById("favorRealDisplay");
-    const estimateEl = document.getElementById("duduEstimate");
-    const speechEl = document.getElementById("duduSpeech");
-    const btnSell = document.getElementById("btnSellDudu");
-
+    const favorEl = document.getElementById("favorRealDisplay"); const estimateEl = document.getElementById("duduEstimate"); const speechEl = document.getElementById("duduSpeech"); const btnSell = document.getElementById("btnSellDudu");
     if(favorEl) favorEl.textContent = (favorReal * 100).toFixed(2) + "%";
-    
-    let estimate = (honey / (Math.max(1000, totalHoneyEver) * 1.5)) * 0.20; 
-    if(estimateEl) estimateEl.textContent = `Estimativa: +${(estimate * 100).toFixed(2)}% de Favor`;
-    
+    let estimate = (honey / (Math.max(1000, totalHoneyEver) * 1.5)) * 0.20; if(estimateEl) estimateEl.textContent = `Estimativa: +${(estimate * 100).toFixed(2)}% de Favor`;
     if(btnSell) btnSell.disabled = honey < 500;
-
-    if(speechEl) {
-        if(honey < 500) speechEl.textContent = "Volte quando tiver pelo menos 500 potes de mel!";
-        else if (honey > totalHoneyEver * 0.1) speechEl.textContent = "Uau! Isso é muito mel. O rei vai adorar!";
-        else speechEl.textContent = "Olá jovenzinho! Quer trocar esse mel por influência real?";
-    }
+    if(speechEl) { if(honey < 500) speechEl.textContent = "Volte quando tiver pelo menos 500 potes de mel!"; else if (honey > totalHoneyEver * 0.1) speechEl.textContent = "Uau! Isso é muito mel. O rei vai adorar!"; else speechEl.textContent = "Olá jovenzinho! Quer trocar esse mel por influência real?"; }
 }
 
 function sellToDudu() {
-    if(honey < 500) return;
-    
-    let gain = (honey / (Math.max(1000, totalHoneyEver) * 1.5)) * 0.20;
-    favorReal += gain;
-    
-    notify({n: "VENDA CONCLUÍDA! 👴", d: `+${(gain*100).toFixed(2)}% de Favor Real`});
-    
-    honey = 0; 
-    playClickSound();
-    updateUI();
-    executeSave();
+    if(honey < 500) return; let gain = (honey / (Math.max(1000, totalHoneyEver) * 1.5)) * 0.20; favorReal += gain; notify({n: "VENDA CONCLUÍDA! 👴", d: `+${(gain*100).toFixed(2)}% de Favor Real`});
+    honey = 0; playClickSound(); updateUI(); executeSave();
 }
 
 function renderTalentTree() {
-    const ptsDisplay = document.getElementById("talentPointsDisplay");
-    if(ptsDisplay) ptsDisplay.textContent = `PONTOS DISPONÍVEIS: ${talentPoints}`;
-
-    const treeData = [
-        { tree: 'tree_clicks', key: 'operario_forca', name: 'Força Operária', icon: '💪', desc: '+0.5 Mel por Click' },
-        { tree: 'tree_clicks', key: 'operario_critico', name: 'Foco Aguçado', icon: '🎯', desc: '+2% Chance Alvo Crítico' },
-        { tree: 'tree_auto', key: 'arquiteto_mps', name: 'Engenharia de Mel', icon: '⚙️', desc: '+2.5 MPS Passivo Base' },
-        { tree: 'tree_auto', key: 'arquiteto_offline', name: 'Estoques Noturnos', icon: '🌙', desc: '+5% Ganho Offline' },
-        { tree: 'tree_luck', key: 'alquimista_sorte', name: 'Destino Real', icon: '🍀', desc: '+1% Sorte Real' },
-        { tree: 'tree_luck', key: 'alquimista_boost', name: 'Essência Duradoura', icon: '🧪', desc: '+10% Duração Boosts' }
-    ];
-
+    const ptsDisplay = document.getElementById("talentPointsDisplay"); if(ptsDisplay) ptsDisplay.textContent = `PONTOS DISPONÍVEIS: ${talentPoints}`;
+    const treeData = [ { tree: 'tree_clicks', key: 'operario_forca', name: 'Força Operária', icon: '💪', desc: '+0.5 Mel por Click' }, { tree: 'tree_clicks', key: 'operario_critico', name: 'Foco Aguçado', icon: '🎯', desc: '+2% Chance Alvo Crítico' }, { tree: 'tree_auto', key: 'arquiteto_mps', name: 'Engenharia de Mel', icon: '⚙️', desc: '+2.5 MPS Passivo Base' }, { tree: 'tree_auto', key: 'arquiteto_offline', name: 'Estoques Noturnos', icon: '🌙', desc: '+5% Ganho Offline' }, { tree: 'tree_luck', key: 'alquimista_sorte', name: 'Destino Real', icon: '🍀', desc: '+1% Sorte Real' }, { tree: 'tree_luck', key: 'alquimista_boost', name: 'Essência Duradoura', icon: '🧪', desc: '+10% Duração Boosts' } ];
     treeData.forEach(t => {
-        const cont = document.getElementById(t.tree);
-        if(!cont) return;
+        const cont = document.getElementById(t.tree); if(!cont) return;
         if(!document.getElementById(`talent_${t.key}`)) {
-            cont.innerHTML += `
-                <div class="talent-card" id="talent_${t.key}">
-                    <div class="talent-icon">${t.icon}</div>
-                    <div class="talent-info">
-                        <div class="talent-name">${t.name}</div>
-                        <div class="talent-desc">${t.desc}</div>
-                    </div>
-                    <div class="talent-points" id="val_${t.key}">0/20</div>
-                    <button class="talent-btn" onclick="upgradeTalent('${t.key}')">+</button>
-                </div>
-            `;
+            cont.innerHTML += `<div class="talent-card" id="talent_${t.key}"><div class="talent-icon">${t.icon}</div><div class="talent-info"><div class="talent-name">${t.name}</div><div class="talent-desc">${t.desc}</div></div><div class="talent-points" id="val_${t.key}">0/20</div><button class="talent-btn" onclick="upgradeTalent('${t.key}')">+</button></div>`;
         }
-        const valEl = document.getElementById(`val_${t.key}`);
-        if(valEl) valEl.textContent = `${talents[t.key]}/20`;
-        const btn = document.querySelector(`#talent_${t.key} .talent-btn`);
-        if(btn) btn.disabled = (talentPoints <= 0 || talents[t.key] >= 20);
+        const valEl = document.getElementById(`val_${t.key}`); if(valEl) valEl.textContent = `${talents[t.key]}/20`;
+        const btn = document.querySelector(`#talent_${t.key} .talent-btn`); if(btn) btn.disabled = (talentPoints <= 0 || talents[t.key] >= 20);
     });
 }
 
-function upgradeTalent(key) {
-    if(talentPoints > 0 && talents[key] < 20) {
-        talentPoints--;
-        talents[key]++;
-        playClickSound();
-        updateMissionProgress('buy_upgrade', 1);
-        updateUI();
-        executeSave();
-    }
-}
+function upgradeTalent(key) { if(talentPoints > 0 && talents[key] < 20) { talentPoints--; talents[key]++; playClickSound(); updateMissionProgress('buy_upgrade', 1); updateUI(); executeSave(); } }
 
 function resetTalents() {
-    const cost = honey * 0.1;
-    if(confirm(`Deseja resetar todos os talentos? Custo: ${formatNum(cost)} 🍯`)) {
-        honey -= cost;
-        talentPoints = level; 
-        for(let k in talents) talents[k] = 0;
-        document.getElementById("tree_clicks").innerHTML = "";
-        document.getElementById("tree_auto").innerHTML = "";
-        document.getElementById("tree_luck").innerHTML = "";
-        updateUI();
-        executeSave();
-        notify({n: "Árvore Resetada!", d: "Distribua seus pontos novamente."});
-    }
+    const cost = honey * 0.1; if(confirm(`Deseja resetar todos os talentos? Custo: ${formatNum(cost)} 🍯`)) { honey -= cost; talentPoints = level; for(let k in talents) talents[k] = 0; document.getElementById("tree_clicks").innerHTML = ""; document.getElementById("tree_auto").innerHTML = ""; document.getElementById("tree_luck").innerHTML = ""; updateUI(); executeSave(); notify({n: "Árvore Resetada!", d: "Distribua seus pontos novamente."}); }
 }
 
-function buyHangar(id) {
-    const cost = HANGAR_COSTS[id];
-    if(honey >= cost) {
-        honey -= cost;
-        hangarsCount = id + 1;
-        notify({n: "HANGAR ADQUIRIDO! 🛸", d: `Espaço #${id+1} liberado.`});
-        updateUI();
-        executeSave();
-    }
-}
+function buyHangar(id) { const cost = HANGAR_COSTS[id]; if(honey >= cost) { honey -= cost; hangarsCount = id + 1; notify({n: "HANGAR ADQUIRIDO! 🛸", d: `Espaço #${id+1} liberado.`}); updateUI(); executeSave(); } }
 
-function selectBiome(hangarId, biomeId) { 
-    if(expeditions[hangarId].active || expeditions[hangarId].finished) return; 
-    expeditions[hangarId].biome = biomeId;
-    renderHangars();
-}
+function selectBiome(hangarId, biomeId) { if(expeditions[hangarId].active || expeditions[hangarId].finished) return; expeditions[hangarId].biome = biomeId; renderHangars(); }
 
 function handleExpEvent(hangarId) {
-    const exp = expeditions[hangarId];
-    if(!exp.active || exp.eventChance === 0) return;
+    const exp = expeditions[hangarId]; if(!exp.active || exp.eventChance === 0) return;
     if(exp.eventChance === 1) { notify({n: "VESPAS AFASTADAS! 🛡️", d: "A missão continua segura!"}); exp.eventChance = 0; }
     else if(exp.eventChance === 2) { exp.startTime -= 30000; notify({n: "VENTO FAVORÁVEL! 🌬️", d: "Redução de 30s aplicada"}); exp.eventChance = 0; }
     renderHangars();
 }
 
-function onSliderChange(hangarId, newVal) {
-    expeditions[hangarId].selectedPerc = parseInt(newVal);
-    const label = document.getElementById(`expPercLabel_${hangarId}`);
-    if(label) label.textContent = newVal + '%';
-    recalculateHangarConstraints();
-}
+function onSliderChange(hangarId, newVal) { expeditions[hangarId].selectedPerc = parseInt(newVal); const label = document.getElementById(`expPercLabel_${hangarId}`); if(label) label.textContent = newVal + '%'; recalculateHangarConstraints(); }
 
 function recalculateHangarConstraints() {
     let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
     const PERCENT_LIMIT = 95;
-
     for(let i=0; i<4; i++) {
         const exp = expeditions[i];
         if(!exp.active && !exp.finished && i < hangarsCount) {
             const slider = document.getElementById(`expSlider_${i}`);
             if(slider) {
-                let availableForThis = Math.max(0, PERCENT_LIMIT - currentOccupiedTotal);
-                slider.max = availableForThis;
-                if(parseInt(slider.value) > availableForThis) {
-                    slider.value = availableForThis;
-                    exp.selectedPerc = availableForThis;
-                    const label = document.getElementById(`expPercLabel_${i}`);
-                    if(label) label.textContent = availableForThis + '%';
-                }
+                let availableForThis = Math.max(0, PERCENT_LIMIT - currentOccupiedTotal); slider.max = availableForThis;
+                if(parseInt(slider.value) > availableForThis) { slider.value = availableForThis; exp.selectedPerc = availableForThis; const label = document.getElementById(`expPercLabel_${i}`); if(label) label.textContent = availableForThis + '%'; }
             }
         }
     }
 }
 
 function startExpedition(hangarId) {
-    const exp = expeditions[hangarId];
-    if(exp.active || exp.finished) return;
-    
-    const slider = document.getElementById(`expSlider_${hangarId}`);
-    const durSelect = document.getElementById(`expDuration_${hangarId}`);
-    if(!slider || !durSelect) return;
-
+    const exp = expeditions[hangarId]; if(exp.active || exp.finished) return;
+    const slider = document.getElementById(`expSlider_${hangarId}`); const durSelect = document.getElementById(`expDuration_${hangarId}`); if(!slider || !durSelect) return;
     const perc = parseInt(slider.value);
-    
     let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
-    if(currentOccupiedTotal + perc > 95) {
-        notify({n: "LIMITE DE ABELHAS! ⚠️", d: "O enxame não suporta mais voos."});
-        return;
-    }
-
-    const baseDuration = parseInt(durSelect.value);
-    const proficiencyBonus = Math.min(0.20, (exp.uses || 0) * 0.005); 
-    exp.duration = baseDuration * (1 - proficiencyBonus);
-    
-    exp.active = true;
-    exp.reductionPerc = perc;
-    exp.startTime = Date.now();
-    exp.eventChance = 0;
-    exp.uses = (exp.uses || 0) + 1;
-
-    notify({n: "DECOLAGEM REAL!", d: `Hangar #${hangarId+1} em missão.`});
-    updateUI();
-    executeSave();
+    if(currentOccupiedTotal + perc > 95) { notify({n: "LIMITE DE ABELHAS! ⚠️", d: "O enxame não suporta mais voos."}); return; }
+    const baseDuration = parseInt(durSelect.value); const proficiencyBonus = Math.min(0.20, (exp.uses || 0) * 0.005); 
+    exp.duration = baseDuration * (1 - proficiencyBonus); exp.active = true; exp.reductionPerc = perc; exp.startTime = Date.now(); exp.eventChance = 0; exp.uses = (exp.uses || 0) + 1;
+    notify({n: "DECOLAGEM REAL!", d: `Hangar #${hangarId+1} em missão.`}); updateUI(); executeSave();
 }
 
 function renderHangars() {
-    const container = document.getElementById("hangarList");
-    const synergyContainer = document.getElementById("synergyDisplay");
-    if(!container) return;
-    container.innerHTML = "";
-
-    let biomesActive = new Set();
-    expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
-    if(synergyContainer) {
-        if(biomesActive.size >= 2) synergyContainer.innerHTML = `<div class="exp-synergy-tag">✨ SINERGIA DE BIOMAS: +${(biomesActive.size * 5)}% MEL GLOBAL ATIVO</div>`;
-        else synergyContainer.innerHTML = "";
-    }
-
+    const container = document.getElementById("hangarList"); const synergyContainer = document.getElementById("synergyDisplay"); if(!container) return; container.innerHTML = "";
+    let biomesActive = new Set(); expeditions.forEach(exp => { if(exp.active) biomesActive.add(exp.biome); });
+    if(synergyContainer) { synergyContainer.innerHTML = biomesActive.size >= 2 ? `<div class="exp-synergy-tag">✨ SINERGIA DE BIOMAS: +${(biomesActive.size * 5)}% MEL GLOBAL ATIVO</div>` : ""; }
     for(let i=0; i<4; i++) {
-        const exp = expeditions[i];
-        const isLocked = i >= hangarsCount;
-        const hangarBox = document.createElement("div");
-        hangarBox.className = "hangar-box";
-        
+        const exp = expeditions[i]; const isLocked = i >= hangarsCount; const hangarBox = document.createElement("div"); hangarBox.className = "hangar-box";
         const profLevel = Math.floor((exp.uses || 0) / 10);
         let content = `<div class="hangar-title">HANGAR #${i+1} [Nív. ${profLevel}] ${isLocked ? '🔒' : ''}</div>`;
-        
-        if(isLocked) {
-            const cost = HANGAR_COSTS[i];
-            content += `<div class="hangar-lock">
-                <button onclick="buyHangar(${i})" ${honey < cost ? 'disabled' : ''} style="font-size:12px; height:auto; padding:10px;">LIBERAR: ${formatNum(cost)} 🍯</button>
-            </div>`;
-        } else if(exp.finished) {
-            content += `<div class="exp-result-inline" style="display:block;">
-                <div style="font-size: 11px; text-align: center; margin-bottom: 8px;">${exp.pendingRewards.msg}</div>
-                <button onclick="collectExpeditionRewards(${i})" style="background: var(--xp-bar); color: white; margin-top:0; height:auto; padding:8px;">COLETAR</button>
-            </div>`;
-        } else if(exp.active) {
-            content += `<div style="text-align:center;">
-                <span class="expedition-timer" id="expTimer_${i}">--:--</span>
-                <div class="exp-event-area" id="expEventArea_${i}">
-                    <button class="exp-event-btn" onclick="handleExpEvent(${i})" id="expEventBtn_${i}"></button>
-                </div>
-            </div>`;
-        } else {
-            let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
-            let availableForThis = Math.max(0, 95 - currentOccupiedTotal);
-            let safeSelectedPerc = Math.min(exp.selectedPerc || 50, availableForThis);
-
-            content += `
-                <div class="biome-selector">
-                    <div class="biome-btn ${exp.biome==='clover'?'selected':''}" onclick="selectBiome(${i}, 'clover')"><span class="biome-icon">🍀</span><small>Trevo</small></div>
-                    <div class="biome-btn ${exp.biome==='pepper'?'selected':''}" onclick="selectBiome(${i}, 'pepper')"><span class="biome-icon">🌶️</span><small>Pimenta</small></div>
-                    <div class="biome-btn ${exp.biome==='orchard'?'selected':''}" onclick="selectBiome(${i}, 'orchard')"><span class="biome-icon">🍎</span><small>Pomar</small></div>
-                </div>
-                <select id="expDuration_${i}" style="width:100%; margin-top:8px; padding:8px; border-radius:10px; background:rgba(0,0,0,0.2); color:white; border:none; font-size:11px;">
-                    <option value="300000">5 Minutos</option>
-                    <option value="1800000">30 Minutos</option>
-                    <option value="3600000">1 Hora</option>
-                </select>
-                <input type="range" id="expSlider_${i}" min="10" max="${availableForThis}" value="${safeSelectedPerc}" step="10" 
-                    oninput="onSliderChange(${i}, this.value)">
-                <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:5px;">
-                    <span>Enxame:</span> <b id="expPercLabel_${i}">${safeSelectedPerc}%</b>
-                </div>
-                <button onclick="startExpedition(${i})" style="background:var(--xp-bar); color:white; padding:10px; font-size:12px;">INICIAR 🚀</button>
-            `;
-        }
-        
-        hangarBox.innerHTML = content;
-        container.appendChild(hangarBox);
+        if(isLocked) { const cost = HANGAR_COSTS[i]; content += `<div class="hangar-lock"><button onclick="buyHangar(${i})" ${honey < cost ? 'disabled' : ''} style="font-size:12px; height:auto; padding:10px;">LIBERAR: ${formatNum(cost)} 🍯</button></div>`; }
+        else if(exp.finished) { content += `<div class="exp-result-inline" style="display:block;"><div style="font-size: 11px; text-align: center; margin-bottom: 8px;">${exp.pendingRewards.msg}</div><button onclick="collectExpeditionRewards(${i})" style="background: var(--xp-bar); color: white; margin-top:0; height:auto; padding:8px;">COLETAR</button></div>`; }
+        else if(exp.active) { content += `<div style="text-align:center;"><span class="expedition-timer" id="expTimer_${i}">--:--</span><div class="exp-event-area" id="expEventArea_${i}"><button class="exp-event-btn" onclick="handleExpEvent(${i})" id="expEventBtn_${i}"></button></div></div>`; }
+        else { let currentOccupiedTotal = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0); let availableForThis = Math.max(0, 95 - currentOccupiedTotal); let safeSelectedPerc = Math.min(exp.selectedPerc || 50, availableForThis); content += `<div class="biome-selector"><div class="biome-btn ${exp.biome==='clover'?'selected':''}" onclick="selectBiome(${i}, 'clover')"><span class="biome-icon">🍀</span><small>Trevo</small></div><div class="biome-btn ${exp.biome==='pepper'?'selected':''}" onclick="selectBiome(${i}, 'pepper')"><span class="biome-icon">🌶️</span><small>Pimenta</small></div><div class="biome-btn ${exp.biome==='orchard'?'selected':''}" onclick="selectBiome(${i}, 'orchard')"><span class="biome-icon">🍎</span><small>Pomar</small></div></div><select id="expDuration_${i}" style="width:100%; margin-top:8px; padding:8px; border-radius:10px; background:rgba(0,0,0,0.2); color:white; border:none; font-size:11px;"><option value="300000">5 Minutos</option><option value="1800000">30 Minutos</option><option value="3600000">1 Hora</option></select><input type="range" id="expSlider_${i}" min="10" max="${availableForThis}" value="${safeSelectedPerc}" step="10" oninput="onSliderChange(${i}, this.value)"><div style="display:flex; justify-content:space-between; font-size:10px; margin-top:5px;"><span>Enxame:</span> <b id="expPercLabel_${i}">${safeSelectedPerc}%</b></div><button onclick="startExpedition(${i})" style="background:var(--xp-bar); color:white; padding:10px; font-size:12px;">INICIAR 🚀</button>`; }
+        hangarBox.innerHTML = content; container.appendChild(hangarBox);
     }
 }
 
-function buyHiveModule(module) {
-    const cost = HIVE_COSTS[module];
-    if(honey >= cost) {
-        honey -= cost;
-        hiveOwned[module] = true;
-        notify({n: "ESTRUTURA EXPANDIDA! 🏠", d: `Módulo ${module} instalado.`});
-        updateUI();
-        executeSave();
-    }
-}
+function buyHiveModule(module) { const cost = HIVE_COSTS[module]; if(honey >= cost) { honey -= cost; hiveOwned[module] = true; notify({n: "ESTRUTURA EXPANDIDA! 🏠", d: `Módulo ${module} instalado.`}); updateUI(); executeSave(); } }
 
 function upgradeQueenFertility() {
-    const cost = (queenProductionLevel + 1) * 750000;
-    if(queenProductionLevel >= 7) return;
-    if(honey >= cost) {
-        honey -= cost;
-        queenProductionLevel++;
-        notify({n: "RAINHA NUTRIDA! 👑", d: `Limite de abelhas: ${800 + (queenProductionLevel * 200)}`});
-        updateUI();
-        executeSave();
-    }
+    const cost = (queenProductionLevel + 1) * 750000; if(queenProductionLevel >= 7) return;
+    if(honey >= cost) { honey -= cost; queenProductionLevel++; notify({n: "RAINHA NUTRIDA! 👑", d: `Limite de abelhas: ${800 + (queenProductionLevel * 200)}`}); updateUI(); executeSave(); }
 }
 
 function renderHiveStats() {
-    const container = document.getElementById("hiveStatsContent");
-    if(!container) return;
-
-    let maxQueen = 800 + (queenProductionLevel * 200);
-    let maxHive = 800 + (hiveOwned.middle?800:0) + (hiveOwned.top?800:0);
-    
-    let nextProdCost = (queenProductionLevel + 1) * 750000;
-    let totalOccupied = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
-    let skinBonus = Math.round((getSkinBonus() - 1) * 100);
-    let totalGlobalMult = (getGlobalBonus()).toFixed(2);
-
-    let boostsHtml = "";
-    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑', jelly: '🧪', magnet: '🧲' };
-    const names = { pepper: 'Mel 2x', energy: 'Vel 1.5x', flower: 'XP 3x', luck: 'Sorte 2x', crown: 'Rei 8x', jelly: 'Geleia 2x', magnet: 'Ímã Alvos' };
-    
-    for(let b in activeBoosts) {
-        if(activeBoosts[b] > 0) {
-            boostsHtml += `<div class="hive-stat-row"><div class="hive-stat-label">${icons[b]} ${names[b]}</div><div class="hive-stat-val" style="color:#fff;">${formatTime(activeBoosts[b])}</div></div>`;
-        }
-    }
-
-    container.innerHTML = `
-        <div class="modular-hive-container">
-            <img src="HiveTop.png" class="hive-module ${!hiveOwned.top ? 'hive-module-hidden' : ''}">
-            <img src="HiveMidle.png" class="hive-module ${!hiveOwned.middle ? 'hive-module-hidden' : ''}">
-            <img src="HiveBase.png" class="hive-module">
-        </div>
-
-        <div id="hiveShopArea" style="margin-bottom: 20px;">
-            ${!hiveOwned.middle ? `<button onclick="buyHiveModule('middle')" ${honey < HIVE_COSTS.middle ? 'disabled' : ''}>COMPRAR MEIO: ${formatNum(HIVE_COSTS.middle)} 🍯 (Cap. +800)</button>` : ''}
-            ${hiveOwned.middle && !hiveOwned.top ? `<button onclick="buyHiveModule('top')" ${honey < HIVE_COSTS.top ? 'disabled' : ''}>COMPRAR TOPO: ${formatNum(HIVE_COSTS.top)} 🍯 (Cap. +800)</button>` : ''}
-            
-            <div class="section-title">NUTRIÇÃO DA RAINHA 🧪</div>
-            <div class="card" style="margin-bottom: 10px; padding: 15px;">
-                <div style="font-size: 12px; font-weight: 800; opacity: 0.7;">CAPACIDADE BIOLÓGICA</div>
-                <div style="font-size: 24px; font-weight: 900; color: var(--accent);">${maxQueen} ABELHAS</div>
-                ${queenProductionLevel < 7 ? 
-                    `<button onclick="upgradeQueenFertility()" ${honey < nextProdCost ? 'disabled' : ''} style="font-size:12px; height:auto; padding:10px; background:var(--xp-bar); color:white;">
-                        GELEIA REAL CONCENTRADA: ${formatNum(nextProdCost)} 🍯 (+200 abelhas)
-                    </button>` : 
-                    '<div style="font-size: 11px; color: gold; font-weight: 900; margin-top: 10px;">LIMITE REAL ALCANÇADO!</div>'}
-            </div>
-        </div>
-        
-        <div class="section-title">OCUPAÇÃO DO ENXAME 🐝</div>
-        <div class="card" style="margin-bottom: 20px;">
-            <div style="font-size: 32px; font-weight: 900; color: var(--accent);">${totalOccupied}%</div>
-            <div style="font-size: 11px; opacity: 0.6; margin-top: 5px;">População ocupada em tarefas externas</div>
-            <div class="xp-bg" style="margin-top: 15px;">
-                <div class="xp-fill" style="width: ${(totalOccupied / 95) * 100}%; background: ${totalOccupied > 80 ? '#e74c3c' : 'var(--accent)'};"></div>
-            </div>
-        </div>
-
-        <div class="section-title">EFICIÊNCIA REAL ✨</div>
-        <div class="hive-stat-row"><div class="hive-stat-label">👴 Favor Real (Dudu)</div><div class="hive-stat-val" style="color: #4caf50;">+${(favorReal * 100).toFixed(2)}%</div></div>
-        <div class="hive-stat-row"><div class="hive-stat-label">🛡️ Sorte Real Total</div><div class="hive-stat-val">${(0.1 + (talents.alquimista_sorte)*1.0).toFixed(2)}%</div></div>
-        <div class="hive-stat-row"><div class="hive-stat-label">👔 Bônus de Visual</div><div class="hive-bonus-badge">+${skinBonus}%</div></div>
-
-        <div class="section-title">RESERVAS TOTAIS 🍯</div>
-        <div class="hive-stat-row"><div class="hive-stat-label">💰 Mel Histórico</div><div class="hive-stat-val">${formatNum(totalHoneyEver)}</div></div>
-        <div class="hive-stat-row"><div class="hive-stat-label">📊 Multiplicador Global</div><div class="hive-stat-val" style="color: var(--xp-bar);">${totalGlobalMult}x</div></div>
-        <div class="version-tag" style="margin-top: 30px;">DADOS SINCRONIZADOS COM A RAINHA ✅</div>
-    `;
+    const container = document.getElementById("hiveStatsContent"); if(!container) return;
+    let maxQueen = 800 + (queenProductionLevel * 200); 
+    let nextProdCost = (queenProductionLevel + 1) * 750000; let totalOccupied = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
+    let skinBonus = Math.round((getSkinBonus() - 1) * 100); let totalGlobalMult = (getGlobalBonus()).toFixed(2);
+    let boostsHtml = ""; const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑', jelly: '🧪', magnet: '🧲' }; const names = { pepper: 'Mel 2x', energy: 'Vel 1.5x', flower: 'XP 3x', luck: 'Sorte 2x', crown: 'Rei 8x', jelly: 'Geleia 2x', magnet: 'Ímã Alvos' };
+    for(let b in activeBoosts) { if(activeBoosts[b] > 0) { boostsHtml += `<div class="hive-stat-row"><div class="hive-stat-label">${icons[b]} ${names[b]}</div><div class="hive-stat-val" style="color:#fff;">${formatTime(activeBoosts[b])}</div></div>`; } }
+    container.innerHTML = `<div class="modular-hive-container"><img src="HiveTop.png" class="hive-module ${!hiveOwned.top ? 'hive-module-hidden' : ''}"><img src="HiveMidle.png" class="hive-module ${!hiveOwned.middle ? 'hive-module-hidden' : ''}"><img src="HiveBase.png" class="hive-module"></div><div id="hiveShopArea" style="margin-bottom: 20px;">${!hiveOwned.middle ? `<button onclick="buyHiveModule('middle')" ${honey < HIVE_COSTS.middle ? 'disabled' : ''}>COMPRAR MEIO: ${formatNum(HIVE_COSTS.middle)} 🍯 (Cap. +800)</button>` : ''}${hiveOwned.middle && !hiveOwned.top ? `<button onclick="buyHiveModule('top')" ${honey < HIVE_COSTS.top ? 'disabled' : ''}>COMPRAR TOPO: ${formatNum(HIVE_COSTS.top)} 🍯 (Cap. +800)</button>` : ''}<div class="section-title">NUTRIÇÃO DA RAINHA 🧪</div><div class="card" style="margin-bottom: 10px; padding: 15px;"><div style="font-size: 12px; font-weight: 800; opacity: 0.7;">CAPACIDADE BIOLÓGICA</div><div style="font-size: 24px; font-weight: 900; color: var(--accent);">${maxQueen} ABELHAS</div>${queenProductionLevel < 7 ? `<button onclick="upgradeQueenFertility()" ${honey < nextProdCost ? 'disabled' : ''} style="font-size:12px; height:auto; padding:10px; background:var(--xp-bar); color:white;">GELEIA REAL CONCENTRADA: ${formatNum(nextProdCost)} 🍯 (+200 abelhas)</button>` : '<div style="font-size: 11px; color: gold; font-weight: 900; margin-top: 10px;">LIMITE REAL ALCANÇADO!</div>'}</div></div><div class="section-title">OCUPAÇÃO DO ENXAME 🐝</div><div class="card" style="margin-bottom: 20px;"><div style="font-size: 32px; font-weight: 900; color: var(--accent);">${totalOccupied}%</div><div style="font-size: 11px; opacity: 0.6; margin-top: 5px;">População ocupada em tarefas externas</div><div class="xp-bg" style="margin-top: 15px;"><div class="xp-fill" style="width: ${(totalOccupied / 95) * 100}%; background: ${totalOccupied > 80 ? '#e74c3c' : 'var(--accent)'};"></div></div></div><div class="section-title">EFICIÊNCIA REAL ✨</div><div class="hive-stat-row"><div class="hive-stat-label">👴 Favor Real (Dudu)</div><div class="hive-stat-val" style="color: #4caf50;">+${(favorReal * 100).toFixed(2)}%</div></div><div class="hive-stat-row"><div class="hive-stat-label">🛡️ Sorte Real Total</div><div class="hive-stat-val">${(0.1 + (talents.alquimista_sorte)*1.0).toFixed(2)}%</div></div><div class="hive-stat-row"><div class="hive-stat-label">👔 Bônus de Visual</div><div class="hive-bonus-badge">+${skinBonus}%</div></div><div class="section-title">RESERVAS TOTAIS 🍯</div><div class="hive-stat-row"><div class="hive-stat-label">💰 Mel Histórico</div><div class="hive-stat-val">${formatNum(totalHoneyEver)}</div></div><div class="hive-stat-row"><div class="hive-stat-label">📊 Multiplicador Global</div><div class="hive-stat-val" style="color: var(--xp-bar);">${totalGlobalMult}x</div></div><div class="version-tag" style="margin-top: 30px;">DADOS SINCRONIZADOS COM A RAINHA ✅</div>`;
 }
 
 function tickExpedition() {
     expeditions.forEach((exp, i) => {
         if(!exp.active) return;
-        const now = Date.now();
-        const elapsed = now - exp.startTime;
-        const remaining = exp.duration - elapsed;
-        
+        const now = Date.now(); const elapsed = now - exp.startTime; const remaining = exp.duration - elapsed;
         if(remaining <= 0) finishExpedition(i);
-        else {
-            const timerEl = document.getElementById(`expTimer_${i}`);
-            if(timerEl) {
-                const m = Math.floor(remaining / 60000);
-                const s = Math.floor((remaining % 60000) / 1000);
-                timerEl.textContent = m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
-            }
-        }
+        else { const timerEl = document.getElementById(`expTimer_${i}`); if(timerEl) { const m = Math.floor(remaining / 60000); const s = Math.floor((remaining % 60000) / 1000); timerEl.textContent = m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0'); } }
     });
 }
 
 function finishExpedition(hangarId) {
-    const exp = expeditions[hangarId];
-    exp.active = false;
-    exp.finished = true;
-    
-    const maxHive = 800 + (hiveOwned.middle?800:0) + (hiveOwned.top?800:0);
-    const prodLimit = 800 + (queenProductionLevel * 200);
-    const effectivePop = Math.min(maxHive, prodLimit);
-    
-    const power = (hPerClick * exp.reductionPerc * (effectivePop / 2));
-    let hGain = power;
-    let xGain = hGain * 0.15;
-    let msg = "";
-
-    if(Math.random() < 0.05) {
-        const type = Math.random() < 0.5 ? 'jelly' : 'magnet';
-        activeBoosts[type] += 1200;
-        msg += "🎁 ENCONTROU UM BAÚ REAL!<br>";
-    }
-
-    if(exp.biome === 'clover') hGain *= 0.8;
-    else if(exp.biome === 'pepper') hGain *= 1.5;
-    else if(exp.biome === 'orchard') xGain *= 2;
-
+    const exp = expeditions[hangarId]; exp.active = false; exp.finished = true;
+    const prodLimit = 800 + (queenProductionLevel * 200); const effectivePop = Math.min(2400, prodLimit);
+    const power = (hPerClick * exp.reductionPerc * (effectivePop / 2)); let hGain = power; let xGain = hGain * 0.15; let msg = "";
+    if(Math.random() < 0.05) { const type = Math.random() < 0.5 ? 'jelly' : 'magnet'; activeBoosts[type] += 1200; msg += "🎁 ENCONTROU UM BAÚ REAL!<br>"; }
+    if(exp.biome === 'clover') hGain *= 0.8; else if(exp.biome === 'pepper') hGain *= 1.5; else if(exp.biome === 'orchard') xGain *= 2;
     msg += `<b>RECOMPENSAS:</b><br>🍯 ${formatNum(hGain)} | ✨ ${formatNum(xGain)}`;
-    exp.pendingRewards = {h: hGain, x: xGain, msg: msg};
-    updateUI();
-    executeSave();
+    exp.pendingRewards = {h: hGain, x: xGain, msg: msg}; updateUI(); executeSave();
 }
 
 function collectExpeditionRewards(hangarId) {
-    const exp = expeditions[hangarId];
-    if(exp.pendingRewards) {
-        honey += exp.pendingRewards.h;
-        addXP(exp.pendingRewards.x);
-        notify({n: "Carga Coletada!", d: `Hangar livre.`});
-    }
-    exp.finished = false;
-    exp.pendingRewards = null;
-    updateUI();
-    executeSave();
+    const exp = expeditions[hangarId]; if(exp.pendingRewards) { honey += exp.pendingRewards.h; addXP(exp.pendingRewards.x); notify({n: "Carga Coletada!", d: `Hangar livre.`}); }
+    exp.finished = false; exp.pendingRewards = null; updateUI(); executeSave();
 }
 
 function renderActiveBoosts() { 
-    const container = document.getElementById("active-boosts"); 
-    if(!container) return; 
-    container.innerHTML = ""; 
-    const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑', jelly: '🧪', magnet: '🧲' }; 
-    
-    if(equippedCosmetic === "NoelBee") {
-        const div = document.createElement("div");
-        div.className = "active-boost-timer active-boost-passive";
-        div.innerHTML = `<span>🎄</span> <span>10%</span>`;
-        container.appendChild(div);
-    }
-    if(equippedCosmetic === "SkullBee") {
-        const div = document.createElement("div");
-        div.className = "active-boost-timer active-boost-passive";
-        div.innerHTML = `<span>💀</span> <span>5%</span>`;
-        container.appendChild(div);
-    }
-    if(equippedCosmetic === "FairyBee") {
-        const div = document.createElement("div");
-        div.className = "active-boost-timer active-boost-passive";
-        div.innerHTML = `<span>✨</span> <span>6%</span>`;
-        container.appendChild(div);
-    }
-
-    for(let key in activeBoosts) if(activeBoosts[key] > 0) { 
-        const div = document.createElement("div"); 
-        div.className = "active-boost-timer"; 
-        div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`; 
-        container.appendChild(div); 
-    } 
+    const container = document.getElementById("active-boosts"); if(!container) return; container.innerHTML = ""; const icons = { pepper: '🌶️', energy: '🥤', flower: '🌼', luck: '🍀', crown: '👑', jelly: '🧪', magnet: '🧲' }; 
+    if(equippedCosmetic === "NoelBee") { const div = document.createElement("div"); div.className = "active-boost-timer active-boost-passive"; div.innerHTML = `<span>🎄</span> <span>10%</span>`; container.appendChild(div); }
+    if(equippedCosmetic === "SkullBee") { const div = document.createElement("div"); div.className = "active-boost-timer active-boost-passive"; div.innerHTML = `<span>💀</span> <span>5%</span>`; container.appendChild(div); }
+    if(equippedCosmetic === "FairyBee") { const div = document.createElement("div"); div.className = "active-boost-timer active-boost-passive"; div.innerHTML = `<span>✨</span> <span>6%</span>`; container.appendChild(div); }
+    for(let key in activeBoosts) if(activeBoosts[key] > 0) { const div = document.createElement("div"); div.className = "active-boost-timer"; div.innerHTML = `<span>${icons[key]}</span> <span>${formatTime(activeBoosts[key])}</span>`; container.appendChild(div); } 
 }
 
 function spawnFloatingNumber(amount, isTarget, isSuperCritical) { const bee = document.getElementById("mainBeeSprite"); if(!bee) return; const rect = bee.getBoundingClientRect(); const centerX = rect.left + (rect.width / 2), centerY = rect.top + (rect.height / 2); const container = document.createElement("div"); container.className = "floating-num-container"; const numEl = document.createElement("div"); numEl.className = "floating-num"; numEl.textContent = `+${formatNum(amount)}`; if(isSuperCritical) { numEl.style.color = "#ff4757"; numEl.style.fontSize = "38px"; const label = document.createElement("div"); label.className = "super-critical-label"; label.textContent = "SORTE REAL! (5x)"; container.appendChild(numEl); container.appendChild(label); } else if(isTarget) { numEl.style.color = "#ffcc00"; numEl.style.fontSize = "32px"; container.appendChild(numEl); } else container.appendChild(numEl); container.style.left = `${centerX}px`; container.style.top = `${centerY}px`; document.body.appendChild(container); setTimeout(() => container.remove(), 800); }
@@ -3303,54 +2560,19 @@ function triggerImpact(isTarget, isSuperCritical) { const card = document.getEle
 
 function doClick(event, isTarget = false) { 
     if (gameLoaded && !checkFullscreenState()) requestFullscreen();
-    playClickSound(); 
-    let baseChance = 0.001 + (talents.alquimista_sorte * 0.01); 
-    if(equippedCosmetic === "SkullBee") baseChance += 0.05; 
-    if(equippedCosmetic === "FairyBee") baseChance += 0.06;
-    if(activeBoosts.luck > 0) baseChance *= 2; 
-
-    const superCriticalChance = Math.random() < baseChance; 
-    let multiplier = (isTarget ? (2 + talents.operario_critico*0.1) : 1) * (superCriticalChance ? 5 : 1); 
-    
-    let totalReduction = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0);
-    let expMult = (100 - Math.min(95, totalReduction)) / 100; 
-
-    let clickVal = hPerClick;
-    if(activeBoosts.jelly > 0) clickVal *= 2;
-
-    const g = clickVal * getGlobalBonus() * multiplier * expMult; 
-    honey = validateNum(honey + g); 
-    totalHoneyEver = validateNum(totalHoneyEver + g); 
-    addXP(g); 
-    updateMissionProgress('honey_gain', g); 
-    if(isTarget) updateMissionProgress('target_clicks', 1); 
-    else updateMissionProgress('clicks', 1); 
-
-    const bee = document.getElementById("beeContainer"); 
-    if(bee) { 
-        bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; 
-        setTimeout(() => bee.style.transform = "scale(1)", 50); 
-    } 
-    spawnFloatingNumber(g, isTarget, superCriticalChance); 
-    spawnHoneyParticles(superCriticalChance); 
-    triggerImpact(isTarget, superCriticalChance); 
-    clickBuffer.push(Date.now()); 
-    spawnFlake('gameSnowContainer'); 
-    updateUI(); 
+    playClickSound(); let baseChance = 0.001 + (talents.alquimista_sorte * 0.01); if(equippedCosmetic === "SkullBee") baseChance += 0.05; if(equippedCosmetic === "FairyBee") baseChance += 0.06; if(activeBoosts.luck > 0) baseChance *= 2; 
+    const superCriticalChance = Math.random() < baseChance; let multiplier = (isTarget ? (2 + talents.operario_critico*0.1) : 1) * (superCriticalChance ? 5 : 1); 
+    let totalReduction = expeditions.reduce((acc, curr) => acc + (curr.active ? curr.reductionPerc : 0), 0); let expMult = (100 - Math.min(95, totalReduction)) / 100; 
+    let clickVal = hPerClick; if(activeBoosts.jelly > 0) clickVal *= 2;
+    const g = clickVal * getGlobalBonus() * multiplier * expMult; honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g); updateMissionProgress('honey_gain', g); 
+    if(isTarget) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1); 
+    const bee = document.getElementById("beeContainer"); if(bee) { bee.style.transform = superCriticalChance ? "scale(0.60)" : "scale(0.80)"; setTimeout(() => bee.style.transform = "scale(1)", 50); } 
+    spawnFloatingNumber(g, isTarget, superCriticalChance); spawnHoneyParticles(superCriticalChance); triggerImpact(isTarget, superCriticalChance); clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI(); 
 }
 
 function addXP(amt) { 
-    let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); 
-    let xpGain = validateNum(amt * 0.15 * m); 
-    currentXP = validateNum(currentXP + xpGain); 
-    updateMissionProgress('xp_gain', xpGain); 
-    while(currentXP >= nextLevelXP){ 
-        currentXP = validateNum(currentXP - nextLevelXP); 
-        level++; 
-        talentPoints++; 
-        nextLevelXP = Math.floor(nextLevelXP * 1.35); 
-        triggerLevelUpCelebration(); 
-    } 
+    let m = ((activeBoosts.flower > 0) ? 3 : 1) * getSkinBonus(); let xpGain = validateNum(amt * 0.15 * m); currentXP = validateNum(currentXP + xpGain); updateMissionProgress('xp_gain', xpGain); 
+    while(currentXP >= nextLevelXP){ currentXP = validateNum(currentXP - nextLevelXP); level++; talentPoints++; nextLevelXP = Math.floor(nextLevelXP * 1.35); triggerLevelUpCelebration(); } 
 }
 
 function triggerLevelUpCelebration() { soundLvlUp.currentTime = 0; soundLvlUp.play().catch(() => {}); notify({n:`Nível Real ${level}!`, d:"+1 Ponto de Talento"}); const card = document.getElementById("statsCard"); if(card) { card.classList.add("lvl-up-flash"); setTimeout(() => card.classList.remove("lvl-up-flash"), 1000); } spawnLevelUpFireworks(); }
@@ -3358,15 +2580,7 @@ function triggerLevelUpCelebration() { soundLvlUp.currentTime = 0; soundLvlUp.pl
 function spawnLevelUpFireworks() { const count = 30; const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200']; for(let i=0; i<count; i++) { const p = document.createElement("div"); p.className = "honey-particle"; p.style.background = colors[Math.floor(Math.random() * colors.length)]; p.style.width = (Math.random() * 10 + 5) + "px"; p.style.height = p.style.width; p.style.left = "50vw"; p.style.top = "50vh"; p.style.boxShadow = "0 0 10px gold"; const angle = Math.random() * Math.PI * 2; const velocity = Math.random() * 400 + 200; const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity; p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`); document.body.appendChild(p); setTimeout(() => p.remove(), 1000); } }
 
 function buyBoostManual(type, ticks, cost, label) { 
-    cost = validateNum(cost); 
-    if(honey >= cost) { 
-        honey = validateNum(honey - cost); 
-        let durationBonus = 1 + (talents.alquimista_boost * 0.1);
-        activeBoosts[type] += (ticks * durationBonus); 
-        notify({n: "Consumível Ativado!", d: `+${label}`}); 
-        updateUI(); 
-        executeSave(); 
-    } 
+    cost = validateNum(cost); if(honey >= cost) { honey = validateNum(honey - cost); let durationBonus = 1 + (talents.alquimista_boost * 0.1); activeBoosts[type] += (ticks * durationBonus); notify({n: "Consumível Ativado!", d: `+${label}`}); updateUI(); executeSave(); } 
 }
 
 function startAutoProducing() { if(autoProduceInterval) clearInterval(autoProduceInterval); autoProduceInterval = setInterval(() => { if(autoUnlocked){ let gain = getMPSBase() * getGlobalBonus(); honey = validateNum(honey + gain); totalHoneyEver = validateNum(totalHoneyEver + gain); addXP(gain); updateMissionProgress('honey_gain', gain); } }, 1000); }
@@ -3374,44 +2588,22 @@ function startAutoProducing() { if(autoProduceInterval) clearInterval(autoProduc
 function startGameTicks() { 
     if(gameTickInterval) clearInterval(gameTickInterval); 
     gameTickInterval = setInterval(() => { 
-        if(!gameLoaded) return; 
-        const now = Date.now(); 
-        achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } }); 
+        if(!gameLoaded) return; const now = Date.now(); achievements.forEach(a => { if(!a.u && totalHoneyEver >= a.target){ a.u = true; notify(a); executeSave(); } }); 
         for(let b in activeBoosts) if(activeBoosts[b] > 0) activeBoosts[b]--; 
-        for(let b in activeBoosts) { 
-            const el = document.getElementById(`status_${b}`); 
-            if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; 
-        } 
-        if(now % 1000 < 150) { 
-            updateUI(); 
-            checkMissionReset(); 
-            updateMissionProgress('play_time', 1); 
-            tickExpedition(); 
-            handleMagnetEffect(); 
-        } 
+        for(let b in activeBoosts) { const el = document.getElementById(`status_${b}`); if(el) el.textContent = activeBoosts[b] > 0 ? `Ativo: ${formatTime(activeBoosts[b])}` : "Inativo"; } 
+        if(now % 1000 < 150) { updateUI(); checkMissionReset(); updateMissionProgress('play_time', 1); tickExpedition(); handleMagnetEffect(); } 
     }, 100); 
 }
 
-function handleMagnetEffect() {
-    if(activeBoosts.magnet <= 0) return;
-    const lTarget = document.getElementById("leftTarget");
-    const rTarget = document.getElementById("rightTarget");
-    if(lTarget && rTarget) {
-        lTarget.style.transform = "translateX(25px)";
-        rTarget.style.transform = "translateX(-25px)";
-    }
-}
+function handleMagnetEffect() { if(activeBoosts.magnet <= 0) return; const lTarget = document.getElementById("leftTarget"); const rTarget = document.getElementById("rightTarget"); if(lTarget && rTarget) { lTarget.style.transform = "translateX(25px)"; rTarget.style.transform = "translateX(-25px)"; } }
 
-// ATUALIZADO SISTEMA DE SAVE PARA INCLUIR COROAS
 function executeSave(){ const data = {honey: validateNum(honey), crowns: validateNum(crowns), favorReal: validateNum(favorReal), totalHoneyEver: validateNum(totalHoneyEver), level, currentXP, nextLevelXP, talents, talentPoints, activeBoosts, equippedCosmetic, equippedBackground, hiveOwned, queenProductionLevel, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
 
 function checkOfflineGains(lastTimestamp) { 
     const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); 
     if (diffInSeconds < 60 && pendingOfflineHoney <= 0) return; 
-    const offlineBoost = 0.7 + (talents.arquiteto_offline * 0.05);
-    const mps = getMPSBase() * getGlobalBonus(); 
-    const calculatedHoney = Math.floor(mps * diffInSeconds * offlineBoost); 
-    const calculatedXP = Math.floor(calculatedHoney * 0.2); 
+    const offlineBoost = 0.7 + (talents.arquiteto_offline * 0.05); const mps = getMPSBase() * getGlobalBonus(); 
+    const calculatedHoney = Math.floor(mps * diffInSeconds * offlineBoost); const calculatedXP = Math.floor(calculatedHoney * 0.2); 
     pendingOfflineHoney += calculatedHoney; pendingOfflineXP += calculatedXP; 
 }
 
@@ -3426,18 +2618,10 @@ function claimDailyReward() { if (dailyState.claimedToday) return; const reward 
 function handleCosmetic(id) {
     if(!ownedCosmetics.includes(id)) {
         let price = id === "FairyBee" ? 250000 : 100000;
-        if(honey >= price) {
-            honey -= price;
-            ownedCosmetics.push(id);
-            notify({n: "Visual Adquirido!", d: id});
-        } else {
-            notify({n: "Mel Insuficiente!", d: formatNum(price) + " 🍯 necessários"});
-            return;
-        }
+        if(honey >= price) { honey -= price; ownedCosmetics.push(id); notify({n: "Visual Adquirido!", d: id}); }
+        else { notify({n: "Mel Insuficiente!", d: formatNum(price) + " 🍯 necessários"}); return; }
     }
-    equippedCosmetic = id;
-    updateUI();
-    executeSave();
+    equippedCosmetic = id; updateUI(); executeSave();
 }
 
 function handleBackground(id) { equippedBackground = id; updateUI(); executeSave(); }
@@ -3453,21 +2637,8 @@ function load(){
     if(raw){ 
         try { 
             const d = JSON.parse(raw); 
-            honey = validateNum(d.honey); 
-            crowns = validateNum(d.crowns || 0);
-            favorReal = validateNum(d.favorReal || 0); 
-            totalHoneyEver = validateNum(d.totalHoneyEver); 
-            level = d.level || 1; 
-            currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
-            if(d.talents) talents = d.talents; if(d.talentPoints !== undefined) talentPoints = d.talentPoints;
-            if(d.queenProductionLevel !== undefined) queenProductionLevel = d.queenProductionLevel;
-            if(d.hangarsCount) hangarsCount = d.hangarsCount; if(d.expeditions) expeditions = d.expeditions;
-            if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics; if(d.activeBoosts) activeBoosts = d.activeBoosts; 
-            if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; 
-            if(d.hiveOwned) hiveOwned = d.hiveOwned;
-            if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); 
-            if(d.defenderProgress) defenderProgress = d.defenderProgress; 
-            if(d.timestamp) checkOfflineGains(d.timestamp); 
+            honey = validateNum(d.honey); crowns = validateNum(d.crowns || 0); favorReal = validateNum(d.favorReal || 0); totalHoneyEver = validateNum(d.totalHoneyEver); level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
+            if(d.talents) talents = d.talents; if(d.talentPoints !== undefined) talentPoints = d.talentPoints; if(d.queenProductionLevel !== undefined) queenProductionLevel = d.queenProductionLevel; if(d.hangarsCount) hangarsCount = d.hangarsCount; if(d.expeditions) expeditions = d.expeditions; if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics; if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.hiveOwned) hiveOwned = d.hiveOwned; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); if(d.defenderProgress) defenderProgress = d.defenderProgress; if(d.timestamp) checkOfflineGains(d.timestamp); 
         } catch(e) { console.error(e); } 
     } else { talentPoints = level; }
     checkMissionReset(); updateUI(); updateVersionDisplay(); checkUpdateStatus(); 
@@ -3475,35 +2646,24 @@ function load(){
 
 function enterGame() { 
     load(); tryPlayMusic(); requestFullscreen(); 
-    const loadingScreen = document.getElementById("loadingScreen"); 
-    const bar = document.getElementById("loadingBarFill"); 
-    const bee = document.getElementById("loadingBeeImg"); 
-    if(loadingScreen) loadingScreen.style.display = "flex"; 
-    let progress = 0; 
-    const interval = setInterval(() => { 
-        progress += Math.random() * 5; if(progress > 100) progress = 100; 
-        if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%"; 
-        if(progress === 100) { 
-            clearInterval(interval); 
-            setTimeout(() => { 
-                if(loadingScreen) loadingScreen.style.display = "none"; 
-                const startScreen = document.getElementById('startScreen'); const gameUI = document.getElementById('gameUI'); 
-                if(startScreen) startScreen.style.display = 'none'; 
-                if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; } 
-                gameLoaded = true; if(pendingOfflineHoney > 1000) openModal('offlineModal'); else checkDailyLogic(); 
-                startGameTicks(); startAutoProducing(); updateUI(); startDynamicNotifications(); 
-            }, 300); 
-        } 
+    const loadingScreen = document.getElementById("loadingScreen"); const bar = document.getElementById("loadingBarFill"); const bee = document.getElementById("loadingBeeImg"); if(loadingScreen) loadingScreen.style.display = "flex"; 
+    let progress = 0; const interval = setInterval(() => { 
+        progress += Math.random() * 5; if(progress > 100) progress = 100; if(bar) bar.style.width = progress + "%"; if(bee) bee.style.left = progress + "%"; 
+        if(progress === 100) { clearInterval(interval); setTimeout(() => { if(loadingScreen) loadingScreen.style.display = "none"; const startScreen = document.getElementById('startScreen'); const gameUI = document.getElementById('gameUI'); if(startScreen) startScreen.style.display = 'none'; if(gameUI) { gameUI.style.display = 'flex'; gameUI.style.opacity = '1'; } gameLoaded = true; if(pendingOfflineHoney > 1000) openModal('offlineModal'); else checkDailyLogic(); startGameTicks(); startAutoProducing(); updateUI(); startDynamicNotifications(); }, 300); } 
     }, 50); 
 }
 
 function openModal(id) { const modal = document.getElementById(id); if(!modal) return; modal.style.display = 'flex'; if(id === 'missionsModal') renderMissions(); if(id === 'dailyRewardModal') renderDailyGrid(); }
 function closeModal(id) { const modal = document.getElementById(id); if(modal) modal.style.display = 'none'; }
+
 function openTab(id, btn) { 
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+    togglePanel(true);
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); 
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
     const pane = document.getElementById(id); if(pane) pane.classList.add('active'); if(btn) btn.classList.add('active'); 
     if(id === 'achievements') renderAchs(); if(id === 'hive-stats') renderHiveStats(); if(id === 'talents') renderTalentTree();
 }
+
 function openSubShop(id, btn) { document.querySelectorAll('.sub-shop-pane').forEach(p => p.style.display = 'none'); document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); const pane = document.getElementById('shop_'+id); if(pane) pane.style.display = 'block'; if(btn) btn.classList.add('active'); }
 function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); renderAchs(); }
 
@@ -3511,18 +2671,9 @@ function buildShop() {
     const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); 
     ['pepper', 'energy', 'flower', 'luck'].forEach(type => { 
         const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = ""; 
-        durations.forEach(d => { 
-            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor)); 
-            const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn); 
-        }); 
+        durations.forEach(d => { const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor)); const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn); }); 
     }); 
-    ['jelly', 'magnet'].forEach(type => {
-        const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
-        specialDurations.forEach(sd => {
-            const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.2)) * sd.m * inflationFactor));
-            const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${sd.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, sd.t, cost, sd.label); grid.appendChild(btn);
-        });
-    });
+    ['jelly', 'magnet'].forEach(type => { const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = ""; specialDurations.forEach(sd => { const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.2)) * sd.m * inflationFactor)); const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${sd.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, sd.t, cost, sd.label); grid.appendChild(btn); }); });
 }
 
 function renderAchs() { const l = document.getElementById("achList"); if(!l) return; l.innerHTML = ""; achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => { l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`; }); }
@@ -3539,5 +2690,5 @@ setInterval(() => { const gameUI = document.getElementById('gameUI'); if(gameLoa
 function initAchievements() { achievements.length = 0; for(let i=1; i<=200; i++) { let val = Math.pow(1.65, i) * 150, theme = achThemes[i % achThemes.length]; achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} de mel`,target:val,u:false,r:i < 80 ? "common" : (i < 160 ? "rare" : "epic"),i:theme.i}); } }
 load();
 </script>
-</body>
+</body> 
 </html>
