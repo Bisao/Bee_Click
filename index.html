@@ -442,11 +442,6 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     position: relative;
 }
 
-/* GRADIENTE REMOVIDO CONFORME SOLICITADO */
-.tab-btn-games-highlight::after {
-    display: none;
-}
-
 .tab-btn span { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 .tab-btn.active { color: var(--accent); }
 .tab-btn.active span { color: var(--text-color); }
@@ -933,7 +928,86 @@ input[type=range]::-webkit-slider-thumb {
     transform: translateX(-50%);
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-top: 8px solid white;
+    border-top: white;
+}
+
+/* ESTILO LABORATÓRIO MELHORADO */
+.lab-machine-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 26px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.lab-icon-big {
+    font-size: 60px;
+    margin-bottom: 15px;
+    display: block;
+    transition: transform 0.5s;
+}
+.lab-working .lab-icon-big {
+    animation: machinePulse 1s infinite alternate;
+}
+@keyframes machinePulse {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1.1) rotate(5deg); }
+}
+
+.lab-stat-box {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 20px;
+}
+.lab-stat-item {
+    display: flex;
+    flex-direction: column;
+}
+.lab-stat-label {
+    font-size: 10px;
+    font-weight: 800;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+.lab-stat-value {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--accent);
+}
+
+/* PROGRESS BAR LABORATÓRIO */
+.lab-progress-container {
+    width: 100%;
+    height: 25px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    margin: 15px 0;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: none;
+    position: relative;
+}
+.lab-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+    transition: width 0.1s linear;
+}
+.lab-progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 25px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 </style>
 </head>
@@ -1030,9 +1104,10 @@ input[type=range]::-webkit-slider-thumb {
       <div class="tabs-header">
           <button class="tab-btn" onclick="openTab('talents', this)">🌳<span>Talentos</span></button>
           <button class="tab-btn" onclick="openTab('shop', this)">🛒<span>Loja</span></button>
+          <button class="tab-btn" onclick="openTab('lab', this)">🧪<span>Laboratório</span></button>
           <button class="tab-btn" onclick="openTab('expedition-tab', this)">🧭<span>Expedição</span></button>
           <button class="tab-btn" onclick="openTab('hive-stats', this)">🏠<span>Colmeia</span></button>
-          <button id="btnTabGames" class="tab-btn tab-btn-games-highlight" onclick="openTab('events', this)">🎮<span>Jogos</span></button>
+          <button id="btnTabGames" class="tab-btn" onclick="openTab('events', this)">🎮<span>Jogos</span></button>
           <button class="tab-btn" onclick="openTab('achievements', this)">🎖️<span>Conquistas</span></button>
       </div>
       
@@ -1153,6 +1228,56 @@ input[type=range]::-webkit-slider-thumb {
                     </button>
                   </div>
                 </div>
+              </div>
+          </div>
+
+          <div id="lab" class="tab-pane">
+              <div class="scroll-area">
+                <div class="section-title">LABORATÓRIO DE ENGARRAFAMENTO 🧪</div>
+                
+                <div class="lab-machine-card" id="labMachine">
+                    <span class="lab-icon-big" id="labMachineIcon">🍶</span>
+                    <h2 style="margin: 0; color: var(--accent);">MÁQUINA DE ENVASAMENTO</h2>
+                    <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Transforme mel bruto em garrafas para obter recompensas reais.</p>
+                    
+                    <div class="lab-stat-box">
+                        <div class="lab-stat-item">
+                            <span class="lab-stat-label">Mel Atual</span>
+                            <span class="lab-stat-value" id="labHoneyValue">0</span>
+                        </div>
+                        <div class="lab-stat-item">
+                            <span class="lab-stat-label">Garrafas</span>
+                            <span class="lab-stat-value" id="labBottlesValue">0</span>
+                        </div>
+                    </div>
+
+                    <div class="lab-progress-container" id="labProgressContainer">
+                        <div class="lab-progress-text" id="labProgressText">PROCESSANDO... 45s</div>
+                        <div class="lab-progress-fill" id="labProgressFill"></div>
+                    </div>
+
+                    <div style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 11px; font-weight: 800; margin-bottom: 5px; text-align: left;">REQUISITO:</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; font-weight: 900;">750K 🍯</span>
+                            <button onclick="bottleHoney()" id="btnBottle" style="width: auto; margin-top: 0; padding: 8px 20px; font-size: 12px;">ENGARRAFAR</button>
+                        </div>
+                    </div>
+
+                    <div class="section-title">MERCADO DE GARRAFAS</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,234,0,0.1); border-radius: 18px; border: 1px solid var(--crown-gold);">
+                            <div style="text-align: left;">
+                                <div style="font-weight: 900; font-size: 14px; color: var(--crown-gold);">VENDER GARRAFAS</div>
+                                <div style="font-size: 10px; opacity: 0.8;">Taxa de Troca: 1 🍶 = 10 👑</div>
+                            </div>
+                            <button onclick="sellBottles()" id="btnSellBottles" style="width: auto; margin-top: 0; padding: 10px 15px; background: var(--crown-gold); color: var(--main-blue); font-size: 13px;">VENDER TUDO</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">DICA DO QUÍMICO 🧪</div>
+                <p style="font-size: 11px; opacity: 0.6; line-height: 1.4;">"Cada processo de envasamento leva 45 segundos de processamento químico. Seja paciente, o Rei recompensa a qualidade!"</p>
               </div>
           </div>
 
@@ -1546,6 +1671,24 @@ async function handlePwaClick() {
 // HISTÓRICO DE ATUALIZAÇÕES (MOSTRANDO AS ÚLTIMAS 5)
 let updateHistory = [
     {
+        version: "16.5.0",
+        title: "🧪 LABORATÓRIO 2.0",
+        changes: [
+            { type: "add", text: "Processamento: Garrafas agora levam 45s para serem envasadas." },
+            { type: "add", text: "Interface: Adicionada barra de progresso e animações na máquina." },
+            { type: "fix", text: "Feedback: Melhorada a indicação visual de tempo restante no Lab." }
+        ]
+    },
+    {
+        version: "16.0.0",
+        title: "🧪 NOVO LABORATÓRIO",
+        changes: [
+            { type: "add", text: "Laboratório: Nova aba para engarrafar mel bruto." },
+            { type: "add", text: "Economia: Converta 750k de mel em 1 Garrafa." },
+            { type: "add", text: "Coroas: Garrafas agora podem ser trocadas por 10 Coroas cada." }
+        ]
+    },
+    {
         version: "15.0.0",
         title: "🎨 REFINAMENTO VISUAL",
         changes: [
@@ -1558,8 +1701,7 @@ let updateHistory = [
         title: "⚡ EXPANSÃO DO CLICK E NOVIDADES",
         changes: [
             { type: "mod", text: "Painel de Click: Agora ocupa 100% da área útil entre o topo e as abas." },
-            { type: "add", text: "Histórico Real: Novo sistema que mostra apenas as últimas 5 atualizações." },
-            { type: "add", text: "Alerta Visual: Botão 'O que mudou?' agora brilha quando há novidades não lidas." }
+            { type: "add", text: "Histórico Real: Novo sistema que mostra apenas as últimas 5 atualizações." }
         ]
     },
     {
@@ -1568,20 +1710,6 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Interface: Todas as abas foram movidas para a parte inferior para maior ergonomia." },
             { type: "mod", text: "Navegação: Ao selecionar uma aba, ela agora ocupa a tela inteira." }
-        ]
-    },
-    {
-        version: "12.2.0",
-        title: "👑 SISTEMA DE COROAS REAIS",
-        changes: [
-            { type: "add", text: "Nova Moeda: Introduzidas as Coroas, a moeda de prestígio." }
-        ]
-    },
-    {
-        version: "12.1.0",
-        title: "👴 O VELHO DUDU CHEGOU!",
-        changes: [
-            { type: "add", text: "Novo Mercado: Agora você pode vender seu mel para o Velho Dudu na aba Loja." }
         ]
     }
 ];
@@ -1614,7 +1742,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V15"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V16_5"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
@@ -1627,7 +1755,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V15", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V16_5", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1645,9 +1773,14 @@ function validateNum(n) {
     return parseFloat(n);
 }
 
-let honey = 0, totalHoneyEver = 0, crowns = 0, hPerClick = 0.2, level = 1;
+let honey = 0, totalHoneyEver = 0, crowns = 0, honeyBottles = 0, hPerClick = 0.2, level = 1;
 let currentXP = 0, nextLevelXP = 1000, autoUnlocked = true;
 let favorReal = 0; 
+
+/* LAB STATE */
+let isLabWorking = false;
+let labTimeLeft = 0;
+const LAB_PROCESS_TIME = 45; // Segundos
 
 let talentPoints = 0;
 let talents = {
@@ -2396,9 +2529,18 @@ function getGlobalBonus() {
 }
 
 function updateUI() {
-    honey = validateNum(honey); crowns = validateNum(crowns);
+    honey = validateNum(honey); crowns = validateNum(crowns); honeyBottles = validateNum(honeyBottles);
     const honeyEl = document.getElementById("honey"); const crownEl = document.getElementById("crowns"); const mpsEl = document.getElementById("mps"); const lvlEl = document.getElementById("lvlDisplay"); const xpEl = document.getElementById("xpDisplay"); const xpFill = document.getElementById("xpFill");
     if(honeyEl) honeyEl.textContent = formatNum(honey); if(crownEl) crownEl.textContent = formatNum(crowns); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lvlEl) lvlEl.textContent = level; if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
+    
+    // Atualiza Lab
+    const labHoney = document.getElementById("labHoneyValue"); const labBottles = document.getElementById("labBottlesValue"); const btnBottle = document.getElementById("btnBottle"); const btnSellBottles = document.getElementById("btnSellBottles");
+    if(labHoney) labHoney.textContent = formatNum(honey); if(labBottles) labBottles.textContent = formatNum(honeyBottles); 
+    
+    // Trava botão se lab estiver trabalhando ou se não tiver mel
+    if(btnBottle) btnBottle.disabled = (honey < 750000 || isLabWorking); 
+    if(btnSellBottles) btnSellBottles.disabled = (honeyBottles < 1 || isLabWorking);
+
     hPerClick = 0.2 + (talents.operario_forca * 0.5) + (level * 0.05);
     buildShop(); renderActiveBoosts(); updateRecordsUI(); renderTalentTree(); updateDuduUI();
     ['Bee', 'NoelBee', 'SkullBee', 'FairyBee'].forEach(id => {
@@ -2414,6 +2556,70 @@ function updateUI() {
     });
     checkUpdateStatus(); updateVersionDisplay(); renderHangars();
     const hivePane = document.getElementById("hive-stats"); if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
+}
+
+/* LÓGICA LABORATÓRIO MELHORADA */
+function bottleHoney() {
+    if(honey >= 750000 && !isLabWorking) {
+        honey -= 750000;
+        isLabWorking = true;
+        labTimeLeft = LAB_PROCESS_TIME;
+        
+        // Visual
+        const card = document.getElementById("labMachine");
+        const container = document.getElementById("labProgressContainer");
+        const fill = document.getElementById("labProgressFill");
+        
+        if(card) card.classList.add("lab-working");
+        if(container) container.style.display = "block";
+        if(fill) fill.style.width = "0%";
+        
+        playClickSound();
+        notify({n: "INICIANDO ENVASAMENTO...", d: "Aguarde 45 segundos."});
+        updateUI();
+        
+        // Iniciar Processo
+        const process = setInterval(() => {
+            labTimeLeft--;
+            const progressPerc = ((LAB_PROCESS_TIME - labTimeLeft) / LAB_PROCESS_TIME) * 100;
+            
+            if(fill) fill.style.width = progressPerc + "%";
+            const text = document.getElementById("labProgressText");
+            if(text) text.textContent = `PROCESSANDO... ${labTimeLeft}s`;
+            
+            if(labTimeLeft <= 0) {
+                clearInterval(process);
+                finishBottling();
+            }
+        }, 1000);
+    }
+}
+
+function finishBottling() {
+    isLabWorking = false;
+    honeyBottles++;
+    
+    const card = document.getElementById("labMachine");
+    const container = document.getElementById("labProgressContainer");
+    if(card) card.classList.remove("lab-working");
+    if(container) container.style.display = "none";
+    
+    notify({n: "PROCESSO CONCLUÍDO! 🍶", d: "+1 Garrafa no estoque real."});
+    playClickSound();
+    updateUI();
+    executeSave();
+}
+
+function sellBottles() {
+    if(honeyBottles >= 1 && !isLabWorking) {
+        let gain = honeyBottles * 10;
+        crowns += gain;
+        notify({n: "VENDA REALIZADA! 👑", d: `+${gain} Coroas obtidas.`});
+        honeyBottles = 0;
+        playClickSound();
+        updateUI();
+        executeSave();
+    }
 }
 
 function updateDuduUI() {
@@ -2597,7 +2803,7 @@ function startGameTicks() {
 
 function handleMagnetEffect() { if(activeBoosts.magnet <= 0) return; const lTarget = document.getElementById("leftTarget"); const rTarget = document.getElementById("rightTarget"); if(lTarget && rTarget) { lTarget.style.transform = "translateX(25px)"; rTarget.style.transform = "translateX(-25px)"; } }
 
-function executeSave(){ const data = {honey: validateNum(honey), crowns: validateNum(crowns), favorReal: validateNum(favorReal), totalHoneyEver: validateNum(totalHoneyEver), level, currentXP, nextLevelXP, talents, talentPoints, activeBoosts, equippedCosmetic, equippedBackground, hiveOwned, queenProductionLevel, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
+function executeSave(){ const data = {honey: validateNum(honey), crowns: validateNum(crowns), honeyBottles: validateNum(honeyBottles), favorReal: validateNum(favorReal), totalHoneyEver: validateNum(totalHoneyEver), level, currentXP, nextLevelXP, talents, talentPoints, activeBoosts, equippedCosmetic, equippedBackground, hiveOwned, queenProductionLevel, achs: achievements.map(a => a.u), timestamp: Date.now(), defenderProgress, pendingOfflineHoney, pendingOfflineXP, hangarsCount, expeditions, ownedCosmetics}; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); const missionData = {dailyMissions, lastMissionReset}; localStorage.setItem(MISSION_KEY, JSON.stringify(missionData)); localStorage.setItem(THEME_KEY, JSON.stringify(themeSettings)); localStorage.setItem(DAILY_REWARD_KEY, JSON.stringify(dailyState)); const indicator = document.getElementById("saveIndicator"); if(indicator) { indicator.classList.add("visible"); setTimeout(() => indicator.classList.remove("visible"), 1000); } }
 
 function checkOfflineGains(lastTimestamp) { 
     const now = Date.now(); const diffInSeconds = Math.floor((now - lastTimestamp) / 1000); 
@@ -2637,7 +2843,7 @@ function load(){
     if(raw){ 
         try { 
             const d = JSON.parse(raw); 
-            honey = validateNum(d.honey); crowns = validateNum(d.crowns || 0); favorReal = validateNum(d.favorReal || 0); totalHoneyEver = validateNum(d.totalHoneyEver); level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
+            honey = validateNum(d.honey); crowns = validateNum(d.crowns || 0); honeyBottles = validateNum(d.honeyBottles || 0); favorReal = validateNum(d.favorReal || 0); totalHoneyEver = validateNum(d.totalHoneyEver); level = d.level || 1; currentXP = validateNum(d.currentXP); nextLevelXP = validateNum(d.nextLevelXP) || 1000; 
             if(d.talents) talents = d.talents; if(d.talentPoints !== undefined) talentPoints = d.talentPoints; if(d.queenProductionLevel !== undefined) queenProductionLevel = d.queenProductionLevel; if(d.hangarsCount) hangarsCount = d.hangarsCount; if(d.expeditions) expeditions = d.expeditions; if(d.ownedCosmetics) ownedCosmetics = d.ownedCosmetics; if(d.activeBoosts) activeBoosts = d.activeBoosts; if(d.equippedCosmetic) equippedCosmetic = d.equippedCosmetic; if(d.equippedBackground) equippedBackground = d.equippedBackground; if(d.hiveOwned) hiveOwned = d.hiveOwned; if(d.achs) d.achs.forEach((u, i) => { if(achievements[i]) achievements[i].u = u; }); if(d.defenderProgress) defenderProgress = d.defenderProgress; if(d.timestamp) checkOfflineGains(d.timestamp); 
         } catch(e) { console.error(e); } 
     } else { talentPoints = level; }
