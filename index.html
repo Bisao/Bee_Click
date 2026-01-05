@@ -1288,6 +1288,7 @@ input[type=range]::-webkit-slider-thumb {
 
 <div id="startScreen">
     <div class="bg-clouds"></div>
+    <div class="snow-container" id="snowContainer"></div>
     <div class="start-bee-wrapper">
         <div class="start-logo">
             <img src="NoelBee.png" alt="NoelBee Logo" class="bee-img-large">
@@ -1955,37 +1956,37 @@ let updateHistory = [
         version: "23.0.0",
         title: "⚖️ VENDA CONTROLADA",
         changes: [
-            { type: "add", text: "Mercado: Agora o player escolhe a quantidade exata de garrafas que quer vender via input ou botões rápidos." },
-            { type: "add", text: "Lógica: Venda dinâmica retira primeiro do inventário e completa com o laboratório automaticamente." },
-            { type: "mod", text: "Visual: Removido flocos de neve da tela inicial para um visual mais limpo." }
+            { type: "add", text: "Mercado: Escolha a quantidade exata de garrafas para vender." },
+            { type: "add", text: "Logística: Venda dinâmica retira do inventário e slots do laboratório." },
+            { type: "mod", text: "Visual: Neve removida da tela de jogo para melhor clareza." }
+        ]
+    },
+    {
+        version: "22.5.0",
+        title: "🧪 SISTEMA DE LOTES",
+        changes: [
+            { type: "add", text: "Laboratório: Adicionado seletor de quantidade (1, 10, 100, Tudo)." }
         ]
     },
     {
         version: "22.0.0",
-        title: "🎨 LOJA REFORMULADA",
+        title: "🎨 INTERFACE DE LOJA",
         changes: [
-            { type: "mod", text: "Visual: Nova interface de boosts organizada em cartões com categorias claras." }
+            { type: "mod", text: "Loja: Nova organização de categorias e cards de itens." }
         ]
     },
     {
-        version: "21.1.0",
-        title: "🏪 LOGÍSTICA DE VENDA",
+        version: "21.0.0",
+        title: "🧭 EXPEDIÇÕES REAIS",
         changes: [
-            { type: "fix", text: "Mercado: O botão 'Vender Tudo' agora coleta automaticamente as garrafas dos slots do laboratório antes de vender." }
+            { type: "add", text: "Hangar: Sistema de biomas e sinergia de abelhas ativado." }
         ]
     },
     {
-        version: "20.5.0",
-        title: "🧪 LABORATÓRIO DE LOTE",
+        version: "20.1.0",
+        title: "🔫 HIVE DEFENDER",
         changes: [
-            { type: "add", text: "Laboratório: Adicionado sistema de envasamento em massa (1x, 10x, 100x ou Tudo)." }
-        ]
-    },
-    {
-        version: "19.2.0",
-        title: "🔫 DEFENSOR DA COLMEIA",
-        changes: [
-            { type: "add", text: "Minigame: Novo jogo 'Hive Defender' com sistema de níveis e ondas de inimigos." }
+            { type: "add", text: "Minigame: Defenda a colmeia contra invasores e ganhe mel." }
         ]
     }
 ];
@@ -2016,7 +2017,6 @@ function renderChangelog() {
 }
 
 function checkUpdateStatus() {
-    // Chave específica da versão 23 para o controle do cromo pulsante
     const hasBeenAccessed = localStorage.getItem("BeeKind_ChangelogAccessed_V23"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
@@ -2929,7 +2929,7 @@ function doClick(e, isT = false) {
     let cV = hPerClick; if(activeBoosts.jelly > 0) cV *= 2; const g = cV * getGlobalBonus() * mult * eM;
     honey = validateNum(honey + g); totalHoneyEver = validateNum(totalHoneyEver + g); addXP(g); updateMissionProgress('honey_gain', g); if(isT) updateMissionProgress('target_clicks', 1); else updateMissionProgress('clicks', 1);
     const beeC = document.getElementById("beeContainer"); if(beeC) { beeC.style.transform = isSC ? "scale(0.60)" : "scale(0.80)"; setTimeout(() => beeC.style.transform = "scale(1)", 50); }
-    spawnFloatingNumber(g, isT, isSC); spawnHoneyParticles(isSC); triggerImpact(isT, isSC); clickBuffer.push(Date.now()); spawnFlake('gameSnowContainer'); updateUI(); 
+    spawnFloatingNumber(g, isT, isSC); spawnHoneyParticles(isSC); triggerImpact(isT, isSC); clickBuffer.push(Date.now()); updateUI(); 
 }
 
 function addXP(amt) { 
@@ -3049,10 +3049,8 @@ if(beeCont) { beeCont.addEventListener("mousedown", (e) => { e.preventDefault();
 const leftT = document.getElementById("leftTarget"); if(leftT) { leftT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); leftT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
 const rightT = document.getElementById("rightTarget"); if(rightT) { rightT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); rightT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
 
-function spawnFlake(cI) { const c = document.getElementById(cI); if(!c) return; const f = document.createElement('div'); f.className = 'snowflake'; f.innerHTML = '❄'; f.style.left = (Math.random() * 95) + 'vw'; f.style.opacity = Math.random(); f.style.animationDuration = (Math.random() * 3 + 3) + 's'; c.appendChild(f); setTimeout(() => f.remove(), 6000); }
-
-// Removido o setInterval de flocos da tela inicial, mantendo apenas para o jogo
-setInterval(() => { const gUI = document.getElementById('gameUI'); if(gameLoaded && gUI && gUI.style.opacity == '1') spawnFlake('gameSnowContainer'); }, 400);
+function spawnFlake(containerId) { const container = document.getElementById(containerId); if(!container) return; const flake = document.createElement('div'); flake.className = 'snowflake'; flake.innerHTML = '❄'; flake.style.left = (Math.random() * 95) + 'vw'; flake.style.opacity = Math.random(); flake.style.animationDuration = (Math.random() * 3 + 3) + 's'; container.appendChild(flake); setTimeout(() => flake.remove(), 6000); }
+setInterval(() => spawnFlake('snowContainer'), 300);
 
 function initAchievements() { achievements.length = 0; for(let i=1; i<=200; i++) { let val = Math.pow(1.65, i) * 150, theme = achThemes[i % achThemes.length]; achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} mel`,target:val,u:false,r:i < 80 ? "common" : (i < 160 ? "rare" : "epic"),i:theme.i}); } }
 load();
