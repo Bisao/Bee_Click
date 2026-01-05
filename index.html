@@ -498,7 +498,7 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 .sub-tab-btn, .filter-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; color: inherit; }
 .sub-tab-btn.active, .filter-btn.active { background: var(--accent); color: var(--main-blue); }
 
-/* NOVOS ESTILOS LOJA REFORMULADA */
+/* ESTILOS LOJA REFORMULADA */
 .shop-card-item {
     background: rgba(255,255,255,0.05);
     border-radius: 20px;
@@ -1039,6 +1039,67 @@ input[type=range]::-webkit-slider-thumb {
     color: var(--crown-gold);
 }
 
+/* SELETOR DE QUANTIDADE MERCADO */
+.market-qty-control {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.market-qty-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-align: left;
+    opacity: 0.7;
+}
+
+.market-qty-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.market-qty-input {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: center;
+    outline: none;
+}
+
+.market-qty-btns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.qty-btn {
+    padding: 8px 0;
+    font-size: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    box-shadow: none;
+    margin-top: 0;
+}
+
+.qty-btn.active {
+    background: var(--accent);
+    color: var(--main-blue);
+    font-weight: 900;
+    border-color: var(--accent);
+}
+
 /* ESTILO LABORATÓRIO MELHORADO */
 .lab-machine-card {
     background: rgba(255, 255, 255, 0.05);
@@ -1341,7 +1402,7 @@ input[type=range]::-webkit-slider-thumb {
                 <div id="shop_boosts" class="sub-shop-pane">
                   
                   <div class="dudu-shop-banner">
-                        <div class="dudu-bubble" id="duduSpeech">Garrafas envasadas? Eu compro tudo!</div>
+                        <div class="dudu-bubble" id="duduSpeech">Quantas garrafas quer me vender hoje?</div>
                         <div style="font-size: 50px; margin-bottom: 10px;">👴</div>
                         
                         <div class="market-stats-row">
@@ -1350,13 +1411,35 @@ input[type=range]::-webkit-slider-thumb {
                                 <span id="shopBottlesCount">0</span>
                             </div>
                             <div class="market-stat-pill">
-                                <span>VALOR (👑)</span>
-                                <span id="shopCrownValue">0</span>
+                                <span>TOTAL EM 👑</span>
+                                <span id="shopCrownValueTotal">0</span>
+                            </div>
+                        </div>
+
+                        <div class="market-qty-control">
+                            <span class="market-qty-label">QUANTIDADE PARA VENDA:</span>
+                            <div class="market-qty-input-group">
+                                <input type="number" id="marketSellQtyInput" class="market-qty-input" value="1" min="1" oninput="updateMarketVendaUI()">
+                            </div>
+                            <div class="market-qty-btns">
+                                <button class="qty-btn" onclick="setMarketSellQty(1)">1</button>
+                                <button class="qty-btn" onclick="setMarketSellQty(10)">10</button>
+                                <button class="qty-btn" onclick="setMarketSellQty(100)">100</button>
+                                <button class="qty-btn" id="marketQtyAll" onclick="setMarketSellQty('all')">TUDO</button>
                             </div>
                         </div>
                         
-                        <button onclick="sellBottles()" id="btnSellBottles" style="background: var(--crown-gold); color: var(--main-blue); border-radius: 20px; box-shadow: 0 6px 0 #b3a400;">VENDER TUDO NO MERCADO</button>
-                        <p style="font-size: 10px; opacity: 0.6; margin-top: 10px;">Taxa fixa: 1 🍶 = 10 👑</p>
+                        <div style="width: 100%; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 20px; border: 1.5px solid var(--crown-gold); margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-size: 10px; opacity: 0.7; display: block;">RECEBERÁ:</span>
+                                    <span style="font-size: 18px; font-weight: 900; color: var(--crown-gold);" id="marketSellPreviewValue">0 👑</span>
+                                </div>
+                                <button onclick="sellBottlesDynamic()" id="btnSellBottles" style="width: auto; margin-top: 0; padding: 12px 25px; background: var(--crown-gold); color: var(--main-blue); border-radius: 12px; font-size: 12px;">VENDER AGORA</button>
+                            </div>
+                        </div>
+
+                        <p style="font-size: 10px; opacity: 0.6;">Taxa fixa: 1 🍶 = 10 👑</p>
                     </div>
 
                   <div class="section-title">INFUSÕES REAIS 🧪</div>
@@ -1870,19 +1953,19 @@ async function handlePwaClick() {
 // HISTÓRICO DE ATUALIZAÇÕES
 let updateHistory = [
     {
-        version: "22.0.0",
-        title: "🎨 LOJA REFORMULADA",
+        version: "23.0.0",
+        title: "⚖️ VENDA CONTROLADA",
         changes: [
-            { type: "mod", text: "Visual: Nova interface de boosts organizada em cartões com categorias claras." },
-            { type: "add", text: "Mercado: Novo painel de venda com estatísticas de estoque em tempo real." },
-            { type: "fix", text: "UI: Botões de compra simplificados e mais atraentes." }
+            { type: "add", text: "Mercado: Agora o player escolhe a quantidade exata de garrafas que quer vender via input ou botões rápidos." },
+            { type: "add", text: "Lógica: Venda dinâmica retira primeiro do inventário e completa com o laboratório automaticamente." },
+            { type: "mod", text: "Interface: Preview de ganho de Coroas adicionado ao painel do Velho Dudu." }
         ]
     },
     {
-        version: "21.1.0",
-        title: "🏪 LOGÍSTICA DE VENDA",
+        version: "22.0.0",
+        title: "🎨 LOJA REFORMULADA",
         changes: [
-            { type: "fix", text: "Mercado: O botão 'Vender Tudo' agora coleta automaticamente as garrafas dos slots do laboratório antes de vender." }
+            { type: "mod", text: "Visual: Nova interface de boosts organizada em cartões com categorias claras." }
         ]
     }
 ];
@@ -1914,7 +1997,7 @@ function renderChangelog() {
 }
 
 function checkUpdateStatus() {
-    const hasBeenAccessed = localStorage.getItem("BeeKind_ChangelogAccessed_V22"); 
+    const hasBeenAccessed = localStorage.getItem("BeeKind_ChangelogAccessed_V23"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
     if(!hasBeenAccessed) btn.classList.add("btn-chromatic-pulse");
@@ -1922,7 +2005,7 @@ function checkUpdateStatus() {
 }
 
 function openChangelog() { 
-    localStorage.setItem("BeeKind_ChangelogAccessed_V22", "true");
+    localStorage.setItem("BeeKind_ChangelogAccessed_V23", "true");
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -2564,13 +2647,10 @@ function updateUI() {
     const hEl = document.getElementById("honey"), cEl = document.getElementById("crowns"), mpsEl = document.getElementById("mps"), lEl = document.getElementById("lvlDisplay"), xEl = document.getElementById("xpDisplay"), xF = document.getElementById("xpFill");
     if(hEl) hEl.textContent = formatNum(honey); if(cEl) cEl.textContent = formatNum(crowns); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lEl) lEl.textContent = level; if(xEl) xEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xF) xF.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     
-    const lH = document.getElementById("labHoneyValue"), lB = document.getElementById("labBottlesValue"), bB = document.getElementById("btnBottle"), sBC = document.getElementById("shopBottlesCount"), sCV = document.getElementById("shopCrownValue");
+    const lH = document.getElementById("labHoneyValue"), lB = document.getElementById("labBottlesValue"), bB = document.getElementById("btnBottle");
     if(lH) lH.textContent = formatNum(honey); if(lB) lB.textContent = formatNum(honeyBottles); 
     
-    const totalInLab = labSlots.reduce((a, b) => a + b, 0);
-    const totalPossibleBottles = honeyBottles + totalInLab;
-    if(sBC) sBC.textContent = formatNum(totalPossibleBottles); 
-    if(sCV) sCV.textContent = formatNum(totalPossibleBottles * 10); 
+    updateMarketVendaUI();
 
     let cQ = currentBatch; if(currentBatch === 'all') cQ = Math.floor(honey / 750000); const tC = cQ * 750000; const lCL = document.getElementById("batchCostLabel"); if(lCL) lCL.textContent = formatNum(tC) + " 🍯";
     const tF = labSlots.reduce((acc, curr) => acc + (SLOT_CAPACITY - curr), 0); const fPQ = Math.min(cQ, tF);
@@ -2589,6 +2669,77 @@ function updateUI() {
     });
     checkUpdateStatus(); updateVersionDisplay(); renderHangars(); renderLabSlots();
     const hP = document.getElementById("hive-stats"); if(hP && hP.classList.contains("active")) renderHiveStats();
+}
+
+/* LÓGICA DE VENDA DINÂMICA MERCADO */
+function setMarketSellQty(qty) {
+    const input = document.getElementById("marketSellQtyInput");
+    const totalAvail = honeyBottles + labSlots.reduce((a, b) => a + b, 0);
+    
+    document.querySelectorAll(".qty-btn").forEach(b => b.classList.remove("active"));
+    
+    if(qty === 'all') {
+        input.value = totalAvail;
+        document.getElementById("marketQtyAll").classList.add("active");
+    } else {
+        input.value = qty;
+        // Tenta achar o botão específico
+        const btn = Array.from(document.querySelectorAll(".qty-btn")).find(b => b.textContent == qty);
+        if(btn) btn.classList.add("active");
+    }
+    updateMarketVendaUI();
+}
+
+function updateMarketVendaUI() {
+    const input = document.getElementById("marketSellQtyInput");
+    const sBC = document.getElementById("shopBottlesCount");
+    const sCVT = document.getElementById("shopCrownValueTotal");
+    const preview = document.getElementById("marketSellPreviewValue");
+    const btn = document.getElementById("btnSellBottles");
+
+    const totalInLab = labSlots.reduce((a, b) => a + b, 0);
+    const totalPossible = honeyBottles + totalInLab;
+    let qtyRequested = parseInt(input.value) || 0;
+
+    if(sBC) sBC.textContent = formatNum(totalPossible);
+    if(sCVT) sCVT.textContent = formatNum(totalPossible * 10);
+    
+    if(preview) preview.textContent = formatNum(qtyRequested * 10) + " 👑";
+    
+    if(btn) btn.disabled = (qtyRequested <= 0 || qtyRequested > totalPossible);
+}
+
+function sellBottlesDynamic() {
+    const input = document.getElementById("marketSellQtyInput");
+    let qtyRequested = parseInt(input.value) || 0;
+    const totalInLab = labSlots.reduce((a, b) => a + b, 0);
+    const totalPossible = honeyBottles + totalInLab;
+
+    if(qtyRequested > 0 && qtyRequested <= totalPossible) {
+        let remainingToSell = qtyRequested;
+        
+        // 1. Vende do inventário primeiro
+        let soldFromInv = Math.min(remainingToSell, honeyBottles);
+        honeyBottles -= soldFromInv;
+        remainingToSell -= soldFromInv;
+
+        // 2. Se sobrar, retira dos slots do laboratório
+        if(remainingToSell > 0) {
+            for(let i=0; i < labSlots.length; i++) {
+                if(remainingToSell <= 0) break;
+                let fromSlot = Math.min(remainingToSell, labSlots[i]);
+                labSlots[i] -= fromSlot;
+                remainingToSell -= fromSlot;
+            }
+        }
+
+        let gain = qtyRequested * 10;
+        crowns += gain;
+        notify({n: "VENDA REALIZADA! 👑", d: `Vendeu ${qtyRequested} garrafas.`});
+        playClickSound();
+        updateUI();
+        executeSave();
+    }
 }
 
 function renderLabSlots() {
@@ -2630,23 +2781,6 @@ function finishBottling() {
     bottlesBeingProduced = 0; const card = document.getElementById("labMachine"), container = document.getElementById("labProgressContainer");
     if(card) card.classList.remove("lab-working"); if(container) container.style.display = "none";
     notify({n: "LOTE CONCLUÍDO! 🧪", d: "Garrafas nos slots."}); playClickSound(); updateUI(); executeSave();
-}
-
-function sellBottles() {
-    let collectedFromLab = 0;
-    for(let i=0; i < labSlots.length; i++) {
-        collectedFromLab += labSlots[i];
-        labSlots[i] = 0;
-    }
-    
-    honeyBottles += collectedFromLab;
-
-    if(honeyBottles >= 1) {
-        let gain = honeyBottles * 10; crowns += gain; notify({n: "VENDA REALIZADA! 👑", d: `+${gain} Coroas obtidas.`});
-        honeyBottles = 0; playClickSound(); updateUI(); executeSave();
-    } else {
-        notify({n: "SEM ESTOQUE! 🍶", d: "Produza garrafas primeiro."});
-    }
 }
 
 function renderTalentTree() {
