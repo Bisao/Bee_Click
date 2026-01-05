@@ -1288,7 +1288,6 @@ input[type=range]::-webkit-slider-thumb {
 
 <div id="startScreen">
     <div class="bg-clouds"></div>
-    <div class="snow-container" id="snowContainer"></div>
     <div class="start-bee-wrapper">
         <div class="start-logo">
             <img src="NoelBee.png" alt="NoelBee Logo" class="bee-img-large">
@@ -1950,7 +1949,7 @@ async function handlePwaClick() {
     }
 }
 
-// HISTÓRICO DE ATUALIZAÇÕES
+// HISTÓRICO DE ATUALIZAÇÕES - ÚLTIMAS 5 VERSÕES
 let updateHistory = [
     {
         version: "23.0.0",
@@ -1958,7 +1957,7 @@ let updateHistory = [
         changes: [
             { type: "add", text: "Mercado: Agora o player escolhe a quantidade exata de garrafas que quer vender via input ou botões rápidos." },
             { type: "add", text: "Lógica: Venda dinâmica retira primeiro do inventário e completa com o laboratório automaticamente." },
-            { type: "mod", text: "Interface: Preview de ganho de Coroas adicionado ao painel do Velho Dudu." }
+            { type: "mod", text: "Visual: Removido flocos de neve da tela inicial para um visual mais limpo." }
         ]
     },
     {
@@ -1966,6 +1965,27 @@ let updateHistory = [
         title: "🎨 LOJA REFORMULADA",
         changes: [
             { type: "mod", text: "Visual: Nova interface de boosts organizada em cartões com categorias claras." }
+        ]
+    },
+    {
+        version: "21.1.0",
+        title: "🏪 LOGÍSTICA DE VENDA",
+        changes: [
+            { type: "fix", text: "Mercado: O botão 'Vender Tudo' agora coleta automaticamente as garrafas dos slots do laboratório antes de vender." }
+        ]
+    },
+    {
+        version: "20.5.0",
+        title: "🧪 LABORATÓRIO DE LOTE",
+        changes: [
+            { type: "add", text: "Laboratório: Adicionado sistema de envasamento em massa (1x, 10x, 100x ou Tudo)." }
+        ]
+    },
+    {
+        version: "19.2.0",
+        title: "🔫 DEFENSOR DA COLMEIA",
+        changes: [
+            { type: "add", text: "Minigame: Novo jogo 'Hive Defender' com sistema de níveis e ondas de inimigos." }
         ]
     }
 ];
@@ -1981,8 +2001,7 @@ function renderChangelog() {
     const container = document.getElementById("changelogContent");
     if(!container) return;
     container.innerHTML = "";
-    const recentUpdates = updateHistory.slice(0, 5);
-    recentUpdates.forEach(update => {
+    updateHistory.forEach(update => {
         let blockHtml = `<div class="changelog-block"><div class="changelog-section-title">v${update.version} - ${update.title}</div><div class="changelog-list">`;
         update.changes.forEach(change => {
             let icon = "🔹";
@@ -1997,6 +2016,7 @@ function renderChangelog() {
 }
 
 function checkUpdateStatus() {
+    // Chave específica da versão 23 para o controle do cromo pulsante
     const hasBeenAccessed = localStorage.getItem("BeeKind_ChangelogAccessed_V23"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
@@ -2683,7 +2703,6 @@ function setMarketSellQty(qty) {
         document.getElementById("marketQtyAll").classList.add("active");
     } else {
         input.value = qty;
-        // Tenta achar o botão específico
         const btn = Array.from(document.querySelectorAll(".qty-btn")).find(b => b.textContent == qty);
         if(btn) btn.classList.add("active");
     }
@@ -2718,12 +2737,10 @@ function sellBottlesDynamic() {
     if(qtyRequested > 0 && qtyRequested <= totalPossible) {
         let remainingToSell = qtyRequested;
         
-        // 1. Vende do inventário primeiro
         let soldFromInv = Math.min(remainingToSell, honeyBottles);
         honeyBottles -= soldFromInv;
         remainingToSell -= soldFromInv;
 
-        // 2. Se sobrar, retira dos slots do laboratório
         if(remainingToSell > 0) {
             for(let i=0; i < labSlots.length; i++) {
                 if(remainingToSell <= 0) break;
@@ -3033,7 +3050,8 @@ const leftT = document.getElementById("leftTarget"); if(leftT) { leftT.addEventL
 const rightT = document.getElementById("rightTarget"); if(rightT) { rightT.addEventListener("mousedown", (e) => { e.preventDefault(); doClick(e, true); }); rightT.addEventListener("touchstart", (e) => { e.preventDefault(); doClick(e, true); }, {passive: false}); }
 
 function spawnFlake(cI) { const c = document.getElementById(cI); if(!c) return; const f = document.createElement('div'); f.className = 'snowflake'; f.innerHTML = '❄'; f.style.left = (Math.random() * 95) + 'vw'; f.style.opacity = Math.random(); f.style.animationDuration = (Math.random() * 3 + 3) + 's'; c.appendChild(f); setTimeout(() => f.remove(), 6000); }
-setInterval(() => spawnFlake('snowContainer'), 300);
+
+// Removido o setInterval de flocos da tela inicial, mantendo apenas para o jogo
 setInterval(() => { const gUI = document.getElementById('gameUI'); if(gameLoaded && gUI && gUI.style.opacity == '1') spawnFlake('gameSnowContainer'); }, 400);
 
 function initAchievements() { achievements.length = 0; for(let i=1; i<=200; i++) { let val = Math.pow(1.65, i) * 150, theme = achThemes[i % achThemes.length]; achievements.push({id:i,n:`${theme.n} ${Math.ceil(i/achThemes.length)}`,d:`Produziu ${formatNum(val)} mel`,target:val,u:false,r:i < 80 ? "common" : (i < 160 ? "rare" : "epic"),i:theme.i}); } }
