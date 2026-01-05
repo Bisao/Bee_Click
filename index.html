@@ -1671,12 +1671,20 @@ async function handlePwaClick() {
 // HISTÓRICO DE ATUALIZAÇÕES (MOSTRANDO AS ÚLTIMAS 5)
 let updateHistory = [
     {
+        version: "17.0.0",
+        title: "👑 MERCADO DE COROAS",
+        changes: [
+            { type: "mod", text: "Economia: Boosts agora custam Coroas (👑) ao invés de Mel." },
+            { type: "mod", text: "Balanceamento: Custos de boosts ajustados para a nova moeda real." },
+            { type: "add", text: "Interface: Botões da loja atualizados com ícones e cores de Coroas." }
+        ]
+    },
+    {
         version: "16.5.0",
         title: "🧪 LABORATÓRIO 2.0",
         changes: [
             { type: "add", text: "Processamento: Garrafas agora levam 45s para serem envasadas." },
-            { type: "add", text: "Interface: Adicionada barra de progresso e animações na máquina." },
-            { type: "fix", text: "Feedback: Melhorada a indicação visual de tempo restante no Lab." }
+            { type: "add", text: "Interface: Adicionada barra de progresso e animações na máquina." }
         ]
     },
     {
@@ -1702,14 +1710,6 @@ let updateHistory = [
         changes: [
             { type: "mod", text: "Painel de Click: Agora ocupa 100% da área útil entre o topo e as abas." },
             { type: "add", text: "Histórico Real: Novo sistema que mostra apenas as últimas 5 atualizações." }
-        ]
-    },
-    {
-        version: "13.0.0",
-        title: "📱 NAVEGAÇÃO INFERIOR E FULLSCREEN",
-        changes: [
-            { type: "mod", text: "Interface: Todas as abas foram movidas para a parte inferior para maior ergonomia." },
-            { type: "mod", text: "Navegação: Ao selecionar uma aba, ela agora ocupa a tela inteira." }
         ]
     }
 ];
@@ -1742,7 +1742,7 @@ function renderChangelog() {
 
 function checkUpdateStatus() {
     const currentVersion = updateHistory[0].version;
-    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V16_5"); 
+    const lastSeen = localStorage.getItem("BeeKind_LastVersionSeen_V17"); 
     const btn = document.getElementById("btnChangelog");
     if(!btn) return;
 
@@ -1755,7 +1755,7 @@ function checkUpdateStatus() {
 
 function openChangelog() { 
     const currentVersion = updateHistory[0].version;
-    localStorage.setItem("BeeKind_LastVersionSeen_V16_5", currentVersion);
+    localStorage.setItem("BeeKind_LastVersionSeen_V17", currentVersion);
     checkUpdateStatus();
     renderChangelog(); 
     openModal('changelogModal'); 
@@ -1780,7 +1780,7 @@ let favorReal = 0;
 /* LAB STATE */
 let isLabWorking = false;
 let labTimeLeft = 0;
-const LAB_PROCESS_TIME = 45; // Segundos
+const LAB_PROCESS_TIME = 45; 
 
 let talentPoints = 0;
 let talents = {
@@ -2427,7 +2427,8 @@ function startDynamicNotifications() { setInterval(() => { const gameUI = docume
 const durations = [{label:"30s",t:300,m:1},{label:"1m",t:600,m:1.8},{label:"5m",t:3000,m:8},{label:"1h",t:36000,m:70},{label:"24h",t:864000,m:1200}];
 const specialDurations = [{label:"2m",t:1200,m:10}]; 
 
-const boostBases = { pepper: 500, energy: 300, flower: 1000, luck: 1500, jelly: 15000, magnet: 4000 }; 
+/* BALANCEAMENTO CROWNS */
+const boostBases = { pepper: 5, energy: 3, flower: 10, luck: 15, jelly: 150, magnet: 40 }; 
 const achievements = [];
 const achThemes = [{n:"Aprendiz de Pólen",r:"common",i:"🌱"},{n:"Batedor de Asas",r:"common",i:"🪽"},{n:"Zumbido Melódico",r:"common",i:"🎵"},{n:"Pequeno Apicultor",r:"common",i:"👨‍🌾"},{n:"Barão do Açúcar",r:"rare",i:"💎"},{n:"Arquiduque da Colmeia",r:"rare",i:"🏰"},{n:"Imperador da Geleia Real",r:"epic",i:"👑"}];
 
@@ -2533,11 +2534,9 @@ function updateUI() {
     const honeyEl = document.getElementById("honey"); const crownEl = document.getElementById("crowns"); const mpsEl = document.getElementById("mps"); const lvlEl = document.getElementById("lvlDisplay"); const xpEl = document.getElementById("xpDisplay"); const xpFill = document.getElementById("xpFill");
     if(honeyEl) honeyEl.textContent = formatNum(honey); if(crownEl) crownEl.textContent = formatNum(crowns); if(mpsEl) mpsEl.textContent = formatNum(getMPSBase() * getGlobalBonus()); if(lvlEl) lvlEl.textContent = level; if(xpEl) xpEl.textContent = `${formatNum(currentXP)} / ${formatNum(nextLevelXP)}`; if(xpFill) xpFill.style.width = `${Math.min(100, (currentXP / nextLevelXP) * 100)}%`;
     
-    // Atualiza Lab
     const labHoney = document.getElementById("labHoneyValue"); const labBottles = document.getElementById("labBottlesValue"); const btnBottle = document.getElementById("btnBottle"); const btnSellBottles = document.getElementById("btnSellBottles");
     if(labHoney) labHoney.textContent = formatNum(honey); if(labBottles) labBottles.textContent = formatNum(honeyBottles); 
     
-    // Trava botão se lab estiver trabalhando ou se não tiver mel
     if(btnBottle) btnBottle.disabled = (honey < 750000 || isLabWorking); 
     if(btnSellBottles) btnSellBottles.disabled = (honeyBottles < 1 || isLabWorking);
 
@@ -2558,14 +2557,12 @@ function updateUI() {
     const hivePane = document.getElementById("hive-stats"); if(hivePane && hivePane.classList.contains("active")) renderHiveStats();
 }
 
-/* LÓGICA LABORATÓRIO MELHORADA */
 function bottleHoney() {
     if(honey >= 750000 && !isLabWorking) {
         honey -= 750000;
         isLabWorking = true;
         labTimeLeft = LAB_PROCESS_TIME;
         
-        // Visual
         const card = document.getElementById("labMachine");
         const container = document.getElementById("labProgressContainer");
         const fill = document.getElementById("labProgressFill");
@@ -2578,7 +2575,6 @@ function bottleHoney() {
         notify({n: "INICIANDO ENVASAMENTO...", d: "Aguarde 45 segundos."});
         updateUI();
         
-        // Iniciar Processo
         const process = setInterval(() => {
             labTimeLeft--;
             const progressPerc = ((LAB_PROCESS_TIME - labTimeLeft) / LAB_PROCESS_TIME) * 100;
@@ -2598,12 +2594,10 @@ function bottleHoney() {
 function finishBottling() {
     isLabWorking = false;
     honeyBottles++;
-    
     const card = document.getElementById("labMachine");
     const container = document.getElementById("labProgressContainer");
     if(card) card.classList.remove("lab-working");
     if(container) container.style.display = "none";
-    
     notify({n: "PROCESSO CONCLUÍDO! 🍶", d: "+1 Garrafa no estoque real."});
     playClickSound();
     updateUI();
@@ -2785,8 +2779,9 @@ function triggerLevelUpCelebration() { soundLvlUp.currentTime = 0; soundLvlUp.pl
 
 function spawnLevelUpFireworks() { const count = 30; const colors = ['#ffcc00', '#ffffff', '#fffa65', '#fff200']; for(let i=0; i<count; i++) { const p = document.createElement("div"); p.className = "honey-particle"; p.style.background = colors[Math.floor(Math.random() * colors.length)]; p.style.width = (Math.random() * 10 + 5) + "px"; p.style.height = p.style.width; p.style.left = "50vw"; p.style.top = "50vh"; p.style.boxShadow = "0 0 10px gold"; const angle = Math.random() * Math.PI * 2; const velocity = Math.random() * 400 + 200; const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity; p.style.setProperty('--tx', `${tx}px`); p.style.setProperty('--ty', `${ty}px`); document.body.appendChild(p); setTimeout(() => p.remove(), 1000); } }
 
+/* COMPRA COM CROWNS */
 function buyBoostManual(type, ticks, cost, label) { 
-    cost = validateNum(cost); if(honey >= cost) { honey = validateNum(honey - cost); let durationBonus = 1 + (talents.alquimista_boost * 0.1); activeBoosts[type] += (ticks * durationBonus); notify({n: "Consumível Ativado!", d: `+${label}`}); updateUI(); executeSave(); } 
+    cost = validateNum(cost); if(crowns >= cost) { crowns = validateNum(crowns - cost); let durationBonus = 1 + (talents.alquimista_boost * 0.1); activeBoosts[type] += (ticks * durationBonus); notify({n: "Boost Real Ativado!", d: `+${label}`}); updateUI(); executeSave(); } 
 }
 
 function startAutoProducing() { if(autoProduceInterval) clearInterval(autoProduceInterval); autoProduceInterval = setInterval(() => { if(autoUnlocked){ let gain = getMPSBase() * getGlobalBonus(); honey = validateNum(honey + gain); totalHoneyEver = validateNum(totalHoneyEver + gain); addXP(gain); updateMissionProgress('honey_gain', gain); } }, 1000); }
@@ -2874,12 +2869,21 @@ function openSubShop(id, btn) { document.querySelectorAll('.sub-shop-pane').forE
 function setAchFilter(rarity, btn) { currentAchFilter = rarity; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); renderAchs(); }
 
 function buildShop() { 
-    const inflationFactor = Math.max(1, Math.pow(hPerClick, 1.1) / 8); 
-    ['pepper', 'energy', 'flower', 'luck'].forEach(type => { 
-        const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = ""; 
-        durations.forEach(d => { const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.15)) * d.m * inflationFactor)); const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${d.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, d.t, cost, d.label); grid.appendChild(btn); }); 
-    }); 
-    ['jelly', 'magnet'].forEach(type => { const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = ""; specialDurations.forEach(sd => { const cost = validateNum(Math.floor(boostBases[type] * (1 + (level * 0.2)) * sd.m * inflationFactor)); const btn = document.createElement("button"); btn.className = "buy-btn-small"; btn.disabled = honey < cost; btn.innerHTML = `<b>${sd.label}</b><br>${formatNum(cost)} 🍯`; btn.onclick = () => buyBoostManual(type, sd.t, cost, sd.label); grid.appendChild(btn); }); });
+    const types = ['pepper', 'energy', 'flower', 'luck', 'jelly', 'magnet'];
+    types.forEach(type => {
+        const grid = document.getElementById(`grid_${type}`); if(!grid) return; grid.innerHTML = "";
+        const durList = (type === 'jelly' || type === 'magnet') ? specialDurations : durations;
+        durList.forEach(d => {
+            const cost = Math.max(1, Math.floor(boostBases[type] * d.m));
+            const btn = document.createElement("button");
+            btn.className = "buy-btn-small";
+            btn.style.borderColor = "var(--crown-gold)";
+            btn.disabled = crowns < cost;
+            btn.innerHTML = `<b>${d.label}</b><br><span style="color:var(--crown-gold)">${formatNum(cost)} 👑</span>`;
+            btn.onclick = () => buyBoostManual(type, d.t, cost, d.label);
+            grid.appendChild(btn);
+        });
+    });
 }
 
 function renderAchs() { const l = document.getElementById("achList"); if(!l) return; l.innerHTML = ""; achievements.filter(a => currentAchFilter === 'all' || a.r === currentAchFilter).forEach(a => { l.innerHTML += `<div class="ach-card ${a.u ? 'unlocked ' + a.r : 'locked'}"><div style="font-size:24px;">${a.u ? a.i : '🔒'}</div><div style="flex:1"><div style="font-weight:900; color:inherit; font-size:13px;">${a.n}</div><div style="font-size:11px; color:inherit; opacity: 0.7;">${a.d}</div></div>${a.u ? '<div style="color:var(--xp-bar)">✔</div>' : ''}</div>`; }); }
